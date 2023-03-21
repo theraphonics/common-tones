@@ -1,0 +1,59 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Shepard.ins                 Juan Reyes 08/20/06
+;;;                             juanig_at_ccrma.Stanford.EDU
+;;;
+;;; This instrument is additive synthesis at its best!
+;;; 
+;;;   Shepard tones and J.C. Risset's application of them are described on
+;;;   Dodge's Computer Music text aroung page 96 (old edition).
+;;;
+;;;
+
+;;
+;;  macro for choosing going up or down
+;;
+(defmacro direction (d p)
+  `(if (= ,d 1)
+      (progn ;; up
+	(* ,p 12.0)
+	)
+      (progn ;; down
+	(* (- 1 ,p) 12.0) 
+	)))
+;;
+;;
+(definstrument shepard (beg dur amp &key
+			    (dir 0)           ;; upwards=1, else down
+			    (incr .000001)    ;; smoothness
+			    )
+  (let* ((start (floor (* beg *srate*)))
+	 (end (+ start (floor (* dur *srate*))))
+	 (x 0.0)
+	 (arr (make-array 12))) ;; we'll create  a 12 oscil bank
+    ;;
+    (do ((i 0 (1+ i)))          ;; initialize oscils
+	((= i 12))
+      (setf (aref arr i) (make-oscil :frequency 0.0)) )
+    ;;
+    (run
+     (loop for i from start to end do
+       (let ((y 0.00)
+	     (oscbank 0.0))
+	 ;; sum signals of twelve oscillators
+	 (do ((i 0 (1+ i)))
+	     ((= i (length arr)))
+	   ;; get amplitude and oscillator phase offset: phoffset
+	   (let ((phoffset (+ x (/ i 12))))
+	     (if (> phoffset 1) (setf phoffset (- phoffset 1)))
+	     (setf y (- 4.0 (* 8.0 phoffset)))
+	     (incf oscbank (* (exp (* -0.5 y y))
+			  (oscil (aref arr i)
+				 (hz->radians (expt 2.0 (direction dir phoffset)))
+						    )))
+	     ))
+	 (incf x incr)
+	 (outa i (* amp oscbank)) )))
+    ))
+;;;(with-sound () (shepard 0 10 0.1))              ;; go down
+;;;(with-sound () (shepard 0 10 0.1 :dir 1))       ;; go up

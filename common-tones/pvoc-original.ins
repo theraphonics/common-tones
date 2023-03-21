@@ -1,0 +1,191 @@
+#|
+pvoc - A feature complete phase vocoder instrument. Based in part on
+sms instrument and the phase vocoder section in F. Richard Moore's "Elements of Computer Music"
+
+Performs analysis and oscillator bank resynthesis. 
+time - specifies the time dilation ratio
+pitch - specifies the pitch transposition ratio
+gate - specifies a resynthesis gate in dB (partials with amplitudes lower than the gate
+       value will not be synthesized)
+pitchoffset - a pitch offset in Hz (creates inharmonic spectra)
+
+TODO: improve speed, reduce number of temporary arrays
+      start and end points (currently chops off some analysis that should be performed)
+      read and write analysis files (in formats such as Beuachamp's sndan, csound pvoc, etc...)
+      improve quality when input and output sample rates differ (still sounds bad)
+      smarter resynthesis gating (time based gating)
+      plug-in system for spectral modification
+
+Michael Klingbeil
+March, 1999   Urbana, IL
+|#
+
+
+(definstrument pvoc (file &key (fftsize 512) (overlap 4) (time 1.0) (beg 0.0)
+                          (pitch 1.0) (gate 0.0) (poffset 0.0))
+  (let* ((fil (open-input* file))         ;; open the file we are going to modify
+         (file-duration (sound-duration file))   ;; get the duration in seconds
+         (file-*srate* (sound-srate file)) ;; get the sampling rate of the file
+         (filptr 0)           ;; index into the file
+         (start (floor (* beg *srate*)))  ;; compute the starting time in samples
+         (end (+ start (* file-duration *srate* time)))  ;; compute the ending time in samples
+         
+         (pi2 (* 2 pi)) ;; handy constant
+         (N fftsize)  ;; fft size
+         (N2 (floor N 2))  ;; half the fft size
+         (Nw fftsize) ;; window size -- currently restricted to the fftsize
+         (D (floor fftsize overlap)) ; decimation factor (how often do we take an fft)
+         (interp (* (floor fftsize overlap) 
+                    (/ *srate* file-*srate*)
+                    time)) ; interpolation factor how often do we synthesize
+                                ; compensates for 
+         (windowsum 0.0)        ; for window normalization
+        
+         ;; take a resynthesis gate specificed in dB, convert to linear amplitude
+         (syngate (if (= 0.0 gate) 0.0 (expt 10 (/ (- (abs gate)) 20))))
+         
+         (poffset (hz->radians poffset))
+ 
+         (window (make-double-array Nw)) ; array for the window
+         (fdr (make-double-array N))     ; buffer for real fft data
+         (fdi (make-double-array N))     ; buffer for imaginary fft data
+         
+         (lastphase (make-double-array N2)) ;; last phase change
+         (lastamp (make-double-array N2)) ;; last sampled amplitude
+         (lastfreq (make-double-array N2)) ;; last sampled frequency
+         (ampinc (make-double-array N2)) ;; amplitude interpolation increment
+         (freqinc (make-double-array N2)) ;; frequency interpolation increments
+         
+         ;; expresses the fundamental in terms of radians per OUTPUT sample
+         (fundamental (* (/ file-*srate* N) (/ pi2 *srate*)))
+         ;; (fundamental (hz->radians (/ file-*srate* N)))
+
+         (sum 0.0)            ; output sample sum
+         (output interp)      ; count of samples that have been output
+         (resynth-oscils (make-array N2))  ; synthesis oscillators
+         (nextpct 10.0)       ; how often to print out the percentage complete message
+
+         )
+    ;; zero out the arrays (lastamp and lastphase will be set from fdr and fdi)
+    (clear-array lastphase)
+    (clear-array fdr)
+    (clear-array fdi)
+
+    ;; setup oscillators
+    (dotimes (i N2)
+      (setf (aref resynth-oscils i) (make-oscil :frequency 0)))
+    
+    (run
+     (progn
+       ;; set-up the analysis window here
+       (setf windowsum 0.0)
+       ;; create a Hamming window (Moore p. 251)
+       (dotimes (k Nw)
+         (let ((val (- 0.54 (* 0.46 (cos (* 2 pi (/ k (- Nw 1))))))))
+           (setf (aref window k) val)
+           (incf windowsum val)))
+       ;; normalize window
+       (setf windowsum (/ 2.0 windowsum))
+       ;; loop over normalizing the window
+       (dotimes (k Nw)
+         (setf (aref window k) (* (aref window k) windowsum)))
+       
+       ;; begin the master run loop
+       (loop for i from start to end do
+             (if (>= output interp) ;; if all the samples have been output then do the next frame
+               (let ((buffix (mod filptr N)))
+                 ; buffix is the index into the input buffer
+                 ; it wraps around circularly as time increases in the input
+
+                 ; reset the output sample counter
+                 (setf output 0)
+                 
+                 ;; save the old amplitudes and frequencies
+                 (dotimes (k N2)
+                   (setf (aref lastamp k) (aref fdr k))
+                   (setf (aref lastfreq k) (aref fdi k)))
+                 
+                 (dotimes (k N)
+                   ;; apply the window and then stuff into the input array
+                   (setf (aref fdr buffix) (* (aref window k) (ina filptr fil)))
+                   (incf filptr)
+
+                   ;; increment the buffer index with wrap around
+                   (incf buffix)
+                   (if (>= buffix N) (setf buffix 0)))
+                 ;; rewind the file for the next hop
+                 (decf filptr (- N D))
+                 ;; no imaginary component input so zero out fdi
+                 (clear-array fdi)
+                 ;; compute the fft
+
+                 (fft fdr fdi N 1)
+                 ;; now convert into magnitude and interpolated frequency
+                 (dotimes (k N2)
+                   (let* ((a (aref fdr k))
+                          (b (aref fdi k))
+                          (mag (* (sqrt (+ (* a a) (* b b)))))
+                          (phase 0) (phasediff 0))
+                     (setf (aref fdr k) mag)    ;; current amp stored in fdr
+                     ;; mag is always positive
+                     ;; if it is zero then the phase difference is zero
+                     (if (> mag 0)
+                       (progn
+                         (setf phase (- (atan b a)))
+                         (setf phasediff (- phase (aref lastphase k)))
+                         (setf (aref lastphase k) phase)
+                         ;; frequency wrapping from Moore p. 254
+                         (loop while (> phasediff pi) do
+                               (decf phasediff pi2))
+                         (loop while (< phasediff (- pi)) do
+                               (incf phasediff pi2))
+                         ))
+                     ;; current frequency stored in fdi
+                     ;; scale by the pitch transposition
+                     (setf (aref fdi k) 
+                           (* pitch (+ (/ (* phasediff file-*srate*) (* D *srate*))
+                                       (* k fundamental)
+                                       poffset)))
+
+                     ;; resynthesis gating
+                     (if (< (aref fdr k) syngate)
+                       (setf (aref fdr k) 0))
+                     
+                     ;; take (aref lastamp k) and count up to (aref fdr k)
+                     ;; interpolating by ampinc
+                     (setf (aref ampinc k) (/ (- (aref fdr k) (aref lastamp k)) interp))
+                     ;; take (aref lastfreq k) and count up to (aref fdi k)
+                     ;; interpolating by freqinc
+                     (setf (aref freqinc k) (/ (- (aref fdi k) (aref lastfreq k)) interp))
+                     ))
+                 
+                 ;; we can now output samples
+                 ;; set the interpolation increment
+                 ;; (setf interp-inc (/ 1.0 interp))
+                 ;; set the interpolation factor
+                 ;; (setf interp-factor 0.0)
+                 ))
+
+             ;; loop over the partials
+             (setf sum 0.0)
+             (dotimes (k (floor N 2))
+               ;; interpolate frequency and amplitude
+               ;; it would be faster to do this with increments
+               
+               (incf (aref lastamp k) (aref ampinc k))
+               (incf (aref lastfreq k) (aref freqinc k))
+
+               (if (> (aref lastamp k) 0)
+                 (incf sum (* (aref lastamp k) (oscil (aref resynth-oscils k) (aref lastfreq k))))
+                 ))
+             (outa i sum)
+             ;; print out a message
+             (let ((pct (* 100.0 (/ (- i beg) (- end beg)))))
+               (if (>= pct nextpct) (progn
+                                      (clm-print "~F%" pct)
+                                      (incf nextpct 10))))
+
+             ;; we just output 1 sample
+             (incf output)
+             ))))
+  )

@@ -1,0 +1,292 @@
+;;;********************************************************************
+;;;
+;;;  This is a scanned synthesis clm instrument with reverb and intensity
+;;;  panning (Butterfly) parameters. The scanned synthesis algorithm is
+;;;  based on Bill's scheme code, 
+;;;  which is a simplification of the underlying table-filling routine for 
+;;;  "scanned synthesis" and a uniform-circular-string. Waveforms can alter
+;;;  the string to some extend.
+;;;
+;;;  For more info read Bill Verplank and Max Mathews paper
+;;;  "Scanned Synthesis", Proc. of ICMC-2001 Berlin 
+;;;  For a simpler, more complete implentation look at "scanned.ins"
+;;;
+;;;  This instrument by Juan Reyes with help from Bill Schottstaedt
+;;;                              
+;;;
+;;;
+;;; 
+;;;    
+;;;********************************************************************
+(definstrument circular-scanned (start dur freq amp 
+				       &key
+				       (amp-env  '(0 0 10 1.0  90 1.0 100 0.0))
+				       (reverb-amount 0.05)
+				       (pts 128)    ;; number of masses in string
+				       (recompute-samps 192) 
+				       ;; Waveforms
+				       (wave 1) ;; 1 = Full cycle Cosine, 2 = Triangular 3 = Pulse
+				       ;;          4 = Overtones
+;;;;
+				       (tension t)  ;; Tension=t ON; nil = off
+				       (rampcentering t) ;; Centering=t  ON;
+;;;;
+;;;; panning factors
+				       (cycles 1)  
+				       (di 1)  ;; distance from speakers
+				       (a 2.1) ;; Butterfly intensity panning parameters 
+				       (b 6)
+				       (c 7)
+				       (d 30)
+			      ) 
+  ;; 
+  (multiple-value-bind (beg end) (times->samples start dur)
+    (let* (
+	   (x0  (make-double-array pts   :initial-element 0.0d0))
+	   (x1  (make-double-array pts   :initial-element 0.0d0))
+	   (x2  (make-double-array pts   :initial-element 0.0d0))
+	   (p1  (make-double-array pts   :initial-element 0.0d0))
+	   (p2  (make-double-array pts   :initial-element 0.0d0))
+	   (p3  (make-double-array pts   :initial-element 0.0d0))
+	   (p4  (make-double-array pts   :initial-element 0.0d0))
+	   (d   (make-double-array pts   :initial-element 0.0d0))
+	   (invM (make-double-array pts   :initial-element 0.0d0))
+	   (f   (make-double-array pts   :initial-element 0.0d0))
+	   (c   (make-double-array pts   :initial-element 0.0d0))
+	   (xf  (make-double-array pts   :initial-element 1.0d0))
+	   (mm  6.0)    ;; initial mass
+	   (ff  0.25)   ;; initial haptics
+	   (cc  0.2)    ;; Centering
+	   (dd  0.06)   ;; initial damping
+	   (s 1.125)
+	   (ss (* s s))
+	   (gen1 (make-table-lookup :frequency freq :wave x1))
+	   (gen2 (make-table-lookup :frequency freq :wave x2))
+	 
+	   ;; amplitude envelopes
+	   (ampf (make-env :envelope amp-env :scaler amp :duration dur))
+	   (sqrt2ov2 (/ (sqrt 2) 2))
+	   (tn   (make-env '(0 -0.7853981633974483d0  ;; envelope for coeff angle of distance factor
+			     100 0.7853981633974483d0) ;; from -pi/4 to pi/4
+			   :duration dur))
+	   (theta1 (make-env  '(0 0 100 1.5707963267948966d0) ;; from 0 to pi/2
+			      :scaler cycles ;;
+			      :duration (* 1.0 dur)))
+	   (dpts (- pts 2))
+           (hpts (/ pts 2))
+           (qpts (/ pts 4))
+	   (k 0)
+	   (kincr  (/ 1.0 recompute-samps)))
+      ;;
+      ;;;;;;;;;;;;;;;;;;;; waveforms for different timbres
+      ;;                   modify or create your own
+      ;;                   beware of initial conditions 
+      ;;
+      ;;
+      ;; here are some examples
+      ;;
+      (cond ((= wave 1) ;; full cycle Cosine Wave
+	     (progn
+	       (do ((i 0 (1+ i))) 
+		   ((= i pts))
+		 (let ((val  (* 0.5 (sin (/ (* 2.0 pi  (+ i qpts )) (- dpts 1))))))
+		   (setf (aref x1 i ) val)))
+	       (setf mm 6.0)
+	       (setf ff 0.25)
+	       (setf cc 0.02)
+	       (setf dd .07)
+	       ))
+	    ;;
+	    ((= wave 2)  ;; triangular wave
+	     (progn
+	       (do ((i 0 (1+ i))) 
+		   ((= i pts))
+		 (cond ((<= i qpts )
+			(setf (aref x1 i) (double (/ i hpts))))
+		       ((and (> i qpts) (<= i hpts))
+			(setf (aref x1 i) (double (/ (- i (* 2 (- i qpts))) hpts)) ))
+		       ((and (> i hpts) (<= i (* 3 qpts)))
+			(setf (aref x1 i) (double (/ (- hpts i) hpts))))
+		       ((> i (* 3 qpts))
+			(setf (aref x1 i) (double (/ (- (* 2 (- i hpts)) i) hpts))  ))))
+	       (setf mm 1.0)
+	       (setf ff 0.25)
+	       (setf cc 0.0001)
+	       (setf dd .006)
+	       ))
+	    ;;
+	    ((= wave 3)  ;;Unidirectional Pulse
+	     (progn
+	       (do ((i 0 (1+ i)))
+		   ((= i pts))
+		 (cond ((< i qpts )
+			(setf (aref x1 i) (double (* .5 1))))
+		       ((and (>= i qpts) (< i hpts))
+			(setf (aref x1 i) (double (* .5 (/ (- i qpts) hpts)))))
+		       ((and (>= i hpts) (< i (* 3 qpts)))
+		      (setf (aref x1 i) (double (* .5 (/ (- (* 3 qpts) i)  hpts)))))
+		       ((>= i (* 3 qpts))
+			(setf (aref x1 i) (* .5 (double 1))))
+		     ))
+	       (setf mm 1.0)
+	       (setf ff 0.25)
+	       (setf cc 0.0000)
+	       (setf dd .006)
+	       ))
+	    ;;
+	    ((= wave 4)  ;; Overtones
+	     (progn
+	       (do ((i 0 (1+ i))) 
+		   ((= i pts))
+		 (let* ((pts2 (double (/ pts 2)))
+			(dpts4 (* dpts .25))
+			(val  (double (* .5 (- 1 (sin  (/ (* 2 pi (+ i dpts4 )) pts2)))))))
+		   (setf (aref x1 i ) val)
+		   ))
+	       (setf mm 8.0)
+	       (setf ff 0.25)
+	       (setf cc 0.001)
+	       (setf dd .024)
+	     ))
+	    ;;
+	    )
+      ;;
+      ;;
+            
+      (do ((i 0 (1+ i))) ;;; initialize trajectories and positions
+	  ((= i pts))
+	(setf (aref xf i) (double i)))
+      ;;
+      ;;; Haptic force array
+      ;;
+      (let* ((da (/ pts 2))
+	     (db (/ 2.5 da))
+	     (dc 0.00)
+	     ;;(dd (/ ff 6.0))
+	     )
+	(if tension
+	    (progn
+	      (do ((jj 0 (1+ jj))) ;;; generate Haptic Force Array
+		  ((= jj pts ))
+		(setf dc (* db (abs (- (/ pts 2) jj))))
+		(setf (aref f jj) (double (exp (* dc dd))))))
+	  (progn
+	    (do ((jj 0 (1+ jj))) ;;; generate Haptic Force Array
+		((= jj pts ))
+	      (setf (aref f jj) (double ff ) )))
+	  ))
+      ;;;;
+
+      (do ((jj 0 (1+ jj))) 
+	  ((= jj pts ))
+	(setf (aref invM jj) (double (/ 1 mm)))
+	)
+  ;;;;
+      (dotimes (j pts)
+	;;
+	;; Damping
+	;;
+	(setf (aref d j) (double dd ))
+	;; (setf (aref d jj) (double (* (+ (*  (*  (aref traj jj) (aref traj jj)) 1.0004) 0.2) dd)))
+	;;
+	;; Centering
+	;;
+	(let* ((djk j) )
+	;;
+	  (if rampcentering
+	    (progn
+	      (setf (aref c j) (double (* djk  (/ 1 pts))))
+		  )
+	      (progn
+		(setf (aref c j) (double 0.987001))) ;; constant centering 
+	      ))
+      
+      ;; generate p1, p2, and p3 values
+      (let* ((djk j)
+	     (hjj (/ djk 2))
+	     (invdenom (/ 1 (+ 1.0 (* s (aref d j) (aref invM j)) (* ss (aref c j) (aref invM j))))))
+	(cond ((<= j hjj)
+	       (setf (aref c j) (double (* cc djk 0.00002))))
+	      (t (setf (aref c j) (double (* cc djk 2.00)))))
+	(setf (aref p1 j) (- (+ 2 (* s (aref d j) (aref invM j))) (* 2 ss (aref f j) (aref invM j))))
+	(setf (aref p2 j) (* ss (aref f j) (aref invM j) invdenom))
+	(setf (aref p3 j) invdenom)
+	(setf (aref p4 j) (* ss (aref invM j) invdenom)))
+		   ;;
+      ) ;;; dotimes (j pts)
+      
+      ;;(format t ";;; ready to loop ~f~%" cc )
+      ;;
+      ;;;;;;;;;;;;;; run - loop
+      ;;
+      (run 
+       (loop for i from beg below end do
+	 (if (>= k 1.0)
+	     (progn
+	       (setf k 0.0)
+	       ;; compute-uniform-circular-string
+	       (dotimes (j pts)
+		 (setf (aref x0 j) (- (+ (* (aref p1 j) (aref x1 j))
+					 (* (aref p2 j) (+
+							 ;; circle-vect-ref
+							 (if (< (- j 1) 0)
+							     (aref x1 (+ pts (- j 1)))
+							   (if (>= (- j 1) pts)
+							       (aref x1 (- (- j 1) pts))
+							     (aref x1 (- j 1))))
+							 ;; circle-vect-ref
+							 (if (< (+ j 1) 0)
+							     (aref x1 (+ pts (+ j 1)))
+							   (if (>= (+ j 1) pts)
+							       (aref x1 (- (+ j 1) pts))
+							     (aref x1 (+ j 1))))))
+					 (* (aref p4 j)  (aref xf j)))
+				      (* (aref p3 j) (aref x2 j)))))
+	       ;;
+	       ;;
+	       (dotimes (j pts)
+		 ;; initialize vector X2
+		 (setf (aref x2 j ) 0.0))
+	       (dotimes (j pts)
+		 ;; add contents of vector X1 to vector X2
+		 (let ((sum (+ (aref x2 j) (aref x1 j))))
+		   (setf (aref x2 j) sum) ))
+	       (dotimes (j pts)
+		 ;; initialize vector X1
+		 (setf (aref x1 j ) 0.0))
+	       (dotimes (j pts)
+		 ;; add contents of vector X0 to vector X1
+		 (let ((sum (+ (aref x0 j) (aref x1 j))))
+		   (setf (aref x1 j) sum) )))
+	   (incf k kincr))
+	 ;;;;
+	 (let* ((g2 (table-lookup gen2 ))
+		(g1 (table-lookup gen1 ))
+		(scanval (* (env ampf) (+ g2 (* k (- g1 g2)))))
+		(di-angle (/ (* cycles (env tn)) 3))
+		(di-coeff (+ sqrt2ov2 (abs (sin di-angle))))
+		(di-factor (/ di-coeff di)) 
+		(theta (env theta1))
+		(sina (sin theta))
+		(cosa (cos theta))
+		(sinb (sin (/ theta d)))
+		(cosb (cos (* b theta)))
+		(rho (+ (- (exp cosa) (* a cosb)) (expt sinb c)))
+		(gaina (*  rho cosa di-factor))
+		(gainb (*  rho sina di-factor))
+		)
+	   (outa i (* scanval gaina ))
+	   (outb i (* scanval gainb ))
+	   (if *reverb* (outa i (* scanval di-factor reverb-amount) *reverb*))
+	   (if *reverb* (outb i (* scanval di-factor reverb-amount) *reverb*))
+	   )
+	 
+	 )))))
+
+;;;(with-sound (:channels 2) (circular-scanned 0 4 400 .5))
+;;;(with-sound () (circular-scanned 0 2 400 .5 :cycles 3))
+;;; (with-sound (:channels 2 ) (circular-scanned 0 8 400 0.4 :cycles 2 :wave 3))
+;;;(with-sound (:channels 2 ) (circular-scanned 0 8 400 0.5 :wave 2))
+;;;(with-sound (:channels 2 :reverb jc-reverb) (circular-scanned 0 8 100 0.5 ))
+;;; (with-sound (:channels 2 :reverb jc-reverb) (circular-scanned 0 8 400 0.5 :wave 4))
+

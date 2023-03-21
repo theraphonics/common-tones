@@ -1,0 +1,228 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;  Banded Waveguide Instrument based on
+;;;  ====== =========
+;;;
+;;;    Essl, G. and Cook, P. "Banded
+;;;    Waveguides: Towards Physical Modelling of Bar
+;;;    Percussion Instruments", Proceedings of the
+;;;    1999 International Computer Music Conference.
+;;;
+;;;    Also, Essl, Serafin, Cook, and Smith J.O., 
+;;;    "Theory of Banded Waveguides", CMJ, 28:1,
+;;;    pp37-50, Spring 2004.    
+;;;
+;;;
+;;;  This CLM version by Juan Reyes 2004-2005, 
+;;;  NOTES:
+;;;        As with all physical models, initial conditions matter.
+;;;        Frequency range is not too broad. 220Hz. is a good
+;;;        starting point.
+;;;
+;;;  Tuned bar, Glass Harmonica and Uniform Bar for now.
+;;;
+;;;  08/22/2013  update bandpass filters with CLM's filter generator (juanig)
+;;;  08/24/2013  replaced delay line macros with DelayL using clm's delay ug  
+;;;  08/29/2014  fixed waveguide with feed and reflections
+;;;  08/30/2014  Try different delay line lengths. Fixing bandpass radius param.
+;;;
+
+
+;;; bowtable structure
+;;;
+(def-clm-struct bowt (offset 0.0) (slope 1.0))
+
+
+(defmacro bowtable (b sample) 
+  `(max 0.0 (- 1.0 (abs (* (bowt-slope ,b) (+ ,sample (bowt-offset ,b)))))))
+
+
+(defun make-bandpassbq (freq radius)
+  (let* ((arra  (make-double-array 3 :initial-contents '(0.0d0 0.0d0 0.0d0)))
+	 (arrb  (make-double-array 3 :initial-contents '(0.0d0 0.0d0 0.0d0)))
+	 )
+    (setf (aref arra 1) (* -1.998 radius (cos (hz->radians freq)))) 
+    (setf (aref arra 2) (double  (*  radius radius)))
+    ;;;
+    ;;; gain gets normalized 
+    ;;;
+    (setf (aref arrb 0) (double (- 0.5 (* 0.5 (aref arra 2)))))
+    (setf (aref arrb 2) (- (aref arrb 0) )) 
+    ;;;
+    (make-filter 3 arra arrb)))
+
+
+;;; Macro to handle bandpass filter
+
+(defmacro bandpassbq (f sample0)
+  `(filter ,f ,sample0))
+
+;;;
+;;;  DelayL prc's delaylinel with bil's fix (as per prc95.scm)  
+;;;
+(defun make-delayl (len lag)
+  (make-delay len 
+	      :max-size (ceiling (+ len lag 1))
+              :type mus-interp-linear
+	      ))
+
+(defmacro delayl (d sample0 outp)
+  ;; outp is the diference of (- lag len)
+  `(let ((samp ,sample0))
+     (delay-tick ,d  samp)
+     (tap ,d ,outp)
+     ))
+
+;;;;;;;;;;;;;;;;;;;;
+
+(definstrument bandedwg (beg dur freq amplitude &key
+                        			     ;; vibration modes
+			                             ;; 1=tuned Bar; 2=Glass Harmonica; 
+			                             ;; 3= Uniform bar
+			     (mode 3) 
+			     (maxa 0.9998)           ;; max bow velocity
+			     (bv 1.0)                ;; bow velocity scaler
+			                             ;; velocity envelope
+			     (vel-env '(0 1.0 .95 1.1 1 1.0))
+			     (amp-env '(0 1 1 1))      ;;'(0 0.0  .95 1.0 .99 0.00))
+			     (rev-amount .08) )
+  
+  (let ((nrmodes 4))
+    (cond ((= mode 1)
+	   (setf nrmodes 4))
+	  ((= mode 2)
+	   (setf nrmodes 6))
+	  (t
+	   (setf nrmodes 4))
+	  )
+    (let* ((start (floor (* *srate* beg)))
+	   (baselen (/ *srate* freq))           ;; original stk delayl length
+	   (baselag (- (/ *srate* freq) 0.5))
+	   (dtapoffs 0.0)                       ;; tap offset is 0.0 in StK's version 
+	   (bandpass    (make-array nrmodes))
+	   (delayslft   (make-array nrmodes))
+	   (delaysrfl   (make-array nrmodes))
+	   (modes       (make-double-array nrmodes  :initial-element 0.0d0))
+	   (gains       (make-double-array nrmodes   :initial-element 0.0d0))
+	   (basegains   (make-double-array nrmodes   :initial-element 0.0d0))
+	   (excitations (make-double-array nrmodes   :initial-element 0.0d0))
+	   (delastout   (make-double-array nrmodes   :initial-element 0.0d0))
+	   ;;
+	   (fradius 0.0)   ;; radius for bandpass filter
+	   (dlength 0.0)   ;; delay-line length
+	   (dlag 0.0)      ;; delay lag (for tap)
+	   ;;
+	   (bowtab (make-bowt :slope 3.0 :offset 0.001))  ;; BowTable
+	   (ampenv (make-env amp-env :scaler amplitude :duration dur))
+	   ;; (vel-env (make-env vel-env :scaler bv :duration dur))
+	   ;;
+	   (maxvelocity maxa)
+	   (end (+ start (floor (* *srate* dur))))
+	   )
+      ;;
+      ;;
+      (cond ((= mode 1) ;; Tuned Bar
+	     (progn
+	       (setf (aref modes 0) (double 1.000))
+	       (setf (aref modes 1) (double  4.0198391420))
+	       (setf (aref modes 2) (double 10.7184986595))
+	       (setf (aref modes 3) (double 18.0697050938))
+	       (dotimes (i nrmodes)
+		 (setf (aref basegains i ) (double (expt 0.998 (+ i 1))))
+		 (setf (aref excitations i) (double 1.0)))
+	       ))
+	    ((= mode 2) ;; Glass Harmonica
+	     (progn 
+	       (setf (aref modes 0) (double 1.000))
+	       (setf (aref modes 1) (double 2.32))
+	       (setf (aref modes 2) (double 4.25))
+	       (setf (aref modes 3) (double 6.63))
+	       (setf (aref modes 4) (double 9.38))
+	       (setf (aref modes 5) (double 12.22))
+	       (dotimes (i nrmodes)
+		 (setf (aref basegains i ) (double (expt 0.988 (+ i 1))))
+		 (setf (aref excitations i) (double 1.0)))
+	       ))
+	    (t ;; Uniform Bar
+	     (progn
+	       (setf (aref modes 0) (double 1.000))
+	       (setf (aref modes 1) (double 2.756))
+	       (setf (aref modes 2) (double 5.404))
+	       (setf (aref modes 3) (double 8.933))
+	       (dotimes (i nrmodes)
+		 (setf (aref basegains i ) (double (expt 0.9 (+ i 1))))
+		 (setf (aref excitations i) (double 1.0)))
+	       ))
+	    )
+
+      ;;
+      ;; setFrequency method in STK's BandedWG
+      ;;
+
+      ;; (setf fradius (- 1.0 (* pi (/ 32 *srate*))))
+      (setf fradius (- 0.3998 (* pi (/ 32 *srate*))))
+      
+      (dotimes (i nrmodes)
+	(setf dlength (floor  (/ baselen (aref modes i))))
+	(setf dlag    (floor  (/ baselag (aref modes i))))  ;; (- lag len) --> tap offset
+	(setf (aref delayslft i) (make-delayl dlength dlag))
+	(setf (aref delaysrfl i) (make-delayl dlength dlag))
+	(setf (aref gains i) (double (aref basegains i)))
+	(setf (aref bandpass i) 
+	      (make-bandpassbq (* freq (aref modes i)) fradius)) )
+      
+      ;;
+;;;;;;;;;;;;
+      ;;
+      
+      (Run
+       (loop for i from start to end do
+	  ;;
+	    (let ((input 0.00)
+		  (velinput  0.00)
+		  (bowvelocity 0.00)
+		  (bplastout 0.0)
+		  (dlastsampl 0.00)
+		  (sample0 0.00)
+		  )
+	      
+	      (dotimes (k nrmodes)
+		(incf velinput (* (aref basegains k)  (aref delastout k))) )
+	      ;;
+	      ;;
+	      ;; (setf bowvelocity (* 0.3 (env vel-env) maxvelocity))
+	      (setf bowvelocity (* 0.3  maxvelocity))
+	      (setf input  (- bowvelocity velinput))
+	      (setf input (* input (bowtable bowtab input)))
+	      (setf input (/ input nrmodes ))
+	      ;;
+	      ;; Here the waveguide
+	      ;;
+	      (dotimes (j nrmodes)
+		(incf bplastout (bandpassbq (aref bandpass j) 
+					    (delayl (aref delayslft j) 
+						    (+ input (* (aref gains j) dlastsampl )) 
+						    dtapoffs)) )
+		(incf dlastsampl (delayl (aref delaysrfl j) bplastout dtapoffs))
+		(setf (aref delastout j) dlastsampl)
+		)
+	      ;;
+	      ;;
+	      (setf sample0 (*  4.0 (env ampenv)  bplastout))
+	      ;;
+	      (outa i sample0)
+	      ;;
+	      (if *reverb*
+		  (progn
+		    (outa i (*  sample0 rev-amount)  *reverb*)))
+	      )))
+      )))
+  
+  
+;;; (with-sound () (bandedwg 0 1 220 0.4))
+;;; (with-sound () (bandedwg 0 1 220 0.4 :mode 1))
+;;; (with-sound () (bandedwg 0 1 220 0.4 :mode 2))
+;;; (with-sound () (bandedwg 0 1.0 220 0.7 :mode 1 :maxa 0.497))
+
+
+

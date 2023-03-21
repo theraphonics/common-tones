@@ -1,0 +1,95 @@
+CLM-3
+
+CLM has moved to version 3.  This turned out to be a much bigger
+change than I originally intended.  The initial plan was to
+incorporate clm.c into the CL run macro, but one thing led to another,
+and by the time I was done, much of the program was gone: the no-ffi
+(clisp) support, real-time graphics and controls (better handled by
+Snd), old Mac MCL/MPW code, the parallel instrument handlers, the help
+system, etc.  The basic goal was to unify the various versions of CLM
+-- all are now based on clm.c -- while minimizing instrument-level
+changes.  A side effect that became a goal was to refocus CLM on its
+original purpose (sound synthesis).
+
+Here are the specific changes:
+
+Removed clisp/no-ffi support: 
+    rc.c, rc.lisp
+    no-ffi and clisp switches.
+
+Removed real-time controls support:
+    noffishm.c and all "control" functions
+    rt.lisp
+    bess*.cl
+    preverb.ins, stochasticRT.ins, revon.ins
+
+Removed old Mac OS/MPW support:
+    ToolServer.Lisp, maclib.lisp, make-clm.cl, mac.help
+    much of mac.lisp (except for ffi links)
+
+Removed with-psound/defpinstrument support:
+    vp.ins
+    rcp.c
+
+Removed obsolete files:
+    jl.ins, load-clm.cl, make-clm.cl
+    clm-changes.html, translate.cl (CLM-1 stuff)
+    fltdes.lisp
+    moog.ins (moog.lisp appears to be more recent)
+
+Removed obsolete/redundant functions and variables:
+    clm-simple-mix
+    *input* (and all related function args)
+    rec-any
+    cnv-reverb in cnv.ins
+
+Removed clm-help:
+    the help subdirectory and indexing support for it
+    clm-help.lisp, menu.lisp
+    clm-inspect, clm-help, linux-help
+    *clm-help-browser* *clm-linux-helper* *clm-helper-choice*
+
+Removed the *explode* feature, and the notion of a lisp instrument
+    (definstrument now assumes C -- use "defun" if you want lisp).
+    also removed save-signal.
+
+Removed mus-open-write, mus-reopen-write, mus-open-read, mus-create, mus-close.
+    These are available under more perspicuous names in clm1.lisp.
+    Also mus-file-open-descriptors, mus-write-zeros, mus-write-float.
+    Also mus-file-to-array (use file->array), mus-array-to-file (use file->array)
+
+Removed excessive speed: CLM-3 is a bit slower than CLM-2 --
+    according to my timing tests, at least half of the slow down comes
+    from using doubles in place of floats -- a few of the benchmarks
+    are faster in clm-3.
+
+Removed def-clm-struct support for generator fields (I still need to
+    update dlocsig)
+
+Removed instrument-let
+
+open-input and close-input are almost no-ops -- they just save their
+    arguments for some future reference (backwards compatibility).
+    removed open-output, reopen-output, close-output (you can
+    get the same functionality from sndlib's mus-sound-open-ouput).
+
+Added run support for:
+    mus-name, mus-file-name, mus-xcoeff, mus-ycoeff, mus-equal
+    mus-describe, mus-inspect, polar->rectangular,
+    sound-comment, mus-header-type-name, mus-data-format-name
+
+Added "declare" types (run macro): string, mus-any, bignum,
+    int*, double*. strings and bignums can be passed through run.
+    Due to CL package confusion, these declare types should
+    prefix a colon (i.e. use the keyword package).
+
+Added off_t sample number support.
+
+Added generators: ssb-am, phase-vocoder, also run-time function
+    args for editing and so on.
+
+Added classes: sample->file, frame->file
+
+changed pv-* to phase-vocoder-* (snd7.scm has old names)
+
+

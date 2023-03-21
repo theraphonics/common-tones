@@ -1,0 +1,118 @@
+;; CLM implementation of Xenakis' Dynamic Stochastic Synthesis as heard in
+;; his GENDY3, S.709, Legende d'Eer, etc.
+;; 12/17/03
+;; revised 01/22/06
+;; Bill Sack wsack@buffalo.edu
+
+(definstrument stochastic
+  (start dur &key 
+	 (amp .9) (bits 16) (xmin 1) (xmax 20) (xwig 0) (xstep 1) (ywig 0) (xfb 0)
+	 (init-array '((10 0) (10 1) (10 0) (10 -.7) (10 0) (10 .5) 
+			  (10 0) (10 -.3) (10 0) (10 .2) (10 0) (10 -.1))))
+  ;;some explanation of the parameters:
+  ;;amp - scales overall amplitude
+  ;;bits - the resolution of the wave's amplitude dimension
+  ;;xmin - minimum number of samples between time breakpoints. must be equal to or greater than 1
+  ;;xmax - maximum number of samples between time breakpoints.
+  ;;xwig - amplitude applied to random walk function in time dimension
+  ;;xstep - quantization of freedom in time dimension, in samples. minimum of 1
+  ;;ywig - amplitude applied to random walk function in amplitude dimension, in 
+  ;;       percent of overall possible amplitude
+  ;;xfb - an attempt at an FIR low-pass filter - the old (n + (x * n-1)) trick,
+  ;;      not really that useful
+  ;;init-array - initial x and y breakpoints for wave. x values must be 
+  ;;             integers and 1 or greater, y values between -1.0 and 1.0
+  (let* ((y 0) (dx 0) (prev-dx 0) (dy 0)
+	 (j 0) (m 0) (dt 0) (output 0) 
+	 (oldy 0) (xdev 0) (ydev 0)
+	 (beg (floor (* start *srate*)))
+	 (end (+ beg (floor (* dur *srate*))))
+         (d-click (make-env (list 0 1 (- end 10) 1 end 0) :duration dur))
+         ;(r (make-rand :frequency *srate* :amplitude .5))
+	 (b (ash 1 (- bits 1))); because we use signed ints - see (- b) below
+	 (xy-array-d (list (length init-array) (length (first init-array))))
+	 ;;make array to hold x,y breakpoints
+	 (xy-array (make-array xy-array-d
+		      :initial-contents init-array))
+	 (xy-array-i (array-dimension xy-array 0)))
+    ;;converts signed float y values into signed integers
+    (dotimes (num xy-array-i)(setf (aref xy-array num 1) (round (* (aref xy-array num 1) b))))
+    (run
+     (loop for i from beg to end do
+       (when (= dx dt);;when current sample is a breakpoint
+	 (setf y (aref xy-array (mod m xy-array-i) 1)
+	       dx (aref xy-array (mod m xy-array-i) 0)
+	       prev-dx (aref xy-array (mod (- m 1) xy-array-i) 0)
+	       dy (- y oldy)
+	       oldy y
+	       ;;straight uniform distribution for y
+	       ydev (round (centered-random (* .01 b ywig)))
+	       ;;gaussian distribution for x
+	       xdev (* xstep (round (* xwig (* (sqrt (* -2.0 (log (- 1 (random 1.0)))))
+					       (cos (* 6.283185307179586 (random 1.0))))))))
+	 (setf (aref xy-array (mod m xy-array-i) 1)
+	       ;;mirror stuff for y 
+	       (cond ((or (< b (+ y ydev))
+			  (> (- b) (+ y ydev)))
+		      (max (min (+ y (- ydev)) b) (- b)))
+		     (t (+ y ydev))))
+	 (setf (aref xy-array (mod m xy-array-i) 0)
+	       ;;mirror stuff for x
+	       (cond ((or  (< (round xmax) (+ dx xdev))
+			   (> (round xmin)(+ dx xdev)))
+		      (max (min ;;this mirror is attentuated
+			    (round (+ (* xfb prev-dx) (* (- 1  xfb) (+ dx (- xdev))))) 
+			    (round xmax)) (round xmin)))
+		     (t (round (+ (* xfb prev-dx)
+				  (* (- 1  xfb) (+ dx xdev)))))))
+	 (incf m)
+	 (setf dt 0))
+       (incf dt)
+       (incf j (/ dy dx));linear interpolation
+       (setf output (/ j b));normalization -1 to 1
+       (outa i (* amp output (env d-click)))))))
+
+;(with-sound (:statistics t)(stochastic 0 10 :xwig .25 :ywig 10.0))
+#|
+;if you have cm-2.6 or later loaded, evaluate the following 
+;for some gendy3-like noise
+
+(defun ran-list (numx xmn xsp)
+  (let ((qua '()))
+    (loop repeat numx do 
+      (push (list (+ xmn (random (+ 1 xsp))) 0) qua))
+    qua))
+
+(define (one total-dur xnum xwig ywig xstep)
+  (process for sound? = (random 1.0)
+           for amplitude = .5
+           for timefac = (/ total-dur 8.0)
+           for dur = (ran :below timefac :type :exp :a 2)
+           for xmin = (round (ran :from 1 :below 10 :type :exp :a 1))
+           for x-spread = (round (ran :below 20 :type :exp :a 10))
+           for init-list = (ran-list xnum xmin x-spread)
+           until (< total-dur (now))
+           if (> sound? .8)
+           output (new stochastic 
+                    :start (now) 
+                    :dur (min dur (- total-dur (now))) 
+                    :amp amplitude
+                    :ywig ywig 
+                    :xwig xwig 
+                    :xmin xmin
+                    :xstep (max (min xstep (+ xmin x-spread)) 1)
+                    :init-array init-list
+                    :xmax (+ xmin x-spread))
+           wait dur))
+
+(define (many num len)
+  (let ((xnums (new heap :of '(2 3 3 4 5 6 7 8 8 10 16 33 50 100))))
+    (process repeat num
+             for xstep = (round (ran :from 1 :below 10))
+             for xnum = (next xnums)
+             for ywig = (ran :below 50 :type :exp :a 10)
+             for xwig = (ran :below 10 :type :exp :a 15)
+             sprout (one len xnum xwig ywig xstep))))
+
+(events (many 16 180) "/tmp/test.aiff" :statistics t :srate 44100 :scaled-to .99)
+|#
