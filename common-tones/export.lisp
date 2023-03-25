@@ -1,4 +1,4 @@
-(in-package :clm)
+(in-package :common-tones)
 
 (export '(
 	  hz->radians radians->hz in-hz times->samples seconds->samples samples->seconds degrees->radians radians->degrees two-pi db->linear linear->db
@@ -72,7 +72,6 @@
 
 	  sound-duration sound-chans sound-comment sound-data-format sound-data-location sound-datum-size sound-maxamp
 	  sound-length sound-samples sound-framples sound-srate sound-header-type sound-loop-info
-	  #+clisp clm-little-endian
 
 	  *definstrument-hook*
 
@@ -125,9 +124,6 @@
 	  with-offset scaled-to scaled-by with-current-sound
 	  mix run run* sound-let with-mix 
 
-	  #+(or cmu excl sbcl openmcl) bye
-	  #+excl quit
-	  #+(or cmu openmcl) exit
 	  print-hash without-warnings
 
 	  envelope-length envelope-reverse envelope-concatenate envelope+ envelope* envelope-max envelope-repeat envelope-exp
@@ -145,7 +141,6 @@
 	  sound-files-in-directory
 	  def-clm-fun def-clm-struct def-clm-float-struct clm-datai clm-datar
 
-	  #+(or openmcl excl cmu) restart-clm
           full-merge-pathnames search-full-merge-pathnames clm-cerror clm-cleanup
 	  
 	  set-instrument-properties ins-var
@@ -254,6 +249,5 @@
 	  
 	  mus-interp-none mus-interp-linear mus-interp-sinusoidal mus-interp-all-pass mus-interp-lagrange mus-interp-bezier mus-interp-hermite
 	  
-	  #+opencml clm_ffi_call
 	  ))
 
