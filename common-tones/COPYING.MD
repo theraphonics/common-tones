@@ -1,6 +1,9 @@
+CLM is a sound synthesis package written by Bill Schottstaedt (bil@ccrma.stanford.edu).
+
+Except where otherwise noted, it is Copyright 1989-2013 Bill Schottstaedt.
+
 Except where otherwise noted, clm is Copyright 1996-2006 The Board of Trustees 
 of Stanford University.	
-
 
 
 The authors hereby grant permission to use, copy, modify, distribute,
@@ -21,8 +24,4 @@ FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE
 IS PROVIDED ON AN "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE
 NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR
 MODIFICATIONS.
-
-
-
- 
 
