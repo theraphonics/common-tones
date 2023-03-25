@@ -1,6 +1,6 @@
 (in-package :clm)
 
-;;; foreign function interfaces for ACL, CMUCL, SBCL, OpenMCL, Clisp, Lispworks
+;;; foreign function interfaces using portable cffi library.
 ;;;   sndlib linkages are in sndlib2clm.lisp, packaged here into the old names
 ;;;   the rest of this file links to cmus.c and clm.c
 
