@@ -1,4 +1,4 @@
-(in-package :clm)
+(in-package :common-tones)
 
 ;;; foreign function interfaces using portable cffi library.
 ;;;   sndlib linkages are in sndlib2clm.lisp, packaged here into the old names
@@ -52,7 +52,7 @@
   (if (mus-input? n)
       (mus-file-name n)
     (if (stringp n)
-	(let ((str (fullstrname n))) 
+	(let ((str (fullstrname n)))
 	  (if (mus-file-probe str)
 	      str
 	    (let ((str (search-full-merge-pathnames n *clm-file-name*)))
@@ -144,7 +144,7 @@ ARRAY must be a specialized array type - an array of one of these types:
 	(sb-sys:int-sap (the (unsigned-byte 32)
 			  (+ addr (* type-size start))))))))
 
-(progn 
+(progn
     (cffi:defcfun ("sl_dac" sl-dac-1) :int (name :string) (dev :int))
     (cffi:defcfun ("initialize_cmus" initialize-cmus) :void)
     (cffi:defcfun ("clm_sound_maxamp" sound-maxamp-1) :int
@@ -167,12 +167,12 @@ ARRAY must be a specialized array type - an array of one of these types:
     (cffi:defcfun ("clm_array2file" array->file-1) :void
         (file :string) (data :pointer) (len :int) (srate :int) (chans :int))
     (defun array->file (file data len srate chans) (array->file-1 file data len srate chans))
-    (cffi:defcfun ("clm_mix" clm-mix) 
+    (cffi:defcfun ("clm_mix" clm-mix)
         :void
         (outfile :string) (infile :string)  (out_start :int) (out_framples :int) (in_start :int))
     (cffi:defcfun ("clm_scale_file" clm-scale-file) :int
         (outfile :string) (infile :string) (scaler :double) (frm :int) (hdr :int))
-    (cffi:defcfun ("clm_file2array" file->array-1) 
+    (cffi:defcfun ("clm_file2array" file->array-1)
         :int
         (file :string) (chan :int) (start :int) (samples :int)  (arr :pointer))
     (defun file->array (file chan start samples arr) (file->array-1 file chan start samples arr))
