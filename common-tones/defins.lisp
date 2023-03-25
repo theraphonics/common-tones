@@ -549,16 +549,7 @@
 
 #+excl (eval-when (compile load eval) (excl:advise excl:exit :before clm-exit-advice nil (cleanup-clm)))
 
-;;; who can remember which lisp uses which!?!?!?
-#+cmu (defun bye () (quit))  ; this might be predefined (as internal) in the common-lisp package
-#+cmu (defun exit () (quit)) ; this used to be in the common-lisp package?
-#+sbcl (defun bye () (sb-ext:quit))
-#+sbcl (defun exit () (sb-ext:quit))
-#+excl (defun bye () (excl:exit))
-#+excl (defun quit () (excl:exit))
-#+openmcl (defun bye () (ccl::quit))
-#+openmcl (defun exit () (ccl::quit))
-#+lispworks (defun exit () (cl-user::quit))
+(defun exit () (cl-user::quit))
 
 #+(or cmu sbcl openmcl excl)
 (defun restart-clm ()

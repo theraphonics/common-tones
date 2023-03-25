@@ -1,6 +1,5 @@
 This is a description of the files in the clm directory.
 
-acl.cl                *features* fixup for acl
 add.ins               additive synthesis instrument
 addflt.ins            filter instrument (Xavier Serra and Richard Karpen)
 addsnd.ins            sound file mixing (see fasmix)
@@ -121,7 +120,6 @@ sndrecord.c           sndlib record program
 sndwarp.ins           sndwarp (from Csound) by Bret Battey
 sound.c               wrapper for sndlib
 sound.lisp	      with-sound and other top-level macros
-special-form-for-cmu.cl sigh....
 spectr.clm	      steady state spectra of many (acoustic) instruments (J. A. Moorer)
 stochastic.ins        Bill Sack's stochastic synthesis implementation
 strad.ins             violin physical model (Juan Reyes)
@@ -137,6 +135,5 @@ vct.c/h               vector handlers for CLM in C in Guile
 vox.ins		      voice synthesis (uses FM)
 walk.lisp	      PCL's code walker
 wavelets.cl           wavelet transforms
-xen.c/h/html          extension language support
 zd.ins                interpolating comb-filter gens (zcomb etc)
 zipper.ins            The 'digital zipper' effect.
