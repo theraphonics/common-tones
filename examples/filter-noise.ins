@@ -1,0 +1,36 @@
+;;; Moog style four pole lowpass filter clm unit generator
+;;;   low pass, 24db/Oct, variable resonance, warm, analog sound ;-)
+;;;   [all this digital wizardry and we're back where we started!]
+;;;
+;;; original C instrument by Tim Stilson
+;;; translation into clm and tuning by 
+;;;   Fernando Lopez-Lezcano, nando@ccrma.stanford.edu
+;;;   http://ccrma.stanford.edu/~nando/clm/moog
+;;;
+;;; Filter some noise as an example
+;;;
+
+(definstrument filter-noise (start-time duration amp 
+					&key
+					(noise-freq 10000)
+					(freq-env '(0 -1 1 1))
+					(res-env '(0 0 1 1)))
+  (multiple-value-bind (beg end)
+      (times->samples start-time duration)
+    (let* ((fenv (make-env :envelope freq-env :duration duration))
+	   (qenv (make-env :envelope res-env :duration duration))
+	   (f (make-moog-filter :frequency 0 :Q 0.9))
+	   (noi (make-rand-interp :frequency noise-freq :amplitude amp)))
+      (run
+       (loop for i from beg to end do
+	     (setf (moog-Q f)(env qenv)
+		   (moog-frequency f)(env fenv))
+	     (outa i (moog-filter f (rand-interp noi))))))))
+
+#|
+(with-sound(:statistics t :output "test.snd" :srate 44100)
+  (filter-noise 0 5 0.041 
+		:res-env '(0 0.94 1 0.94) 
+		:freq-env '(0 50 1 22050) 
+		:noise-freq 22050))
+|#

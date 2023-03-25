@@ -1,0 +1,68 @@
+(definstrument fofins (beg dur frq amp vib f0 a0 f1 a1 f2 a2 &optional (ae '(0 0 25 1 75 1 100 0)))
+  (let* ((start (floor (* beg *srate*)))
+	 (end (+ start (floor (* dur *srate*))))
+	 (ampf (make-env :envelope ae :scaler amp :duration dur))
+	 (frq0 (hz->radians f0))
+	 (frq1 (hz->radians f1))
+	 (frq2 (hz->radians f2))
+	 (foflen (if (= *srate* 22050) 100 200))
+	 (vibr (make-oscil :frequency 6))
+	 (win-freq (/ two-pi foflen))
+	 (foftab (make-double-array foflen))
+	 (wt0 (make-wave-train :wave foftab :frequency frq)))
+    (loop for i from 0 below foflen do 
+      (setf (aref foftab i) (double (* (+ (* a0 (sin (* i frq0)))
+					  (* a1 (sin (* i frq1)))
+					  (* a2 (sin (* i frq2))))
+				       .5 (- 1.0 (cos (* i win-freq)))))))
+      ;; this is not the pulse shape used by B&R
+    (run
+     (loop for i from start to end do
+       (outa i (* (env ampf) (wave-train wt0 (* vib (oscil vibr)))))))))
+
+;;;(with-sound () (fofins 0 1 270 .2 .001 730 .6 1090 .3 2440 .1))
+
+
+(definstrument grain-simp-sound (file startime dur
+				     &key
+				     (start 0)
+				     (srt 1.0)
+				     (amplitude 1.0)
+				     (grain-duration .16)   ;;maximum duration .16
+				     (grain-interval .08)
+				     (grain-interval-env '(0 1 100 1))
+				     (grain-env  '(0 0 25 1 75 1 100 0)))
+  (let* ((f (make-readin file :start (* start (sound-srate file))))
+	 (st (floor (* startime *srate*)))
+	 (src-gen (make-src :input f :srate srt))
+	 (genv (make-env :envelope grain-env
+			 :duration grain-duration))
+	 (grain-size (ceiling  (* grain-duration *srate*)))
+	 (grain (make-double-array grain-size :initial-element 0.0))
+	 (grintenv (make-env :envelope grain-interval-env
+			     :scaler grain-interval :duration dur))
+	 (grains (make-wave-train :wave grain))
+	 (loc (make-locsig :degree 45
+			   :distance 0
+			   :reverb 0))
+	 (loaded nil)
+	 (nd (+ st (floor (* dur *srate*)))))
+    (run
+     (loop for i from st to nd do
+	(if (not loaded)
+	    (progn
+	      (do ((k 0 (1+ k)))
+		  ((= k grain-size))
+		(setf (aref (mus-data grains) k) (double (* (src src-gen) (env genv)))))
+	      (setf loaded t)))
+	(setf (mus-frequency grains) (/ 1 (env grintenv)))
+	(locsig loc i (* amplitude (wave-train grains)))))))
+
+ 
+#|
+(with-sound (:statistics t :channels 2) 
+  (grain-simp-sound "oboe.snd" 0 2 
+		    :grain-interval .15
+		    :grain-interval-env '(0 .01 1 1)))
+|#
+   

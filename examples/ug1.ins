@@ -1,0 +1,277 @@
+;;; test suite for CLM generators and various control options
+
+(definstrument s22 (beg dur)
+  (let ((o1 (make-oscil 440.0))
+	(o2 (make-oscil :frequency 1200)))
+    (run
+     (loop for i from beg to (+ beg dur) do
+       (if (= i beg) (setf (mus-phase o1) 0.0))
+       ;(if (= i beg) (setf (mus-name o1) "hiho")) ; this is deprecated
+       (if (> (abs (- (mus-frequency o1) 440.0)) .001) (error "freq wrong"))
+       (if (= (- i beg) 5000) (setf (mus-frequency o2) 660.0))
+       (out-any i (* .1 (+ (oscil o1) (oscil o2))))))))
+
+(definstrument s25 (beg dur)
+  (let ((o1 (make-square-wave :frequency 440))
+	(stp 0)
+	(lim (floor dur 10)))
+    (run
+     (loop for i from beg to (+ beg dur) do
+       (if (= i beg) (setf (mus-phase o1) 0.0))
+       (if (= (- i beg) 5000) (setf (mus-frequency o1) 660.0))
+       (when (= stp lim)
+	 (decf (mus-scaler o1) .1)
+	 (setf stp 0))
+       (incf stp)
+       (setf (mus-width o1) (* (mus-width o1) .999))
+       (out-any i (* .1 (square-wave o1)) 0 *output*))))) ;no error msg if this is sawtooth-wave!
+
+(definstrument s27 (beg dur)
+  (let ((o1 (make-rand))
+	(o2 (make-rand :frequency 10)))
+    (run
+     (loop for i from beg to (+ beg dur) do
+       (tagbody
+	 (if (= i beg) (setf (mus-phase o1) 0.0))
+	 (if (= (- i beg) 5000) (setf (mus-frequency o2) (* 3 660.0)))
+	 (go test)
+	 (warn "ignored a label?")
+	test
+	 (outa i (* .1 (+ (rand o1) (rand o2)))))))))
+
+(definstrument s29 (beg dur)
+  (let* ((waveform (partials->wave '(1 .5  2 1  3 .5  4 .1  5 .01)))
+	 (s (make-table-lookup :frequency 440.0 :wave waveform))
+	 (loc (make-locsig :degree 0))
+	 (x (aref waveform 123))
+	 (chans (mus-channels *output*)))
+    (run
+     (loop for i from beg to (+ beg dur) do
+       (when (= (- i beg) 5000)
+	 (setf (locsig-ref loc 0) .125)
+	 (if (> chans 1) (setf (locsig-ref loc 1) .875)))
+       (when (= (- i beg) 10000)
+	 (setf (locsig-ref loc 0) .875)
+	 (if (> chans 1) (setf (locsig-ref loc 1) .125)))
+       (unless (< (abs (- (aref (mus-data s) 123) x)) .0001) (clm-print "x: ~F " (aref (mus-data s) 123)))
+       (locsig loc i 
+	     (block hi-mom
+	       (if (= (- i beg) 5000) (setf (mus-frequency s) 660.0))
+	       (if (/= (mus-length s) 512) (progn (print "hunh?") (return-from hi-mom 0.0)))
+	       (if (> chans 2) (if (> (abs (locsig-ref loc 2)) .0001) (terpri)))
+	       (table-lookup s)))))))
+
+(definstrument s34 (beg dur)
+  (let ((dl (make-delay 12))
+	(cm (make-comb .5 4))
+	(fc (make-filtered-comb .5 5 :filter (make-one-zero .5 .5)))
+	(al (make-all-pass .5 .5 12))
+	(nt (make-notch .9 9))
+	(zl (make-delay 12 :max-size 128))
+	(pl (make-one-pole .9 .1))
+	(ozl (make-one-zero .5 .5))
+	(tpl (make-two-pole .1 .1 .1))
+	(tzl (make-two-zero .1 .1 .1))
+	(ppl (make-two-pole :radius .99 :frequency 2000))
+	(zpl (make-two-zero :radius .99 :frequency 2000))
+	(ol (make-oscil 440.0)))
+    (run
+     (loop for i from beg to (+ beg dur) do
+       (let ((val (oscil ol)))
+	 (if (/= (mus-length dl) 12) (print "dl size"))
+	 (if (/= (mus-length cm) 4) (print "cm size"))
+	 (if (/= (mus-length al) 12) (print "al size"))
+	 (if (> (abs (- (mus-feedback al) .5)) .00001) (print "al fbck"))
+	 (if (> (abs (- (mus-feedforward al) .5)) .00001) (print "al ffwd"))
+	 (outa i (* .01 (+ (delay dl val) (comb cm val) (all-pass al val) (notch nt val) (delay zl val) (one-pole pl val)
+			   (one-zero ozl val) (two-pole tpl val) (two-zero tzl val) (two-pole ppl val) (two-zero zpl val)
+			   (filtered-comb fc val)
+			   (aref (mus-data dl) 0) (- (aref (mus-data zl) 0))))))))))
+
+
+(definstrument s36 (beg dur)
+  ;; read file forwards and backwards until dur is used up
+  (let* ((last-sample 5000)
+	 (end (+ beg dur))
+	 (rd (make-src :input "pistol.snd" :srate .5))
+	 (senv (make-env :envelope '(0 .5 100 0) :length dur))
+	 (cs 0))
+    (run
+     (loop for i from beg to end do
+       (setf cs (mus-location rd))
+       (if (>= cs last-sample) (setf (mus-increment rd) -.5))
+       (if (<= cs 0) (setf (mus-increment rd) .5))
+       (outa i (src rd (if senv (env senv) 0.0)))))))
+
+(definstrument gad (a b)
+  (run
+   (loop for i from 0 to 1 do
+     (let (c d)
+       (setf c 1)
+       (setf d 3.1)
+       (outa i (* .1 (+ c d a b)))))))
+
+(definstrument simp8 (beg dur frq amp chan)
+  (let ((os1 (make-oscil :frequency frq))
+	(ae (make-env :envelope '(0 0 1 1 2 1 3 0) :scaler amp :length dur)))
+    (run
+     (loop for i from beg to (+ beg dur) do 
+       (out-any i (* (env ae) (oscil os1)) chan *output*)))))
+
+(definstrument simp8r (file beg dur inchan outchan)
+  (let ((fil (make-sample->file file)))
+    (run
+     (loop for i from beg to (+ beg dur) do 
+       (out-any i (in-any i inchan fil) outchan *output*)))))
+
+(definstrument s38 (beg dur freq)
+  (let* ((os (make-oscil :frequency freq))
+	 (lo (make-locsig :degree 45)))
+    (run
+     (loop for i from beg to (+ beg dur) do 
+       (setf (locsig-ref lo 0) .1)
+       (if (= (mus-channels *output*) 2) (setf (locsig-ref lo 1) 1.0))
+       (locsig lo i (* .1 (oscil os)))))))
+
+(definstrument simp9 (beg dur freq)
+  (let* ((os (make-oscil :frequency freq))
+	 (arr (make-double-array 3)))
+    (setf (aref arr 0) (double 32.0))
+    (setf (aref arr 1) (double 2.0))
+    (setf (aref arr 2) (double .1))
+    (run
+     (loop for i from beg to (+ beg dur) do 
+       (print arr)
+       (princ arr) (princ " ")   
+       (outa i (* (aref arr 2) (oscil os)))))))
+
+#-clisp
+(definstrument ender ()
+  (let ((os (make-oscil 440.0)))
+    (run
+      (loop for i from 0 to 1234567 do
+        (if (= i 123) (loop-finish))
+        (outa i (* .1 (oscil os)))))))
+
+
+;;; example of mus-location and friends
+;;; very much like backandforth in clm.html, but to try to reduce clicks
+;;;   it waits for an "inflection point" in the sound before changing direction
+
+#-clisp
+(definstrument scratch (file src-ratio turnaroundlist)
+  (let* ((beg 0)
+	 (turntable (make-array (length turnaroundlist) :initial-contents turnaroundlist))
+	 (turn-i 0)
+         (turn-sample 0)
+	 (turning 0)
+	 (last-val 0.0)
+	 (last-val2 0.0)
+	 (input-start (round (* *srate* (aref turntable turn-i))))
+	 (input (make-readin file :start input-start))
+         (rd (make-src :srate src-ratio))
+         (cs 0))
+    (setf turn-sample (round (* *srate* (aref turntable (incf turn-i)))))
+    (if (< turn-sample input-start) 
+	(setf (mus-increment rd) (- src-ratio)))
+    (run
+     (loop for i from beg do
+       (when (= turn-i (length turntable)) (loop-finish))
+       (if (plusp (mus-increment rd))
+	   (when (>= cs turn-sample) (setf turning -1))
+	 (when (<= cs turn-sample) (setf turning 1)))
+       (let ((val (src rd 0.0 #'(lambda (dir)
+				  (incf cs dir)
+				  (setf (mus-increment input) dir)
+				  (readin input)))))
+	 ;; wait for an inflection...
+	 ;; might also want to envelope it, but that will still make a "burble" 
+	 (if (/= turning 0)
+	     (when (or (and (<= last-val2 last-val) (>= last-val val))
+		     (and (>= last-val2 last-val) (<= last-val val)))
+	       (if (= turning -1)
+		   (progn
+		     (setf (mus-increment rd) (- src-ratio))
+		     (setf turn-sample (round (* *srate* (aref turntable (incf turn-i))))))
+		 (progn
+		   (setf (mus-increment rd) src-ratio)
+		   (setf turn-sample (round (* *srate* (aref turntable (incf turn-i)))))))
+	       (setf turning 0)))
+	 (setf last-val2 last-val)
+	 (setf last-val val)
+	 (outa i val))))))
+
+(definstrument loctest ()
+  (let ((os (make-oscil 440))
+	(lc (make-locsig))
+	(offsets (make-double-array 4 :initial-contents '(25000 75000 0 50000))))
+    (run
+     (dotimes (i 4)
+       (let ((off (aref offsets i)))
+	 (dotimes (k 2000)
+	   (locsig lc (+ k off) (* .4 (oscil os)))))))))
+
+(definstrument mapenv2 (beg dur frq amp en)
+  (let* ((bg (floor (* beg *srate*)))
+         (nd (+ bg (floor (* dur *srate*))))
+         (o (make-oscil frq))
+	 (ctr 0)
+	 (secs 0)
+	 (fl 3.14)
+         (zv (make-env en amp dur)))
+    (run
+     (loop for i from bg below nd do
+       (let ((zval (env zv)))
+	 (incf ctr)
+	 (if (floatp ctr) (clm-print "float"))
+	 (if (integerp fl) (clm-print "integer"))
+	 (if (numberp "hiho") (clm-print "number"))
+	 (if (arrayp ctr) (clm-print "array"))
+	 (when (>= ctr *srate*)
+	   (incf secs)
+	   (setf ctr 0)
+	   )
+         (outa i (* zval (oscil o))))))))
+
+#-clisp
+(definstrument simpwhile (beg dur freq)
+  (let* ((os (make-oscil freq))
+	 (end (+ beg dur))
+	 (i beg)
+	 (happy t))
+    (run
+     (loop while happy do
+       (outa i (oscil os))
+       (incf i)
+       (if (>= i end) (setf happy nil))))))
+
+#-clisp
+(definstrument simpuntil (beg dur freq)
+  (let* ((os (make-oscil freq))
+	 (end (+ beg dur))
+	 (i beg)
+	 (happy nil))
+    (run
+     (loop until happy do
+       (outa i (oscil os))
+       (incf i)
+       (if (>= i end) (setf happy t))))))
+
+
+(definstrument arrclr ()
+  (let* ((iarr (make-integer-array 3))
+	 (farr (make-double-array 3)))
+    (setf (aref iarr 1) 32)
+    (setf (aref farr 1) (double 2.14))
+    (run
+     (loop for i from 0 below 1 do
+       (clear-array farr)
+       (if (/= (aref farr 1) 0.0) (clm-print "yow float"))
+       (outa 0 0.0)))))
+
+(definstrument sec2samp (beg)
+  (run
+   (loop for i from 0 to 2 do
+     (clm-print "~F -> ~D~%" beg (seconds->samples beg))
+     (outa i 0.0))))
+
