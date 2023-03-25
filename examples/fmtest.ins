@@ -1,0 +1,15 @@
+(definstrument fm (beg end freq amp mc-ratio index cr0p cr1p md0p md1p)
+  (let ((cr0 (make-oscil :frequency 0 :initial-phase cr0p))
+        (cr1 (make-oscil :frequency 0 :initial-phase cr1p))
+        (md0 (make-oscil :frequency (* freq mc-ratio) :initial-phase md0p))
+        (md1 (make-oscil :frequency (* freq mc-ratio) :initial-phase md1p))
+        (am0 (make-oscil :frequency freq :initial-phase 0))
+        (am1 (make-oscil :frequency freq :initial-phase (* .5 pi)))
+        (fm-index (in-hz (* index mc-ratio freq))))
+    (run
+      (loop for i from beg to end do
+        (outa i (* amp (+ (* (oscil am0) (oscil cr0 (* fm-index (oscil md0))))
+                          (* (oscil am1) (oscil cr1 (* fm-index (oscil md1)))))))))))
+
+;(with-sound () (fm 0 10000 1000 .25 .1 1.0 0 (* .5 pi) (* .5 pi) 0))
+

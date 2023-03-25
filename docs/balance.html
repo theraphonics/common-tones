@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+<title>Balance, RMS, Gain</title>
+
+<style type="text/css">
+	EM.red {color:red; font-style:normal}
+        EM.def {font-style: normal}
+        BODY.body {background-color: #ffffff;    /* white */
+	           margin-left: 20px; 
+                   }
+</style>
+
+</head>
+<body class="body">
+
+<!--
+;; Written by Sam Heisz, January 1998.
+;; Idea and RMS formulas taken from Csound unit generators 
+;; balance, rms, and gain.
+-->
+
+
+<h4>BALANCE, RMS, GAIN</h4>
+
+<b>Balance</b>, <b>Rms</b> and <b>Gain</b> are used to trace and modify the
+rms value of a signal or signals. <b>Rms</b> traces the rms of a
+signal. <b>Gain</b> modifies a signal so that it has a specified rms
+power. <b>Balance</b> is a combination of the two which modifies a signal so
+that it has rms power equal to that of a compare signal. <b>Balance</b> is
+useful for restoring power to a signal after it has passed through a
+filter.
+
+<pre>
+  <b>make-balance</b> &amp;optional (<b>hp</b> 10)
+  <b>make-rms</b> &amp;optional (<b>hp</b> 10)
+  <b>make-gain</b> &amp;optional (<b>hp</b> 10)
+
+  <em class=def id="balance"><b>balance</b> b signal compare</em>
+  <em class=def id="rms"><b>rms</b> r signal</em>
+  <em class=def id="gain"><b>gain</b> g signal rms</em>
+</pre>
+
+hp is the half-power point (in cps) of a special internal low-pass
+filter.  <b>Balance</b> and <b>gain</b> return a modified signal, <b>rms</b>
+returns the rms of the signal.<p>
+
+Extreme cases will cause spikes in the audio - if this occurs try using a
+gain multiplier to approximate the target rms before applying <b>balance</b>
+or <b>gain</b> to it. It is a good idea to use a multiplier in any case
+because <b>balance</b> and <b>gain</b> work better the less they have to
+gain.</p>
+
+
+The average gain that was applied can be retrieved:
+<pre>
+  <b>balance-avg</b> b
+  <b>gain-avg</b> g
+</pre>
+   
+<p>Use <b>Run*</b> and the average functions to suggest a user-supplied
+gain for the next time.</p>
+
+For Example:
+<pre>
+(definstrument formnt-noise (start dur amp 
+		             &amp;key
+                             (freq 440) (r .9) (g 1.0)
+                             (postfilter-gain nil))
+
+  (let* ((st (floor (* start *srate*)))
+	 (nd (+ st (floor (* *srate* dur))))
+	 (rd (make-rand))
+	 (ft (make-formant freq r))
+	 (postfilter-amp (* g (if postfilter-gain postfilter-gain 1.0)))
+	 (bal (<em class="red">make-balance</em>)))
+    
+    (run* (bal)
+     (loop for i from st to nd do
+       (let ((sig (* amp (rand rd))))
+	 (outa i (<em class="red">balance</em> bal (* postfilter-amp (formant ft sig)) sig)))))
+    
+    (if (not postfilter-gain) 
+	(format t "~&amp;formnt-noise: specify a :postfiler-gain of ~,5F for best results.~%" (balance-avg bal)))))
+</pre>
+</body></html>

@@ -1,0 +1,39 @@
+(definstrument (btest :exp-env nil) ()
+ (let ((amp .1)
+       (x 0)
+       (y 1)
+       (z nil)
+       (val 0))
+   (run
+    (loop for i from 0 to 100 do
+      (setf val 0)
+      (if (not (zerop x)) (print "yow") (incf val))
+      (cond ((/= 0 x) (print "yowza"))
+	    (t (incf val)))
+      (if (/= x 0) (print "oops") (incf val))
+      (if (zerop y) (print "zow") (incf val))
+      (if (= 0 y) (print "zowza") (incf val))
+      (if (= y 0) (print "zoops") (incf val))
+      (if z (print "z oops") (incf val))
+      (if (not (null z)) (print "z yow") (incf val))
+      (if (not (not z)) (print "z yowza") (incf val))
+      (if (not (and (zerop x) (not (zerop y)) (not z))) (print "1 bug") (incf val))
+      (if (or (minusp y) (and (not (zerop x)) (not z))) (print "2 bug") (incf val))
+      (if (not (and (/= x 1) (/= y 0) (not z) (null z))) (print "3 bug") (incf val))
+      (if (/= val 12) (warn "val=~D" val) (setf val 0))
+      (outa i (if (zerop val)
+		  (progn
+		    (when (= val 0)
+		      (setf val (unless (minusp amp) 1))
+		      (if (or (not (and (= amp .1)
+					(= val 1))))
+			  (case val
+			    (0 (setf amp 0))
+			    (1 (setf val 2))
+			    (t (setf amp 0))))
+		      (if (evenp val) amp 0.0)))
+		0.0))))))
+
+
+
+
