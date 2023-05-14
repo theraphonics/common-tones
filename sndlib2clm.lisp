@@ -1,4 +1,4 @@
-#+clm (in-package :clm)
+#+clm (in-package :common-tones)
 
 ;;; import some sndlib names to CLM
 ;;;

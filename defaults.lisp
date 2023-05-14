@@ -2,7 +2,7 @@
 ;;; in many cases the *clm-<>* form is *<>* during a given run; that is,
 ;;;    *clm-channels* is the default, *channels* is the current setting
 
-(in-package :clm)
+(in-package :common-tones)
 
 (defvar *clm-srate* 44100)
 (defvar *clm-channels* 1)

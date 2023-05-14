@@ -1,6 +1,6 @@
 ;;; main defpackage is in clm-package.lisp. Export statement is in export.lisp.
 
-(in-package :clm)
+(in-package :common-tones)
 
 (defvar *clm* (find-package :clm) "clm synthesis package")
 (defvar *clm-version* 5)

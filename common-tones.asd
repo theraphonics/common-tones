@@ -1,9 +1,10 @@
-;;; ASDF system definition file for CLM
+;;; ASDF system definition file for common-tones
 (in-package :asdf)
+
 (defsystem "common-tones"
-    :depends-on ("cffi")
+    :depends-on ("cffi" "bordeaux-threads")
     :description "common-tones synthesis library (forked from CLM-V)"
-    :version "1.0"
+    :version "0.1"
     :author "Josh Armenta"
     :licence "BSD"
     :serial t

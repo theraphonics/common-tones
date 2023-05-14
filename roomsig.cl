@@ -1,4 +1,4 @@
-(in-package :clm)
+(in-package :common-tones)
 
 ;;; roomsig -- attempt to more accurately imitate the initial echos.  Here we assume a rectangular room.
 ;;; see "Extension of the Image Model to Arbitrary Polyhedra" by J. Borish  JASA 75(6) June 84.

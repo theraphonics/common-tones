@@ -1,5 +1,5 @@
 (defpackage :common-tones
-	(:use :cl-user :cffi)
+	(:use :cl-user :cffi :bordeaux-threads)
 	(:export
 		#:hz->radians #:radians->hz #:in-hz #:times->samples #:seconds->samples #:samples->seconds #:degrees->radians #:radians->degrees #:two-pi #:db->linear #:linear->db
 	  #:oscil #:make-oscil #:oscil?
