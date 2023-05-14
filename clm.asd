@@ -5,10 +5,11 @@
     :description "common-tones synthesis library (forked from CLM-V)"
     :version "1.0"
     :author "Josh Armenta"
-    :licence "BSD or whatever"
+    :licence "BSD"
     :serial t
     :components
-    ((:file "ffi")
+    ((:file "all")
+     (:file "ffi")
      (:file "mus")
      (:file "run")
      (:file "sound")
