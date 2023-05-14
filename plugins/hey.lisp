@@ -1,3 +1,4 @@
+(in-package :common-tones/plugins)
 ;;; ------------------------------------------------------------------------
 ;;; often one wants to save and annotate the last sound, so...
 

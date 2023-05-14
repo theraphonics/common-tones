@@ -1,3 +1,5 @@
+(in-package :common-tones/plugins)
+
 ;;;  ------------------------------------------------------------------------
 ;;; get a listing of sound files in a given directory (courtesy Marco Trevisani)
 

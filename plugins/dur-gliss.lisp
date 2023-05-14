@@ -1,3 +1,5 @@
+(in-package :common-tones/plugins)
+
 ;;;  ------------------------------------------------------------------------
 ;;; another version of gliss-dur (Marco Trevisani)
 ;;;

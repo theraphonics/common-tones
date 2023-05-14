@@ -1,5 +1,4 @@
-
-
+(in-package :common-tones/plugins)
 
 ;;;  ------------------------------------------------------------------------
 ;;; with-instruments -- make sure needed instruments are loaded before going on.

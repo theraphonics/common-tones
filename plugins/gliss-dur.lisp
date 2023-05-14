@@ -1,3 +1,5 @@
+(in-package :common-tones/plugins)
+
 ;;; ------------------------------------------------------------------------
 ;;; courtesy Michael Edwards (for use with src-change and such) -- returns
 ;;;  duration after all the resampling has taken effect.

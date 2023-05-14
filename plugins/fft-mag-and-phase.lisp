@@ -1,3 +1,4 @@
+(in-package :common-tones/plugins)
 
 ;;;  ------------------------------------------------------------------------
 ;;; fft-mag-and-phase: fft rectangular to polar coordinates at run time
