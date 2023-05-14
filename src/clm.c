@@ -1,9 +1,9 @@
 /* CLM (Music V) implementation */
 
-#include "mus-config.h"
+#include "../headers/mus-config.h"
 
 #if USE_SND
-  #include "snd.h"
+  #include "../headers/snd.h"
 #endif
 
 #include <stddef.h>
@@ -21,9 +21,9 @@
   #pragma warning(disable: 4244)
 #endif
 
-#include "_sndlib.h"
-#include "clm.h"
-#include "clm-strings.h"
+#include "../headers/_sndlib.h"
+#include "../headers/clm.h"
+#include "../headers/clm-strings.h"
 
 #if HAVE_GSL
   #include <gsl/gsl_complex.h>

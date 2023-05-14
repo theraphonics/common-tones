@@ -1,4 +1,4 @@
-#include "mus-config.h"
+#include "../headers/mus-config.h"
 
 #if (defined(__GNUC__)) && (!(defined(__cplusplus)))
   #define _GNU_SOURCE
@@ -33,7 +33,7 @@
 
 #include <sys/stat.h>
 
-#include "_sndlib.h"
+#include "../headers/_sndlib.h"
 
 #if (!USE_SND)
 #define mus_clear_floats(Arr, Len)		\

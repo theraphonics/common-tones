@@ -1,4 +1,4 @@
-#include "mus-config.h"
+#include "../headers/mus-config.h"
 
 #if USE_SND
   #include "snd.h"

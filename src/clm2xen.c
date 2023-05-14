@@ -6,7 +6,7 @@
  * (env env) is accepted by the optimizer in error
  */
 
-#include "mus-config.h"
+#include "../headers/mus-config.h"
 
 #if USE_SND
   #include "snd.h"
@@ -28,13 +28,13 @@
   #pragma warning(disable: 4244)
 #endif
 
-#include "_sndlib.h"
-#include "xen.h"
-#include "clm.h"
-#include "sndlib2xen.h"
-#include "vct.h"
-#include "clm2xen.h"
-#include "clm-strings.h"
+#include "../headers/_sndlib.h"
+#include "../headers/xen.h"
+#include "../headers/clm.h"
+#include "../headers/sndlib2xen.h"
+#include "../headers/vct.h"
+#include "../headers/clm2xen.h"
+#include "../headers/clm-strings.h"
 
 #ifndef TWO_PI
   #define TWO_PI (2.0 * M_PI)

@@ -1,6 +1,6 @@
 /* xen support procedures */
 
-#include "mus-config.h"
+#include "../headers/mus-config.h"
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
@@ -15,7 +15,7 @@
   #pragma warning(disable: 4244)
 #endif
 
-#include "xen.h"
+#include "../headers/xen.h"
 
 #define S_gc_off "gc-off"
 #define S_gc_on  "gc-on"

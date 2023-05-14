@@ -1,6 +1,6 @@
 /* sndinfo describes sounds */
 
-#include "mus-config.h"
+#include "../headers/mus-config.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #include <errno.h>
 #include <time.h>
 
-#include "sndlib.h"
+#include "../headers/sndlib.h"
 
 static char *display_maxamps(const char *filename, int chans)
 {

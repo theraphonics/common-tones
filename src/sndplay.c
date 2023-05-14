@@ -1,12 +1,12 @@
 /* sndplay plays sounds */
 
-#include "mus-config.h"
+#include "../headers/mus-config.h"
 
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "_sndlib.h"
+#include "../headers/_sndlib.h"
 
 #ifndef _MSC_VER
   #include <unistd.h>

@@ -34,10 +34,10 @@
  * test cases (sample files): ccrma-ftp.stanford.edu:/pub/Lisp/sf.tar.gz
  */
 
-#include "mus-config.h"
+#include "../headers/mus-config.h"
 
 #if USE_SND
-  #include "snd.h"
+  #include "../headers/snd.h"
 #endif
 
 #include <math.h>
@@ -54,8 +54,8 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-#include "_sndlib.h"
-#include "sndlib-strings.h"
+#include "../headers/_sndlib.h"
+#include "../headers/sndlib-strings.h"
 
 
 /* can't use LONG_MAX here because we want a 4-byte max even on 64-bit machines */

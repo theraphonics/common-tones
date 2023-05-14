@@ -117,24 +117,24 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named mylib
+# Target rules for targets named common-tones
 
 # Build rule for target.
-mylib: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 mylib
-.PHONY : mylib
+common-tones: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 common-tones
+.PHONY : common-tones
 
 # fast build rule for target.
-mylib/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/build
-.PHONY : mylib/fast
+common-tones/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/build
+.PHONY : common-tones/fast
 
 src/audio.o: src/audio.c.o
 .PHONY : src/audio.o
 
 # target to build an object file
 src/audio.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/audio.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/audio.c.o
 .PHONY : src/audio.c.o
 
 src/audio.i: src/audio.c.i
@@ -142,7 +142,7 @@ src/audio.i: src/audio.c.i
 
 # target to preprocess a source file
 src/audio.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/audio.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/audio.c.i
 .PHONY : src/audio.c.i
 
 src/audio.s: src/audio.c.s
@@ -150,7 +150,7 @@ src/audio.s: src/audio.c.s
 
 # target to generate assembly for a file
 src/audio.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/audio.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/audio.c.s
 .PHONY : src/audio.c.s
 
 src/clm.o: src/clm.c.o
@@ -158,7 +158,7 @@ src/clm.o: src/clm.c.o
 
 # target to build an object file
 src/clm.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/clm.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/clm.c.o
 .PHONY : src/clm.c.o
 
 src/clm.i: src/clm.c.i
@@ -166,7 +166,7 @@ src/clm.i: src/clm.c.i
 
 # target to preprocess a source file
 src/clm.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/clm.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/clm.c.i
 .PHONY : src/clm.c.i
 
 src/clm.s: src/clm.c.s
@@ -174,7 +174,7 @@ src/clm.s: src/clm.c.s
 
 # target to generate assembly for a file
 src/clm.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/clm.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/clm.c.s
 .PHONY : src/clm.c.s
 
 src/cmus.o: src/cmus.c.o
@@ -182,7 +182,7 @@ src/cmus.o: src/cmus.c.o
 
 # target to build an object file
 src/cmus.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/cmus.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/cmus.c.o
 .PHONY : src/cmus.c.o
 
 src/cmus.i: src/cmus.c.i
@@ -190,7 +190,7 @@ src/cmus.i: src/cmus.c.i
 
 # target to preprocess a source file
 src/cmus.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/cmus.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/cmus.c.i
 .PHONY : src/cmus.c.i
 
 src/cmus.s: src/cmus.c.s
@@ -198,7 +198,7 @@ src/cmus.s: src/cmus.c.s
 
 # target to generate assembly for a file
 src/cmus.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/cmus.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/cmus.c.s
 .PHONY : src/cmus.c.s
 
 src/headers.o: src/headers.c.o
@@ -206,7 +206,7 @@ src/headers.o: src/headers.c.o
 
 # target to build an object file
 src/headers.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/headers.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/headers.c.o
 .PHONY : src/headers.c.o
 
 src/headers.i: src/headers.c.i
@@ -214,7 +214,7 @@ src/headers.i: src/headers.c.i
 
 # target to preprocess a source file
 src/headers.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/headers.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/headers.c.i
 .PHONY : src/headers.c.i
 
 src/headers.s: src/headers.c.s
@@ -222,7 +222,7 @@ src/headers.s: src/headers.c.s
 
 # target to generate assembly for a file
 src/headers.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/headers.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/headers.c.s
 .PHONY : src/headers.c.s
 
 src/io.o: src/io.c.o
@@ -230,7 +230,7 @@ src/io.o: src/io.c.o
 
 # target to build an object file
 src/io.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/io.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/io.c.o
 .PHONY : src/io.c.o
 
 src/io.i: src/io.c.i
@@ -238,7 +238,7 @@ src/io.i: src/io.c.i
 
 # target to preprocess a source file
 src/io.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/io.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/io.c.i
 .PHONY : src/io.c.i
 
 src/io.s: src/io.c.s
@@ -246,7 +246,7 @@ src/io.s: src/io.c.s
 
 # target to generate assembly for a file
 src/io.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/io.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/io.c.s
 .PHONY : src/io.c.s
 
 src/sound.o: src/sound.c.o
@@ -254,7 +254,7 @@ src/sound.o: src/sound.c.o
 
 # target to build an object file
 src/sound.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/sound.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/sound.c.o
 .PHONY : src/sound.c.o
 
 src/sound.i: src/sound.c.i
@@ -262,7 +262,7 @@ src/sound.i: src/sound.c.i
 
 # target to preprocess a source file
 src/sound.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/sound.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/sound.c.i
 .PHONY : src/sound.c.i
 
 src/sound.s: src/sound.c.s
@@ -270,7 +270,7 @@ src/sound.s: src/sound.c.s
 
 # target to generate assembly for a file
 src/sound.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/sound.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/sound.c.s
 .PHONY : src/sound.c.s
 
 src/vct.o: src/vct.c.o
@@ -278,7 +278,7 @@ src/vct.o: src/vct.c.o
 
 # target to build an object file
 src/vct.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/vct.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/vct.c.o
 .PHONY : src/vct.c.o
 
 src/vct.i: src/vct.c.i
@@ -286,7 +286,7 @@ src/vct.i: src/vct.c.i
 
 # target to preprocess a source file
 src/vct.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/vct.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/vct.c.i
 .PHONY : src/vct.c.i
 
 src/vct.s: src/vct.c.s
@@ -294,7 +294,7 @@ src/vct.s: src/vct.c.s
 
 # target to generate assembly for a file
 src/vct.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/vct.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/vct.c.s
 .PHONY : src/vct.c.s
 
 src/xen.o: src/xen.c.o
@@ -302,7 +302,7 @@ src/xen.o: src/xen.c.o
 
 # target to build an object file
 src/xen.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/xen.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/xen.c.o
 .PHONY : src/xen.c.o
 
 src/xen.i: src/xen.c.i
@@ -310,7 +310,7 @@ src/xen.i: src/xen.c.i
 
 # target to preprocess a source file
 src/xen.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/xen.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/xen.c.i
 .PHONY : src/xen.c.i
 
 src/xen.s: src/xen.c.s
@@ -318,7 +318,7 @@ src/xen.s: src/xen.c.s
 
 # target to generate assembly for a file
 src/xen.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mylib.dir/build.make CMakeFiles/mylib.dir/src/xen.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/common-tones.dir/build.make CMakeFiles/common-tones.dir/src/xen.c.s
 .PHONY : src/xen.c.s
 
 # Help Target
@@ -329,7 +329,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... mylib"
+	@echo "... common-tones"
 	@echo "... src/audio.o"
 	@echo "... src/audio.i"
 	@echo "... src/audio.s"
