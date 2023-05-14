@@ -23,12 +23,9 @@
   #-(or windoze openmcl sgi sun hpux linux) mus-aifc
   )
 
-(defvar *clm-data-format* 
-  #+(or sun hpux linux windoze) mus-ldouble
-  #-(or sun hpux linux windoze) mus-bdouble
-  )
+(defvar *clm-data-format* mus-ldouble)
 
-(defvar *clm-tempfile-data-format* #+little-endian mus-ldouble #-little-endian mus-bdouble)
+(defvar *clm-tempfile-data-format* mus-ldouble)
 (defvar *clm-tempfile-header-type* mus-next)
 
 (defvar *clm-verbose* nil)		; will cause instrument names and so on to be printed out
@@ -46,4 +43,3 @@
 (defvar *clm-statistics* nil)           ; statistics arg in with-sound
 
 (defvar *clm-default-frequency* 0.0)    ; make-* default frequency
-

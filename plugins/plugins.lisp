@@ -1,6 +1,8 @@
 (defpackage :common-tones/plugins
   (:use :common-tones)
   (:export
+    #:add
+    #:cut
     #:db-to-amp
     #:amp-to-db
     #:vol-to-amp
