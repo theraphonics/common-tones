@@ -759,7 +759,7 @@ static int mus_header_write_next_header(int fd, int wsrate, int wchans, int loc,
  *  8: "AIFF" or "AIFC" -- the latter includes compressed formats (list extended for 8.5 Sound.h)
  *
  *  Thereafter the file is organized into "chunks", each chunk being 
- *  a 4-byte identifier followed by an int (4-bytes) giving the chunk size
+ *  a 4-byte identifer followed by an int (4-bytes) giving the chunk size
  *  not including the 8-byte header.  AIFF data is signed.  If the chunk
  *  size is odd, an extra (unaccounted-for) null byte is added at the end.
  *
@@ -5139,7 +5139,7 @@ static int read_diamondware_header(const char *filename, int fd)
  * _paf -> Ensoniq Paris?  (this info from libaudiofile)
  *  0   paf (or fap)
  *  4  version (0)
- *  8  endianness (0 = big)
+ *  8  endianess (0 = big)
  * 12  rate (uint32_t)
  * 16  format (0: 16-bit linear, 24-bit linear)
  * 20  channels
@@ -5213,7 +5213,7 @@ static int read_comdisco_header(const char *filename, int fd)
   bool happy = true, little, commenting;
 
   k = 15;
-  line = (char *)calloc(257, sizeof(char));
+  line = (char *)calloc(256, sizeof(char));
   little = false;
   offset = 0;
   type = 0;

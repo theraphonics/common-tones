@@ -1,18 +1,16 @@
 cmake_minimum_required(VERSION 3.0)
-
-project(MyProject)
-
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 # Add source files
 set(SRC_FILES
-    src/xen.c
-    src/io.c
-    src/headers.c
-    src/audio.c
-    src/sound.c
-    src/clm.c
-    src/vct.c
-    src/cmus.c
+    xen
+    io
+    headers
+    audio
+    sound
+    clm
+    vct
+    cmus
 )
 
 # Add library target
-add_library(mylib OBJECT ${SRC_FILES})
+add_library(common-tones OBJECT ${SRC_FILES})
