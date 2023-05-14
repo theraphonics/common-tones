@@ -1,15 +1,15 @@
-;;; main defpackage is in common-tones-package.lisp. Export statement is in export.lisp.
+;;; main defpackage is in clm-package.lisp. Export statement is in export.lisp.
 
-(in-package :common-tones)
+(in-package :clm)
 
-(defvar *common-tones* (find-package :common-tones) "common-tones synthesis package")
-(defvar *common-tones-version* 5)
-(defvar *common-tones-revision* 2)
+(defvar *clm* (find-package :clm) "clm synthesis package")
+(defvar *clm-version* 5)
+(defvar *clm-revision* 2)
 
-(defvar *common-tones-source-directory* "")
-(defvar *common-tones-binary-directory* "")
-(defvar *common-tones-ins-directory* nil)
-(defvar *common-tones-compiler-name* #-windoze "cc" #+windoze "cl")         
+(defvar *clm-source-directory* "")
+(defvar *clm-binary-directory* "")
+(defvar *clm-ins-directory* nil)
+(defvar *clm-compiler-name* #-windoze "cc" #+windoze "cl")         
 					;this is set in all.lisp via the envirionment variable "CC"
 
 
@@ -17,9 +17,9 @@
 (load "constants.lisp")
 (load "generics.lisp")
 
-(defvar *common-tones-instruments* nil)		;list of currently loaded instruments
+(defvar *clm-instruments* nil)		;list of currently loaded instruments
 
-(defvar *common-tones-linked* nil)
+(defvar *clm-linked* nil)
 
 
 (defun double (x) (coerce x 'double-float))
@@ -65,7 +65,7 @@
  
 (defun print-hash (tab &optional (stream t)) (maphash #'(lambda (a b) (format stream "~A ~A~%" a b)) tab))
 
-(defun common-tones-print (fstr &rest args) 
+(defun clm-print (fstr &rest args) 
   ;; 30-Sep-96 allow file output(?)
   (if (stringp fstr)
       (princ (apply #'format nil fstr args))
@@ -86,9 +86,9 @@
 
 ;;; take care of some minor differences in file names and so on
 
-(defvar *common-tones-lisp-name* "lisp")
+(defvar *clm-lisp-name* "lisp")
 
-(defvar *common-tones-c-options* 
+(defvar *clm-c-options* 
   #+sgi " -DMUS_SGI" 
   #+sun " -DMUS_SUN" 
   #+(and linux (not alsa)) " -DMUS_LINUX" #+(and linux alsa) " -DMUS_LINUX -DHAVE_ALSA"
@@ -115,7 +115,7 @@
 
 ;#+cmu (defmacro restart-case (expr &rest rest) (declare (ignore rest)) expr)
 
-(defun common-tones-cerror (continue-control continue-default-value continue-test error-control &rest args)
+(defun clm-cerror (continue-control continue-default-value continue-test error-control &rest args)
   ;; like cerror, except provides a default continuation value, and if continue-test, prompts for new value
   (apply #'cerror continue-control error-control args)
   ;; if we get here, we've been told to go on
@@ -125,10 +125,10 @@
 	  (princ (format nil "new value (return=~A):" continue-default-value))
 	  (multiple-value-bind (new-str eof) (read-line)
 	    (if (or eof (zerop (length new-str)))
-		(return-from common-tones-cerror continue-default-value)
+		(return-from clm-cerror continue-default-value)
 	      (let ((new-val (read-from-string new-str)))
 		(if (funcall continue-test new-val)
-		    (return-from common-tones-cerror new-val)
+		    (return-from clm-cerror new-val)
 		  (print (format nil "~A is not a valid value in this context" new-val))))))))
     continue-default-value))
 

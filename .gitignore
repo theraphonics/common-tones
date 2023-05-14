@@ -1,2 +1,25 @@
-CMakeFiles
 .DS_Store
+# CMake-generated files
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+
+# Generated build files
+build/
+
+# Compiled object files and libraries
+*.o
+*.a
+*.so
+
+# Compiled executables
+*.exe
+*.out
+
+# Compiled files
+*.fasl
+*.fas
+*.lib
+
