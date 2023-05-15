@@ -9,7 +9,11 @@
     :licence "BSD"
     :serial t
     :components
-    ((:file "all")
+    ((:file "common-tones")
+     (:file "constants")
+     (:file "generics")
+     (:file "initmus")
+     (:file "all")
      (:file "ffi")
      (:file "mus")
      (:file "run")
