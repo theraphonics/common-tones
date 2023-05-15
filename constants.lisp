@@ -1,4 +1,4 @@
-(in-package :common-music)
+(in-package :common-tones)
 
 ; System-wide constants
 
