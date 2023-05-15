@@ -1,12 +1,13 @@
+/* mus-config.h.  Generated from mus-config.h.in by configure.  */
 #ifndef CONFIG_H_LOADED
 #define CONFIG_H_LOADED
 
-#undef WORDS_BIGENDIAN
-#undef SIZEOF_VOID_P
-#undef HAVE_OSS
-#undef HAVE_ALSA
-#undef MUS_JACK
-#undef WITH_AUDIO
+/* #undef WORDS_BIGENDIAN */
+#define SIZEOF_VOID_P 8
+/* #undef HAVE_OSS */
+/* #undef HAVE_ALSA */
+/* #undef MUS_JACK */
+#define WITH_AUDIO 1
 
 /* ---------------------------------------- */
 

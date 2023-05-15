@@ -1,4 +1,4 @@
-(in-package :clm)
+(in-package :common-tones)
 
 (defvar *statistics* nil)
 (defvar *interrupted* 0)
@@ -32,11 +32,11 @@
 	(if fname
 	    (setf ios (clm-open-input :file fname :start start :channel channel))
 	  (if restartable
-	      (restart-case 
+	      (restart-case
 		  (break "can't find ~S" name)
 		(nil (file-name)
 		    :report "try again with a new file name."
-		    :interactive (lambda () 
+		    :interactive (lambda ()
 				   (progn
 				     (princ "open-input* file: ")
 				     (list (read-from-string (read-line)))))
@@ -49,12 +49,12 @@
   (declare (ignore i-stream))
   nil)
 
-;;; someday: generic outa for CL, not to mention defgenerator and env-any!  
+;;; someday: generic outa for CL, not to mention defgenerator and env-any!
 
 (defvar out-already-warned nil)
 
-(defun out-any (loc data &optional (channel 0) o-stream) 
-  (declare (ignore loc data channel o-stream)) 
+(defun out-any (loc data &optional (channel 0) o-stream)
+  (declare (ignore loc data channel o-stream))
   (if (not out-already-warned)
       (progn
 	(warn "Lisp interpreted out-any is a no-op")
@@ -69,7 +69,7 @@
 (defvar in-already-warned nil)
 
 (defun in-any (loc channel i-stream)
-  (declare (ignore loc channel i-stream)) 
+  (declare (ignore loc channel i-stream))
   (if (not in-already-warned)
       (progn
 	(warn "Lisp interpreted in-any is a no-op")
@@ -79,7 +79,7 @@
 (defmacro inb (loc i-stream) `(in-any ,loc 1 ,i-stream))
 
 
-(defun whos-to-blame () 
+(defun whos-to-blame ()
   (let ((site #-openmcl (or (long-site-name) (short-site-name)) )
         (user #-openmcl (first (last (pathname-directory (user-homedir-pathname))))) ;can be (:ABSOLUTE "Net" ...)
         (machine (machine-type))
@@ -99,8 +99,8 @@
 (defun month-name (month) (nth (- month 1) '("Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec")))
 (defun day-name (day) (nth day '("Mon" "Tue" "Wed" "Thu" "Fri" "Sat" "Sun")))
 
-(defun timestring () 
-  (multiple-value-bind 
+(defun timestring ()
+  (multiple-value-bind
       (second minute hour date month year day daylight-saving-p time-zone)
       (get-decoded-time)
     (declare (ignore second time-zone daylight-saving-p))
@@ -137,7 +137,7 @@
 (defvar clm-revfile-name nil)
 (defvar clm-max-stat-amp 0.0)
 
-(defun print-statistics (stats out-chans &optional (stream t) scaled) 
+(defun print-statistics (stats out-chans &optional (stream t) scaled)
   (when stats
     (let* ((total-time (float (/ (- (get-internal-real-time) clm-start-time) internal-time-units-per-second)))
 	   (ovals (make-double-array out-chans :initial-element 0.0d0))
@@ -147,8 +147,8 @@
 	   (rtimes (and (> rev-chans 0) (make-integer-array rev-chans :initial-element 0)))
 	   (clm-last-end-time (sound-maxamp clm-outfile-name out-chans ovals times)))
       (if (and clm-revfile-name (not *clm-delete-reverb*)) (sound-maxamp clm-revfile-name rev-chans rvals rtimes))
-      (if scaled 
-	  (setf clm-max-stat-amp 
+      (if scaled
+	  (setf clm-max-stat-amp
 	    (max (loop for i from 0 below out-chans maximize (aref ovals i))
 		 (if (> rev-chans 0)
 		     (loop for i from 0 below rev-chans maximize (aref rvals i))
@@ -158,13 +158,13 @@
 (defun print-stats (stream stats total-time clm-last-end-time ochans ovals otimes rchans rvals rtimes)
   (flet ((convert-samples-to-seconds (samp) (if samp (float (/ samp *srate*)) 0.0)))
     (format stream "~A~A~A~:{~%  Out~A max amp~A: ~,3F (near ~,3F sec~:P)~}~A"
-	    (format nil "~A: ~%  Duration: ~,4F~A, Last begin time: ~,4F~A~%" 
+	    (format nil "~A: ~%  Duration: ~,4F~A, Last begin time: ~,4F~A~%"
 		    (filename->string clm-outfile-name)
 		    (convert-samples-to-seconds clm-last-end-time)
 		    (if (< clm-last-end-time 1000) (format nil " (~D sample~:P)" clm-last-end-time) "")
 		    (convert-samples-to-seconds clm-last-begin-time)
 		    (if (< 0 clm-last-begin-time 1000) (format nil " (sample ~D)" clm-last-begin-time) ""))
-	    (format nil "  Compute time: ~,3F, Compute ratio: ~,2F" 
+	    (format nil "  Compute time: ~,3F, Compute ratio: ~,2F"
 		    total-time
 		    (if (not (zerop clm-last-end-time))
 			(/ total-time (convert-samples-to-seconds clm-last-end-time))
@@ -198,7 +198,7 @@
 					(convert-samples-to-seconds (aref rtimes i)))))
 	      ""))))
 
-(defun initialize-statistics (stats ofile &optional rfile) 
+(defun initialize-statistics (stats ofile &optional rfile)
   (setf *statistics* stats)
   (setf clm-start-time (get-internal-real-time))
   (setf clm-last-begin-time 0)
@@ -226,7 +226,7 @@
 	      (push file all-files)))
 	  all-files)
   )
- 
+
 (defun sound-files-in-directory (path)
   (let ((dir (full-directory path))
 	(sounds nil))
@@ -248,11 +248,11 @@
 	  (if path
 	      (setf nam (probe-file (full-merge-pathnames pathname path)))))))
     #+windoze
-    (when (not nam) 
-      (setf nam 
-	    (probe-file 
-	     (full-merge-pathnames 
-	      (concatenate 'string (filename->string #+excl (excl:current-directory) #-excl (truename "./")) pathname) 
+    (when (not nam)
+      (setf nam
+	    (probe-file
+	     (full-merge-pathnames
+	      (concatenate 'string (filename->string #+excl (excl:current-directory) #-excl (truename "./")) pathname)
 	      default))))
     nam))
 
@@ -280,13 +280,13 @@
 (defun prettified-freq (freq phase &optional (wave-length two-pi))
   (let ((rfrq (if (numberp freq) (round (/ (* freq *srate*) wave-length))))
 	(rphase (if (numberp phase) (round (* phase (/ 360.0 wave-length))))))
-    (format nil "freq: ~A~A, phase: ~A~A" 
+    (format nil "freq: ~A~A, phase: ~A~A"
 	    (prettified-float freq) (if rfrq (format nil " (~A Hz)" rfrq) "")
 	    (prettified-float phase) (if rphase (format nil " (~A degrees)" rphase) ""))))
 
 (defun prettified-array (arr)
-  ;; follow *clm-array-print-length* 
-  (if arr 
+  ;; follow *clm-array-print-length*
+  (if arr
       (if (arrayp arr)
 	  (let* ((len (length arr))
 		 (lim (if *clm-array-print-length* (min *clm-array-print-length* len) len)))
@@ -307,7 +307,7 @@
 (defmacro in-hz (val) `(* ,val (/ two-pi *srate*)))
 (defun hz->radians (val) (* val (/ two-pi *srate*)))
 (defun radians->hz (val) (* val (/ *srate* two-pi)))
-(defun degrees->radians (x) (* two-pi (/ x 360))) 
+(defun degrees->radians (x) (* two-pi (/ x 360)))
 (defun radians->degrees (x) (* x (/ 360.0 two-pi)))
 (defun db->linear (x) (expt 10.0 (/ x 20.0)))
 (defun linear->db (x) (* 20 (log (max x .00001) 10.0)))
@@ -395,11 +395,11 @@
   (let ((len (or size (length fn))))
     (if (< x 0.0) (incf x len))
     (multiple-value-bind
-	(int-part frac-part) 
+	(int-part frac-part)
 	(truncate x)
       (if (>= int-part len)
 	  (setf int-part (mod int-part len)))
-      (if (zerop frac-part) 
+      (if (zerop frac-part)
 	  (aref fn int-part)
 	(+ (aref fn int-part)
 	   (* frac-part (- (aref fn (if (< (1+ int-part) len) (1+ int-part) 0))
@@ -431,7 +431,7 @@
 						   (* y 0.45813e-2)))))))))))))
     (let* ((ax (abs x))
 	   (y (/ 3.75 ax)))
-      (* (/ (exp ax) (sqrt ax)) 
+      (* (/ (exp ax) (sqrt ax))
 	 (+ 0.39894228
 	    (* y (+ 0.1328592e-1
 		    (* y (+ 0.225319e-2
@@ -541,7 +541,7 @@
   ;;   Fredric J. Harris, "On the Use of Windows for Harmonic Analysis with the
   ;;   Discrete Fourier Transform," Proceedings of the IEEE, Vol. 66, No. 1,
   ;;   January 1978.
-  ;;   Albert H. Nuttall, "Some Windows with Very Good Sidelobe Behaviour", 
+  ;;   Albert H. Nuttall, "Some Windows with Very Good Sidelobe Behaviour",
   ;;   IEEE Transactions of Acoustics, Speech, and Signal Processing, Vol. ASSP-29,
   ;;   No. 1, February 1981, pp 84-91
 
@@ -557,144 +557,144 @@
 	 (I0beta (if (= type kaiser-window) (bes-i0 beta)))
 	 (val 0.0))
 
-    (macrolet ((lw (&body code) 
-		  `(loop for i from 0 to midn and j = (1- size) then (1- j) do 
+    (macrolet ((lw (&body code)
+		  `(loop for i from 0 to midn and j = (1- size) then (1- j) do
 		    (progn ,.code)
 		    (setf (aref window i) (double val))
 		    (setf (aref window j) (double val))))
 
-	       (lcw (&body code) 
-		 `(loop for i from 0 to midn and j = (1- size) then (1- j) do 
+	       (lcw (&body code)
+		 `(loop for i from 0 to midn and j = (1- size) then (1- j) do
 		    (let ((cx (cos angle)))
 		      (progn ,.code)
 		      (setf (aref window i) (double val))
 		      (setf (aref window j) (double val))
 		      (incf angle freq)))))
 
-      (cond ((= type rectangular-window) 
+      (cond ((= type rectangular-window)
 	     (lw (setf val 1.0)))
 
-	    ((= type bartlett-window) 
-	     (lw (setf val angle) 
+	    ((= type bartlett-window)
+	     (lw (setf val angle)
 		 (incf angle rate)))
 
-	    ((= type parzen-window) 
+	    ((= type parzen-window)
 	     (lw (setf val (- 1.0 (abs (/ (- i midn) midp1))))))
 
 	    ((= type welch-window)
 	     (lw (setf val (- 1.0 (sqr (/ (- i midn) midp1))))))
 
-	    ((= type exponential-window) 
-	     (lw (setf val (- expsum 1.0)) 
+	    ((= type exponential-window)
+	     (lw (setf val (- expsum 1.0))
 		 (setf expsum (* expsum expn))))
 
-	    ((= type kaiser-window) 
+	    ((= type kaiser-window)
 	     (lw (setf val (/ (bes-i0 (* beta (sqrt (- 1.0 (sqr (/ (- midn i) midn)))))) I0beta))))
 
-	    ((= type gaussian-window) 
+	    ((= type gaussian-window)
 	     (lw (setf val (exp (* -.5 (sqr (* beta (/ (- midn i) midn))))))))
 
-	    ((= type poisson-window) 
+	    ((= type poisson-window)
 	     (lw (setf val (exp (* (- beta) (/ (- midn i) midn))))))
 
-	    ((= type riemann-window) 
-	     (lw (if (= midn i) 
-		     (setf val 1.0) 
+	    ((= type riemann-window)
+	     (lw (if (= midn i)
+		     (setf val 1.0)
 		   (setf val (/ (sin (* sr (- midn i))) (* sr (- midn i)))))))
 
-	    ((= type cauchy-window) 
+	    ((= type cauchy-window)
 	     (lw (setf val (/ 1.0 (+ 1.0 (sqr (/ (* beta (- midn i)) midn)))))))
 
-	    ((= type tukey-window) 
-	     (lw (let ((pos (* midn (- 1.0 beta)))) 
-		   (if (>= i pos) 
-		       (setf val 1.0) 
+	    ((= type tukey-window)
+	     (lw (let ((pos (* midn (- 1.0 beta))))
+		   (if (>= i pos)
+		       (setf val 1.0)
 		     (setf val (* .5 (- 1.0 (cos (/ (* pi i) pos)))))))))
 
-	    ((= type dolph-chebyshev-window) 
+	    ((= type dolph-chebyshev-window)
 	     (dolph-chebyshev dolph-chebyshev-window window beta 0.0))
 
-	    ((= type samaraki-window) 
+	    ((= type samaraki-window)
 	     (dolph-chebyshev samaraki-window window beta 1.0))
 
-	    ((= type ultraspherical-window) 
+	    ((= type ultraspherical-window)
 	     (dolph-chebyshev ultraspherical-window window beta mu))
 
-	    ((= type hann-poisson-window) 
+	    ((= type hann-poisson-window)
 	     (lcw (setf val (* (- 0.5 (* 0.5 cx)) (exp (* (- beta) (/ (- midn i) midn)))))))
 
-	    ((= type connes-window) 
+	    ((= type connes-window)
 	     (lw (setf val (sqr (- 1.0 (sqr (/ (- i midn) midp1)))))))
 
-	    ((= type bartlett-hann-window) 
-	     (lw (setf val (+ 0.62 
-			      (* -0.48 (abs (- (/ i (1- size)) 0.5))) 
+	    ((= type bartlett-hann-window)
+	     (lw (setf val (+ 0.62
+			      (* -0.48 (abs (- (/ i (1- size)) 0.5)))
 			      (* 0.38 (cos (* 2 pi (- (/ i (1- size)) 0.5))))))))
 
-	    ((= type bohman-window) 
-	     (lw (let ((r (/ (- midn i) midn))) 
+	    ((= type bohman-window)
+	     (lw (let ((r (/ (- midn i) midn)))
 		   (setf val (+ (* (- 1.0 r) (cos (* pi r)))
 				(* (/ 1.0 pi) (sin (* pi r))))))))
 
-	    ((= type flat-top-window) 
-	     (lcw (setf val (+ 0.2156 
+	    ((= type flat-top-window)
+	     (lcw (setf val (+ 0.2156
 			       (* -0.4160 cx)
 			       (* 0.2781 (cos (* 2 angle)))
 			       (* -0.0836 (cos (* 3 angle)))
 			       (* 0.0069 (cos (* 4 angle)))))))
 
-	    ((= type hann-window) 
+	    ((= type hann-window)
 	     (lcw (setf val (- 0.5 (* 0.5 cx)))))
 
 	    ((= type rv2-window)
-	     (lcw (setf val (+ .375 
-			       (* -0.5 cx) 
+	     (lcw (setf val (+ .375
+			       (* -0.5 cx)
 			       (* .125 (cos (* 2 angle)))))))
-      
+
 	    ((= type rv3-window)
-	     (lcw (setf val (+ (/ 10.0 32.0) 
+	     (lcw (setf val (+ (/ 10.0 32.0)
 			       (* (/ -15.0 32.0) cx)
-			       (* (/ 6.0 32.0) (cos (* 2 angle))) 
+			       (* (/ 6.0 32.0) (cos (* 2 angle)))
 			       (* (/ -1.0 32.0) (cos (* 3 angle)))))))
-      
+
 	    ((= type rv4-window)
 	     (lcw (setf val (+ (/ 35.0 128.0)
-			       (* (/ -56.0 128.0) cx) 
-			       (* (/ 28.0 128.0) (cos (* 2 angle))) 
+			       (* (/ -56.0 128.0) cx)
+			       (* (/ 28.0 128.0) (cos (* 2 angle)))
 			       (* (/ -8.0 128.0) (cos (* 3 angle)))
 			       (* (/ 1.0 128.0) (cos (* 4 angle)))))))
-      
-	    ((= type hamming-window) 
+
+	    ((= type hamming-window)
 	     (lcw (setf val (- 0.54 (* 0.46 cx)))))
 
-	    ((= type blackman2-window) 
+	    ((= type blackman2-window)
 	     (lcw (setf val (* (+ .34401 (* cx (+ -.49755 (* cx .15844))))))))
 
-	    ((= type blackman3-window) 
+	    ((= type blackman3-window)
 	     (lcw (setf val (+ .21747 (* cx (+ -.45325 (* cx (+ .28256 (* cx -.04672)))))))))
 
-	    ((= type blackman4-window) 
+	    ((= type blackman4-window)
 	     (lcw (setf val (+ .08403 (* cx (+ -.29145 (* cx (+ .37569 (* cx (+ -.20762 (* cx .04119)))))))))))
 
 	    ((= type blackman5-window)
-	     (lcw (setf val (+ .293557 
+	     (lcw (setf val (+ .293557
 			       (* -.451935 cx)
 			       (* .201416 (cos (* 2 angle)))
 			       (* -.047926 (cos (* 3 angle)))
 			       (* .00502619 (cos (* 4 angle)))
 			       (* -.000137555 (cos (* 5 angle)))))))
-      
+
 	    ((= type blackman6-window)
-	     (lcw (setf val (+ .271220 
+	     (lcw (setf val (+ .271220
 			       (* -.433444 cx)
 			       (* .218004 (cos (* 2 angle)))
 			       (* -.065785 (cos (* 3 angle)))
 			       (* .01076186 (cos (* 4 angle)))
 			       (* -.000770012 (cos (* 5 angle)))
 			       (* .0000136808 (cos (* 6 angle)))))))
-      
+
 	    ((= type blackman7-window)
-	     (lcw (setf val (+ .253317 
+	     (lcw (setf val (+ .253317
 			       (* -.416327 cx)
 			       (* .228839 (cos (* 2 angle)))
 			       (* -.081575 (cos (* 3 angle)))
@@ -702,9 +702,9 @@
 			       (* -.002096702 (cos (* 5 angle)))
 			       (* .0001067741 (cos (* 6 angle)))
 			       (* -.0000012807(cos (* 7 angle)))))))
-	    
+
 	    ((= type blackman8-window)
-	     (lcw (setf val (+ .238433 
+	     (lcw (setf val (+ .238433
 			       (* -.400554 cx)
 			       (* .235824 (cos (* 2 angle)))
 			       (* -.095279 (cos (* 3 angle)))
@@ -713,9 +713,9 @@
 			       (* .0003685604 (cos (* 6 angle)))
 			       (* -.0000138435 (cos (* 7 angle)))
 			       (* .000000116180(cos (* 8 angle)))))))
-      
+
 	    ((= type blackman9-window)
-	     (lcw (setf val (+ .225734 
+	     (lcw (setf val (+ .225734
 			       (* -.386012 cx)
 			       (* .240129 (cos (* 2 angle)))
 			       (* -.107054 (cos (* 3 angle)))
@@ -725,9 +725,9 @@
 			       (* -.0000600859 (cos (* 7 angle)))
 			       (* .000001710716 (cos (* 8 angle)))
 			       (* -.00000001027272(cos (* 9 angle)))))))
-      
+
 	    ((= type blackman10-window)
-	     (lcw (setf val (+ .215153 
+	     (lcw (setf val (+ .215153
 			       (* -.373135 cx)
 			       (* .242424 (cos (* 2 angle)))
 			       (* -.1166907 (cos (* 3 angle)))
@@ -751,7 +751,7 @@
     (let ((maxa 0.0)
 	  (20log10 (/ 20 (log 10)))
 	  (lowest 1.0e-6))
-      (loop for i from 0 below len do 
+      (loop for i from 0 below len do
 	(setf (aref rdat i) (double (sqrt (+ (sqr (max lowest (aref rdat i))) (sqr (max lowest (aref idat i)))))))
 	(setf maxa (max maxa (abs (aref rdat i)))))
       (if (> maxa 0.0)
@@ -776,7 +776,7 @@
 		 :phase initial-phase))
 
 (defun oscil (gen &optional (fm-input 0.0) (pm-input 0.0))
-  (prog1 
+  (prog1
       (sin (+ (oscil-phase gen) pm-input))
     (incf (oscil-phase gen) (+ (oscil-freq gen) fm-input))
     ;; if we were being extremely careful, we'd add the fm-input into the sin call at the start too.
@@ -823,7 +823,7 @@
 
 (defmethod table-lookup? ((g table-lookup)) t)
 (defmethod table-lookup? ((g t)) nil)
-	      
+
 (defun table-lookup (tl &optional (fm-input 0.0))
   (let ((val (array-interp (tbl-wave tl) (tbl-phase tl)))
 	(len (length (tbl-wave tl))))
@@ -846,7 +846,7 @@
 
 
 
-;;; Additive Synthesis -- data comes in "synth table", a list of partial--amp pairs    
+;;; Additive Synthesis -- data comes in "synth table", a list of partial--amp pairs
 
 (defun load-one-sine-wave (partial partial-amp table &optional (partial-phase 0.0))
   (when (/= 0.0 partial-amp)
@@ -856,16 +856,16 @@
 	(incf (aref table i) (double (* partial-amp (sin angle))))))))
 
 (defun partials->wave (synth-data &optional utable (norm t))
-  (when (not (listp synth-data)) 
+  (when (not (listp synth-data))
     (setf synth-data (clm-cerror "use '(1 1)" (list 1 1) #'listp "weird argument to partials->wave: ~A" synth-data)))
   (let* ((table (or utable (make-double-array *clm-table-size*))))
     (loop for partial in synth-data by #'cddr and amp in (cdr synth-data) by #'cddr do
       (load-one-sine-wave partial amp table))
     (if norm (normalize-array table))
     table))
-			   
+
 (defun phase-partials->wave (synth-data &optional utable (norm t))
-  (when (not (listp synth-data)) 
+  (when (not (listp synth-data))
     (setf synth-data (clm-cerror "use '(1 1)" (list 1 1) #'listp "weird argument to phase-partials->wave: ~A" synth-data)))
   (let* ((table (or utable (make-double-array *clm-table-size*))))
     (loop for partial in synth-data by #'cdddr and amp in (cdr synth-data) by #'cdddr and angle in (cddr synth-data) by #'cdddr do
@@ -901,7 +901,7 @@
 		   :zsize lsize
 		   :zdly max-size
 		   :zloc (and max-size (- max-size size))
-		   :line (if initial-contents 
+		   :line (if initial-contents
 			     (make-double-array lsize :initial-contents initial-contents)
 			   (if initial-element
 			       (make-double-array lsize :initial-element (double initial-element))
@@ -916,13 +916,13 @@
 
 (defun tap (d &optional (offset 0.0))
   (if (dly-zdly d)
-      (if (= offset 0.0) 
+      (if (= offset 0.0)
 	  (aref (dly-line d) (dly-zloc d))
 	(array-interp (dly-line d) (- (dly-zloc d) offset) (dly-zsize d)))
-    (if (= offset 0.0) 
+    (if (= offset 0.0)
 	(aref (dly-line d) (dly-loc d))
       (aref (dly-line d) (floor (mod (- (dly-loc d) offset) (dly-size d)))))))
-	  
+
 (defun delay-tick (d input)
   (setf (aref (dly-line d) (dly-loc d)) (double input))
   (incf (dly-loc d))
@@ -954,12 +954,12 @@
 ;;;    so to get a decay of DUR seconds, scaler <= 1-7*D/(DUR*Srate).  (D=delay length here).
 ;;;    The peak gain is 1/(1-(abs scaler)).
 ;;;
-;;;    See Julius Smith's "An Introduction to Digital Filter Theory" in Strawn "Digital 
+;;;    See Julius Smith's "An Introduction to Digital Filter Theory" in Strawn "Digital
 ;;;    Audio Signal Processing"
 
 
 (defclass comb (delay) ())
-  
+
 (def-optkey-fun make-comb (scaler size initial-contents initial-element max-size type)
   (let ((lsize (round (or max-size size))))
     (make-instance 'comb
@@ -969,7 +969,7 @@
 		   :zsize lsize
 		   :zdly max-size
 		   :zloc (and max-size (- max-size size))
-		   :line (if initial-contents 
+		   :line (if initial-contents
 			     (make-double-array lsize :initial-contents initial-contents)
 			   (if initial-element
 			       (make-double-array lsize :initial-element (double initial-element))
@@ -1002,7 +1002,7 @@
 
 (defclass filtered-comb (delay)
   ((filter :initform nil :initarg :filter :accessor dly-filter)))
-  
+
 (def-optkey-fun make-filtered-comb (scaler size initial-contents initial-element max-size type filter)
   (let ((lsize (round (or max-size size))))
     (make-instance 'filtered-comb
@@ -1013,7 +1013,7 @@
 		   :zdly max-size
 		   :zloc (and max-size (- max-size size))
 		   :filter filter
-		   :line (if initial-contents 
+		   :line (if initial-contents
 			     (make-double-array lsize :initial-contents initial-contents)
 			   (if initial-element
 			       (make-double-array lsize :initial-element (double initial-element))
@@ -1058,7 +1058,7 @@
 		   :zsize lsize
 		   :zdly max-size
 		   :zloc (and max-size (- max-size size))
-		   :line (if initial-contents 
+		   :line (if initial-contents
 			     (make-double-array lsize :initial-contents initial-contents)
 			   (if initial-element
 			       (make-double-array lsize :initial-element (double initial-element))
@@ -1084,7 +1084,7 @@
 
 (defmethod mus-feedforward ((gen notch)) (dly-xscl gen))
 (defmethod (setf mus-feedforward) (val (gen notch)) (setf (dly-xscl gen) val))
-(defmethod mus-run ((gen notch) &optional (arg1 0.0) (arg2 0.0)) (notch gen arg1 arg2))				      
+(defmethod mus-run ((gen notch) &optional (arg1 0.0) (arg2 0.0)) (notch gen arg1 arg2))
 (defmethod mus-interp-type ((gen notch)) (dly-type gen))
 
 
@@ -1112,7 +1112,7 @@
 		   :zsize lsize
 		   :zdly max-size
 		   :zloc (and max-size (- max-size size))
-		   :line (if initial-contents 
+		   :line (if initial-contents
 			     (make-double-array lsize :initial-contents initial-contents)
 			   (if initial-element
 			       (make-double-array lsize :initial-element (double initial-element))
@@ -1162,7 +1162,7 @@
 		   :zsize lsize
 		   :zdly nil
 		   :zloc 0
-		   :line (if initial-contents 
+		   :line (if initial-contents
 			     (make-double-array lsize :initial-contents initial-contents)
 			   (if initial-element
 			       (make-double-array lsize :initial-element (double initial-element))
@@ -1313,7 +1313,7 @@
 (defmethod one-zero? ((g one-zero)) t)
 (defmethod one-zero? ((g t)) nil)
 
-(defun one-zero (f input) 
+(defun one-zero (f input)
   (let ((val (+ (* (flt-a0 f) input) (* (flt-a1 f) (flt-x1 f)))))
     (setf (flt-x1 f) input)
     val))
@@ -1396,14 +1396,14 @@
 
 (def-optkey-fun make-two-pole (a0 b1 b2 frequency radius)
   (if (or radius frequency (and (not b2) (>= b1 2.0)))
-      (make-two-pole-base 1.0 
+      (make-two-pole-base 1.0
 			  (- (* 2.0 (or radius a0) (cos (hz->radians (or frequency b1)))))
 			  (* (or radius a0) (or radius a0)))
     (make-two-pole-base a0 b1 b2)))
 
 (defun two-pole (f input)
-  (let ((y0 (- (* (flt-a0 f) input) 
-	       (* (flt-b1 f) (flt-y1 f)) 
+  (let ((y0 (- (* (flt-a0 f) input)
+	       (* (flt-b1 f) (flt-y1 f))
 	       (* (flt-b2 f) (flt-y2 f)))))
     (setf (flt-y2 f) (flt-y1 f))
     (setf (flt-y1 f) y0)
@@ -1465,9 +1465,9 @@
 
 (def-optkey-fun make-two-zero (a0 a1 a2 frequency radius)
   (if (or radius frequency (and (not a2) (> a1 20.0)))
-      (make-instance 'two-zero 
-		     :a0 1.0 
-		     :a1 (- (* 2.0 (or radius a0) (cos (hz->radians (or frequency a1))))) 
+      (make-instance 'two-zero
+		     :a0 1.0
+		     :a1 (- (* 2.0 (or radius a0) (cos (hz->radians (or frequency a1)))))
 		     :a2 (* (or radius a0) (or radius a0)))
     (make-instance 'two-zero :a0 a0 :a1 a1 :a2 a2)))
 
@@ -1542,7 +1542,7 @@
 		 :b1 (- (* 2.0 radius (cos (hz->radians frequency))))
 		 :b2 (* radius radius)))
 
-(defun formant (f input &optional freq) 
+(defun formant (f input &optional freq)
   (if freq
       (setf (mus-frequency f) freq))
   (let* ((inval (* (flt-a0 f) input))
@@ -1574,7 +1574,7 @@
 
 (defmethod mus-run ((gen formant) &optional (arg1 0.0) (arg2 0.0)) (declare (ignore arg2)) (formant gen arg1))
 
-(defmethod mus-scaler ((gen formant)) 
+(defmethod mus-scaler ((gen formant))
   (radius gen))
 
 (defmethod (setf mus-scaler) (val (gen formant))
@@ -1604,20 +1604,20 @@
 
 (def-optkey-fun make-firmant (frequency radius)
   (make-instance 'firmant
-		 :radius radius 
+		 :radius radius
 		 :frequency frequency
 		 :eps (* 2.0 (sin (* 0.5 (hz->radians frequency))))
 		 :gain (- 1.0 (* radius radius))))
 
-(defun firmant (m input &optional freq) 
+(defun firmant (m input &optional freq)
   (if freq
       (setf (mus-frequency m) freq))
   (let* ((xn1 (+ (* (frm-gain m) input)
-		 (* (frm-radius m) 
-		    (- (frm-xn m) 
+		 (* (frm-radius m)
+		    (- (frm-xn m)
 		       (* (frm-eps m) (frm-yn m))))))
-	 (yn1 (* (frm-radius m) 
-		 (+ (* (frm-eps m) xn1) 
+	 (yn1 (* (frm-radius m)
+		 (+ (* (frm-eps m) xn1)
 		    (frm-yn m)))))
     (setf (frm-xn m) xn1)
     (setf (frm-yn m) yn1)
@@ -1635,7 +1635,7 @@
 
 (defmethod mus-run ((gen firmant) &optional (arg1 0.0) (arg2 0.0)) (declare (ignore arg2)) (firmant gen arg1))
 
-(defmethod mus-scaler ((gen firmant)) 
+(defmethod mus-scaler ((gen firmant))
   (frm-radius gen))
 
 (defmethod (setf mus-scaler) (val (gen firmant))
@@ -1648,14 +1648,14 @@
 
 ;;; Rand and Rand-Interp
 ;;;
-;;;    rand latches its output random number, getting a new number 
+;;;    rand latches its output random number, getting a new number
 ;;;    every srate/freq samples -- internally we pretend that our cycle is between 0 and
-;;;    two-pi so that the caller can use hz->radians without confusion.  This way, 
+;;;    two-pi so that the caller can use hz->radians without confusion.  This way,
 ;;;    frequency calculations look the same between oscil and rand and so on.
 ;;;    rand-interp interpolates between successive random numbers.
 
 (defun ran (lo hi)			;returns random numbers between lo and hi
-  (if (= hi lo) 
+  (if (= hi lo)
       lo
     #-(and excl cltl2) (+ lo (random (- hi lo)))
     #+(and excl cltl2) (+ lo (* (- hi lo) (random 1.0f0)))
@@ -1764,8 +1764,8 @@
 		 :base amplitude
 		 :phase 0.0
 		 :output 0.0
-		 :incr (if (zerop amplitude) 
-			   0.0 
+		 :incr (if (zerop amplitude)
+			   0.0
 			 (* (random amplitude) (/ frequency *srate*)))
 		 :distribution (or (and envelope (inverse-integrate envelope))
 				   distribution)
@@ -1791,7 +1791,7 @@
     (when (>= (noi-phase r) two-pi)
       (loop while (>= (noi-phase r) two-pi) do (decf (noi-phase r) two-pi))
       (setf (noi-incr r) (* (- (random-any r)
-			       (noi-output r)) 
+			       (noi-output r))
 			    (/ (+ (noi-freq r) sweep) two-pi))))
     ;; the (+ freq sweep) is obviously just a wild guess at the current "frequency"
     (incf (noi-phase r) (+ (noi-freq r) sweep))
@@ -1810,10 +1810,10 @@
 
 
 ;;; Envelopes
-;;; magify-seg takes an envelope, a starting time in samples, the envelope duration in samples, 
-;;; and a y scaler.  It returns another seg-like list (i.e. a list of time-value pairs), 
-;;; where the times are pass numbers, and the values are increments to be added on each pass to 
-;;; get to the next y-value.   For very large envelopes, (say more than 50 segments), we should 
+;;; magify-seg takes an envelope, a starting time in samples, the envelope duration in samples,
+;;; and a y scaler.  It returns another seg-like list (i.e. a list of time-value pairs),
+;;; where the times are pass numbers, and the values are increments to be added on each pass to
+;;; get to the next y-value.   For very large envelopes, (say more than 50 segments), we should
 ;;; simply load the thing into an array and use table-lookup to read it out.
 
 (defun magify-seg (envelope duration-in-samples scaler &optional (stepit nil) (offset 0.0))
@@ -1825,7 +1825,7 @@
 	 (x-diff (- (nth lim envelope) x1))) ; x1 is really x0 here
     (if (zerop x-diff) (warn "envelope repeats x axis values: ~A" envelope))
     (let* ((x-mag (/ (1- duration-in-samples) x-diff)))
-      (if (zerop x-mag) 
+      (if (zerop x-mag)
 	  (let ((dur (clm-cerror "use 1.0 for laughs" 1.0 #'plusp "envelope duration is 0.0: ~A" envelope)))
 	    (setf x-mag (/ (1- (floor (* *srate* dur))) x-diff))))
       (let* ((inv-x-mag (/ 1.0 x-mag))
@@ -1840,7 +1840,7 @@
 	  (push cur-pass result)
 	  (if (not stepit)
 	      (if (= y0 y1)		;no change in y on this segment
-		  (setf y-incr 0)    
+		  (setf y-incr 0)
 		(setf y-incr (* scaler (/ (- y1 y0) cur-x))))
 	    (setf y-incr (+ offset (* scaler y0))))
 	  (push y-incr result)
@@ -1873,7 +1873,7 @@
 	      (setf tmp (* val (- (nth i result) min-y)))
 	    (setf tmp 1.0))
 	  ;; tmp is now a number between 0 and 1, we need the power that will give us that number given base...
-	  (if nb 
+	  (if nb
 	      (setf (nth i result) (* (log (+ 1.0 (* tmp b-1))) b))
 	    (setf (nth i result) tmp)))
 	;; that is -- ((base^x)-1)/(base-1) solved for x in terms of base.
@@ -1935,9 +1935,9 @@
 	      (setf (seg-current-value gen) (seg-rate gen)))
 	  (progn			;type = :exp
 	    (incf (seg-power gen) (* passes (seg-rate gen)))
-	    (setf (seg-current-value gen) 
+	    (setf (seg-current-value gen)
 	      (+ (seg-offset gen)
-		 (* (seg-scaler gen) 
+		 (* (seg-scaler gen)
 		    (- (expt (seg-base gen) (seg-power gen)) 1.0))))))))))
 
 (defun clm-flatten (L)			;borrowed from /dist/lisp/mac/Lisp-Utilities/extensions.lisp
@@ -1958,7 +1958,7 @@
   (if (and base (numberp base) (minusp base))
       (warn "make-env with :base ~,3F won't work -- the 'base' has to be 0.0 or greater.~
              If you're trying to get convex connecting segments, use a base between 0.0 and 1.0." base))
-  (if (and (null duration) (null end) (null length)) 
+  (if (and (null duration) (null end) (null length))
       (error "make-env needs either :duration, :end, or :length"))
   (let ((dur-in-samples (or length
 			    (and end (floor (1+ end)))
@@ -1971,15 +1971,15 @@
 				 envelope)))
 	   (y0 (cadr checked-envelope))
 	   (init-y (+ offset (* scaler y0))))
-      
+
       (when #-(and sbcl (not little-endian)) (> *safety* 0)
 	    #+(and sbcl (not little-endian)) t
 	    (let ((x0 (first checked-envelope)))
 	      (loop for x1 in (cddr checked-envelope) by #'cddr do
-		    (if (< x1 x0) 
+		    (if (< x1 x0)
 			(error "X axis values out of order in: '~A going from ~A to ~A" envelope x0 x1))
 		    (setf x0 x1))))
-      
+
       (if (or (null base) (= base 1) (= base 0))
 	  (let ((data (magify-seg checked-envelope dur-in-samples scaler (and (numberp base) (zerop base)) offset)))
 	    (make-instance 'seg
@@ -1999,7 +1999,7 @@
 				 :restart-y init-y
 				 :restart-power 0.0
 				 :restart-data data))
-	(multiple-value-bind 
+	(multiple-value-bind
 	 (new-e min-y max-y)
 	 (fix-up-exp-env checked-envelope offset scaler base)
 	 (let ((data (magify-seg new-e dur-in-samples 1.0 nil 0.0)))
@@ -2021,7 +2021,7 @@
 				:restart-y init-y
 				:restart-power (cadr new-e)
 				:restart-data data)))))))
-  
+
 (defun restart-env (e)
   (mus-reset e))
 
@@ -2057,9 +2057,9 @@
 	  (when (and (/= 0.0 (seg-rate e))
 		     (<= (seg-pass e) (seg-end e)))
 	    (incf (seg-power e) (seg-rate e))
-	    (setf (seg-current-value e) 
+	    (setf (seg-current-value e)
 		  (+ (seg-offset e)
-		     (* (seg-scaler e) 
+		     (* (seg-scaler e)
 			(- (expt (seg-base e) (seg-power e)) 1.0))))))
       (error "unknown envelope type: ~A" (seg-type e)))))
 
@@ -2079,14 +2079,14 @@
 	  (prettified-freq (sw-freq d) (sw-phase d))
 	  (prettified-float (sw-base d))
 	  (prettified-float (sw-current-value d))))
-	
+
 (defun fix-up-phase (s)
   (if (plusp (sw-phase s))
       (loop while (>= (sw-phase s) two-pi) do (decf (sw-phase s) two-pi))
     (loop while (minusp (sw-phase s)) do (incf (sw-phase s) two-pi))))
 
 (defun tri-val (amplitude phase)
-  (* amplitude (if (< phase (/ pi 2.0)) phase 
+  (* amplitude (if (< phase (/ pi 2.0)) phase
 		 (if (< phase (/ (* 3.0 pi) 2.0))
 		     (- pi phase)
 		   (- phase two-pi)))))
@@ -2149,7 +2149,7 @@
       (sw-current-value s)
     (incf (sw-phase s) (+ (sw-freq s) fm))
     (if (or (minusp (sw-phase s))
-	    (>= (sw-phase s) two-pi)) 
+	    (>= (sw-phase s) two-pi))
 	(fix-up-phase s))
     (setf (sw-current-value s) (if (< (sw-phase s) (sw-width s)) (sw-base s) 0.0))))
 
@@ -2228,7 +2228,7 @@
 ;;; Waveshaping
 ;;;    see "Digital Waveshaping Synthesis" by Marc Le Brun in JAES 1979 April, vol 27, no 4, p250
 
-(defun signify (harm-amps)		;taken very directly from MLB's Mus10 code.  
+(defun signify (harm-amps)		;taken very directly from MLB's Mus10 code.
 					;Here we assume Harm-amps is ordered by partial number.
   (let ((lastpt (length harm-amps)))
     (do ((i 2 (+ i di))
@@ -2236,14 +2236,14 @@
 	((>= i lastpt) harm-amps)
       (setf (aref harm-amps i) (double (- (aref harm-amps i)))))))
 
-; T(n+1) <= 2xT(n)-T(n-1) gives the Chebychev polynomials of the first kind 
+; T(n+1) <= 2xT(n)-T(n-1) gives the Chebychev polynomials of the first kind
 ; (T0 = 1, T1 = X to get recursion going)
 
-; we take the array of signified partial amplitudes (harm-amps) and use them to weight the 
+; we take the array of signified partial amplitudes (harm-amps) and use them to weight the
 ; associated Chebychev polynomial
 
-;;; assume we're using synth-data that looks like additive synthesis tables 
-;;; (i.e. a list of partial-amp pairs).  That means we have to prepare it for 
+;;; assume we're using synth-data that looks like additive synthesis tables
+;;; (i.e. a list of partial-amp pairs).  That means we have to prepare it for
 ;;; the preceding two procedures by loading it into an array.
 
 (defun normalize-partials (partials)
@@ -2449,8 +2449,8 @@
 (defmethod mus-scaler ((gen ncos)) (ncosp-scaler gen))
 (defmethod (setf mus-scaler) (val (gen ncos)) (setf (ncosp-scaler gen) val))
 
-(defmethod mus-run ((gen ncos) &optional (arg1 0.0) (arg2 0.0)) 
-  (declare (ignore arg2)) 
+(defmethod mus-run ((gen ncos) &optional (arg1 0.0) (arg2 0.0))
+  (declare (ignore arg2))
   (ncos gen arg1))
 
 
@@ -2493,7 +2493,7 @@
 		(* (ncosp-scaler cs)
 		   (/ (* (sin (* (ncosp-n cs) a2))
 			 (sin (* (1+ (ncosp-n cs)) a2)))
-		      den)))))		   
+		      den)))))
     (incf (ncosp-phase cs) (+ (ncosp-freq cs) fm))
     (if (> (ncosp-phase cs) two-pi) (decf (ncosp-phase cs) two-pi))
     (if (< (ncosp-phase cs) (- two-pi)) (incf (ncosp-phase cs) two-pi))
@@ -2504,8 +2504,8 @@
   (setf (ncosp-scaler gen) (nsin-scaler val))
   val)
 
-(defmethod mus-run ((gen nsin) &optional (arg1 0.0) (arg2 0.0)) 
-  (declare (ignore arg2)) 
+(defmethod mus-run ((gen nsin) &optional (arg1 0.0) (arg2 0.0))
+  (declare (ignore arg2))
   (nsin gen arg1))
 
 
@@ -2596,7 +2596,7 @@
 	  (* (expt r (1+ n))
 	     (- (cos (+ x (* (1+ n) y)))
 		(* r (cos (+ x (* n y)))))))
-       (* norm 
+       (* norm
 	  (+ 1.0 (* r r) (* -2 r (cos y)))))))
 
 (defmethod mus-frequency ((gen nrxycos)) (radians->hz (nrxy-freq gen)))
@@ -2641,7 +2641,7 @@
 
 (defmethod asymmetric-fm? ((g asymmetric-fm)) t)
 (defmethod asymmetric-fm? ((g t)) nil)
-			
+
 (defun asymmetric-fm (af index &optional (fm 0.0))
   (let* ((th (asymfm-phase af))
 	 (mth (* (asymfm-ratio af) th))
@@ -2815,7 +2815,7 @@
    ;;   instruments still use it.  (see simple-rd-start in ug2.ins)
    (loc :initform 0 :initarg :loc :accessor f2s-loc)
    (chn :initform 0 :initarg :chn :accessor f2s-chn)
-   (size :initform nil :initarg :size :accessor f2s-size)))   
+   (size :initform nil :initarg :size :accessor f2s-size)))
 
 (defmethod print-object ((d file->sample) stream)
   (format stream "#<file->sample: fil: ~A, chan: ~A, start: ~A>" (f2s-fil d) (f2s-chn d) (f2s-loc d)))
@@ -3075,7 +3075,7 @@
 			    0.0)
 		   :freq frequency
 		   :type type)))
-    
+
 (defmethod wave-train? ((g wave-train)) t)
 (defmethod wave-train? ((g t)) nil)
 
@@ -3125,7 +3125,7 @@
 (defvar previous-sinc-table-size -1)
 
 (defun fill-sinc-table (size)
-  (if (= size previous-sinc-table-size) 
+  (if (= size previous-sinc-table-size)
       previous-sinc-table
     (let* ((sinc-table (make-double-array (1+ size)))
 	   (win-freq (/ pi size))
@@ -3133,7 +3133,7 @@
       (setf (aref sinc-table 0) (double 1.0))
       (setf (aref sinc-table size) (double 0.0))
       (loop for i from 1 below size and sf from sinc-freq by sinc-freq and wf from win-freq by win-freq do
-	(setf (aref sinc-table i) 
+	(setf (aref sinc-table i)
 	      (double (/ (* (+ 0.5 (* 0.5 (cos wf))) (sin sf)) sf))))
       (setf previous-sinc-table sinc-table)
       (setf previous-sinc-table-size size)
@@ -3270,7 +3270,7 @@
   (file->array file2 file2-chan 0 file2-len data2)
   (convolution data1 data2 fftlen)
   data1)
-  
+
 (defun convolve-files (file1 file2 &optional (maxamp 1.0) (output-file "tmp.snd"))
   (let* ((file1-len (sound-framples file1))
 	 (file2-len (sound-framples file2))
@@ -3348,7 +3348,7 @@
 	  (prettified-float (spd-amp d))
 	  (spd-len d) (spd-block-len d) (spd-rmp d) (spd-input-hop d) (spd-output-hop d)
 	  (spd-cur-in d) (spd-in-data-start d) (spd-cur-out d) (spd-s20 d) (spd-s50 d) (spd-ctr d)
-	  (spd-rd d) 
+	  (spd-rd d)
 	  (prettified-array (spd-data d))
 	  (prettified-array (spd-in-data d))))
 
@@ -3416,7 +3416,7 @@
 	      (setf (aref (spd-data e) i) (aref (spd-data e) j))))
 	(loop for i from end below (spd-block-len e) do
 	  (setf (aref (spd-data e) i) (double 0.0))))
-      
+
       ;; we need unidirectional input from the input-function if it's not a file reader
       ;; so we save partial results in spd-in-data; this input has to be basically
       ;; regular (i.e. follow input-hop) with local (non-accumulating) jitter
@@ -3586,7 +3586,7 @@
 	      (incf (pv-filptr pv) D)
 	      (fft amps freqs N 1)
 	      (rectangular->polar amps freqs)))
-	
+
 	(if (or (not (pv-edit pv))
 		(funcall (pv-edit pv) pv))
 	    (progn
@@ -3656,7 +3656,7 @@
 	     (num (- 1.0 (cos (* pi i)))))
 	(if (= i 0)
 	    (setf (aref arr k) (double 0.0))
-	    (setf (aref arr k) (double (* (/ num denom) 
+	    (setf (aref arr k) (double (* (/ num denom)
 					  (+ .54 (* .46 (cos (/ (* i pi) len))))))))))
     (make-fir-filter arrlen arr)))
 

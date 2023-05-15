@@ -1,4 +1,4 @@
-#+clm (in-package :clm)
+(in-package :common-tones)
 
 ;;; import some sndlib names to CLM
 ;;;
@@ -174,5 +174,3 @@
 
 (defun mus-header-writable (typ frm)
   (not (zerop (clm-mus-header-writable typ frm))))
-
-

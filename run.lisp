@@ -1,4 +1,4 @@
-(in-package :clm)
+(in-package :common-tones)
 
 ;;; Apr-14 -- clm-5 (remove framples and mixers)
 ;;; Feb-08 -- clm-4 (new gens, etc)
@@ -12,7 +12,7 @@
 ;;; Mar-98 -- higher precision clm_env causes layout changes
 ;;; Jul-97 -- no-rld linker support removed -- many prototype changes
 ;;; Oct-95 -- many changes for n-channel IO and run-block connections to src et al
-;;; Jul-95 -- array allocation changed for SGI port 
+;;; Jul-95 -- array allocation changed for SGI port
 ;;; Apr-95 -- boolean handling completely revised.
 ;;; Oct-94 -- parallel instrument scheduling option.
 ;;; Mar-94 -- full C output, rather than heavy use of foreign function interface
@@ -64,7 +64,7 @@
 
 (defun clm-function (x) (gethash x clm-functions))
 
-(defun def-clm-fun (x y) 
+(defun def-clm-fun (x y)
   (if (null clm-functions) (setf clm-functions (make-hash-table)))
   (setf (gethash x clm-functions) y))
 
@@ -124,7 +124,7 @@
 			     (not (varinfo-global lst))
 			     (not (varinfo-temp lst)))
 		    (setf (varinfo-global lst) *global*))
-		  
+
 		  (if (and (varinfo-parallel lst) (not (eq do-init var)))
 		      (progn
 			(if (<= (varinfo-depth lst) 0) (warn "reference to undefined variable ~A" var))
@@ -134,7 +134,7 @@
 		      (list :var var (varinfo-depth lst))))))))
 	var)
     var))
-    
+
 (defun provisional-var (var)
   (if (and var (not (eq var t)))
       (if (symbolp var)
@@ -164,11 +164,11 @@
 		  (list :var var (varinfo-depth lst))))))
 	var)
     var))
-    
+
 (defun make-compiler-temp (&optional type) (make-var (gensym "_clm_") type))
 (defun new-label (&optional name) (if name name (gensym "L-")))
 
-(defmacro run-1 (run-time-code &environment env) 
+(defmacro run-1 (run-time-code &environment env)
   ;;Lisp expands this twice unless we take other action (i.e. run and run-1 two-step)
   (setf new-prog nil
 	unhappy nil
@@ -204,7 +204,7 @@
     #-openmcl
     `(progn
        (<start> ,loop-end)
-       ,@(nreverse new-prog) 
+       ,@(nreverse new-prog)
        (<end-1>)
        ,@(or (nreverse *as-needed-functions*) '())
        (<end-2> ,(or loop-beg 0) ,(or loop-end 0) ,loop-end)
@@ -217,7 +217,7 @@
 	   (loop for i from 0 by 50 below len
 	     collect (append (list 'progn) (subseq lst i (min len (+ i 50))))))
        (<end-1>)
-       ,@(or (nreverse *as-needed-functions*) '())       
+       ,@(or (nreverse *as-needed-functions*) '())
        (<end-2> ,(or loop-beg 0) ,(or loop-end 0) ,loop-end)
        )
     ))
@@ -294,7 +294,7 @@
 	      (setf (varinfo-gen-type gen) (list (varinfo-gen-type gen) gen-type))
 	    (if (not (member gen-type (varinfo-gen-type gen)))
 		(setf (varinfo-gen-type gen) (append (varinfo-gen-type gen) (list gen-type)))))))))
-  
+
 (defun gen-package-op (clm-name var x &optional type-func gen-type arg-func)
   (setf *gen-type* gen-type)
   (let ((result (package-op clm-name var x type-func nil nil arg-func)))
@@ -332,7 +332,7 @@
   ;; 29-Mar-01
   ;;  this is no longer needed as an optimization for speed.  If the run macro sees
   ;;    (progn (loop for i fixnum from ...))
-  ;;  the code it generates is just as fast as 
+  ;;  the code it generates is just as fast as
   ;;    (loop for i from...)
   ;;
   (if (and (not loop-end)
@@ -349,7 +349,7 @@
 	       (= i (length x)))
 	   (if (and (not loop-e) (not loop-v))
 	       (error "Can't find control variable or end point of outer loop")
-	     (progn 
+	     (progn
 	       ;;; (setf loop-end (or loop-e (list '+ loop-b 1234567890)))
 	       (setf loop-end loop-e)
 	       (setf loop-beg loop-b)
@@ -385,7 +385,7 @@
       (setf last-var (wf (macroexpand x)))
       (pop loop-label-stack)
       (if last-var (make-var last-var)))))
-	  
+
 (defun lisp->c (x y env)
   (declare (ignore y env))		;env is the local environment that the tree walker keeps track of
   (block sbcl-stupidity
@@ -401,13 +401,13 @@
 	      (if (and (listp (car x)) (eq (caar x) 'lambda))
 		  (lambda-branch var x)
 		(let ((xx (macroexpand-1 x outer-environment))) ;else full expansion => trouble in struct field setfs (system::rplaca-nthcdr)
-		  (if (eq x xx) 
-		      (give-up x) 
+		  (if (eq x xx)
+		      (give-up x)
 		    xx))))))
       (if (symbolp x)
 	  (if #-clisp (constantp x)               ;PI is not a constant in clisp!
 	      #+clisp (or (constantp x) (eq x 'pi))
-	      (if (eq x nil) 
+	      (if (eq x nil)
 		  nil
 		(if (eq x t)
 		    t
@@ -418,7 +418,7 @@
 ;;; return has to thread its way through block lists and get its value returned
 ;;; from the correct place, so it's not enough to just dump the value in A and
 ;;; jump to the end.  The return stack values is a list of lists, pushed anew
-;;; as blocks are opened, and popped as they close.  The inner list is of the 
+;;; as blocks are opened, and popped as they close.  The inner list is of the
 ;;; form (block-name block-variable block-end-label 0) -- the block-variable is
 ;;; what we return (either via return or by falling through the bottom), block-label
 ;;; is the location of the end of the block, and the block-name is either nil
@@ -428,7 +428,7 @@
   (declare (ignore var))
   (if return-stack
       (let ((our-block-data (find nil return-stack :key #'first)))
-	(if (not our-block-data) 
+	(if (not our-block-data)
 	    (error "return not inside a block named NIL")
 	  (let ((block-lab (third our-block-data))
 		(block-var (second our-block-data)))
@@ -446,7 +446,7 @@
   (declare (ignore var))
   (if return-stack
       (let ((our-block-data (find (cadr x) return-stack :key #'first)))
-	(if (not our-block-data) 
+	(if (not our-block-data)
 	    (error "return-from ~S not inside the specified block" (cadr x))
 	  (let ((block-lab (third our-block-data))
 		(block-var (second our-block-data)))
@@ -484,7 +484,7 @@
     (if (not new-prog) (push :tagbody new-prog)) ; (see progn)
     (push `(<comment> tagbody) new-prog)
     (loop for i in (cdr x) do
-      (if (listp i) 
+      (if (listp i)
 	  (wf i)
 	(let ((lab (if (and loop-label-stack
 			    #-(or openmcl cmu sbcl clisp (and excl cltl2)) (member i '(loop::next-loop loop::end-loop))
@@ -508,7 +508,7 @@
     (push `(<comment> if ,(cadr x)) new-prog)
     (setf ifvar (wf (cadr x)))
     (make-var ifvar)
-    
+
     (if (and ifvar (symbolp ifvar) (not (eq ifvar t)))
 	(let ((lst (gethash ifvar vars)))
 	  (if (not lst)
@@ -518,7 +518,7 @@
 		     (varinfo-temp lst))
 	    (if *clm-debug* (format t "if set ~A to boolean~%" ifvar))
 	    (setf (varinfo-type lst) :clm-boolean))))
-    
+
     (push `(<jump-if-not> ,(current-var ifvar) ,flabel) new-prog)
     (if (caddr x)
 	(let ((val (wf (caddr x))))
@@ -550,7 +550,7 @@
       (setf flabel (new-label))
       (setf ifvar (wf (car i)))
       (make-var ifvar)
-      
+
       (if (and ifvar (symbolp ifvar) (not (eq ifvar t)))
 	  (let ((lst (gethash ifvar vars)))
 	  (if (not lst)
@@ -560,7 +560,7 @@
 		       (varinfo-temp lst))
 	      (if *clm-debug* (format t "cond set ~A to boolean~%" ifvar))
 	      (setf (varinfo-type lst) :clm-boolean))))
-      
+
       (push `(<setf> ,+setf+ ,(provisional-var var) ,(chained-var ifvar var)) new-prog)
       (if (not (eq ifvar t))
 	  (push `(<jump-if-not> ,(current-var ifvar) ,flabel) new-prog))
@@ -589,7 +589,7 @@
   ;;       case V2 L2 (i.e. if t=V2 goto L2 etc)
   ;; ...
   ;;     goto Ln (i.e. case-else branch, if any)
-  ;; next: 
+  ;; next:
   (push `(<comment> case ,(cadr x)) new-prog)
   (let ((test-lab (new-label))
 	(next-lab (new-label))
@@ -620,7 +620,7 @@
     nvar))
 
 (defun dotimes-branch (var x)
-  (declare (ignore var)) 
+  (declare (ignore var))
   (let ((cmp-lab (new-label))
 ;	(res-lab (new-label))
 	(body-lab (new-label))
@@ -648,7 +648,7 @@
     (push `(<label> ,body-lab) new-prog)
     (push (list (cadr x) end-lab) return-stack)
     (loop for i in (cddr x) do
-      (if (listp i) 
+      (if (listp i)
 	  (wf i)
 	(progn
 	  (push i inner-labs)
@@ -686,7 +686,7 @@
 	       (var-i (make-local-var (car i) (not starred))))
 	  ;; I knew there was something really peculiar about do -- the local variable is not declared
 	  ;; within the block of variables, yet it is declared within the step statement in its declaration!!!
-	  (when next-init-lab 
+	  (when next-init-lab
 	    (push next-init-lab inner-labs)
 	    (push `(<label> ,next-init-lab) new-prog))
 	  (setf next-init-lab (new-label))
@@ -713,7 +713,7 @@
 	      (let ((val (current-var (wf (caddr i)))))
 		(if (and lst (not starred)) (decf (varinfo-depth lst)))
 		(push `(<setf> ,+setf+ ,(current-var var-i var-i) ,val) new-prog)))
-	    (when (cdr j) 
+	    (when (cdr j)
 	      (setf need-next-step t)
 	      (push `(<jump> ,next-step-lab) new-prog)))))
       (if (not starred)
@@ -727,10 +727,10 @@
 	    (setf step-lab (new-label))
 	    (push step-lab inner-labs)
 	    (push `(<label> ,step-lab) new-prog))
-	(when need-next-step 
+	(when need-next-step
 	  (push next-step-lab inner-labs)
 	  (push `(<label> ,next-step-lab) new-prog)))
-      (when need-next-init 
+      (when need-next-init
 	(push next-init-lab inner-labs)
 	(push `(<label> ,next-init-lab) new-prog))
       ;; end test
@@ -748,7 +748,7 @@
       ;; DO body (a tagbody)
       (push (list nil end-var end-lab) return-stack)
       (loop for i in body do
-	(if (listp i) 
+	(if (listp i)
 	    (wf i)
 	  (progn
 	    (push i inner-labs)
@@ -781,7 +781,7 @@
 			     (list 'mus-ramp '<mus-set-ramp> nil :mus-any)
 			     (list 'mus-location '<mus-set-location> nil :mus-any)
 			     (list 'mus-length '<mus-set-length> nil :mus-any)
-			     (list 'mus-width '<mus-set-width> nil :mus-any)	     
+			     (list 'mus-width '<mus-set-width> nil :mus-any)
 			     (list 'mus-xcoeff '<mus-set-xcoeff> nil :mus-any)
 			     (list 'mus-ycoeff '<mus-set-ycoeff> nil :mus-any)
 			     (list 'locsig-ref '<locsig-set!> nil :mus-any 'locsig)
@@ -807,7 +807,7 @@
 	      (evalled-sval (setf last-var (current-var (wf sval)))))
 
 	  (if *clm-debug* (format t "~A ~A: set ~A~%" svar sval setf-data))
-	  
+
 	  (if setf-data
 	      ;; create <setf...> (var adr ...) val
 	      ;; svar is either a symbol or a list (<accessor> name [args...])
@@ -827,13 +827,13 @@
 				 (not (varinfo-gen-type info)))
 
 			(if *clm-debug* (format t "set ~A to :mus-any~%" (second (first evalled-args))))
-			
+
 			(if (eq (fourth setf-data) :mus-any)
 			    (if (= (length setf-data) 5)
 				(setf (varinfo-gen-type info) (fifth setf-data)) ; a particular gen type ('locsig etc)
 			      (setf (varinfo-gen-type info) :mus-any))
 			  (setf (varinfo-type info) (fourth setf-data))))))
-		
+
 		(if *clm-debug* (format t "aref-type: ~A, setf-added-args: ~A, data: ~A~%" aref-type setf-added-args setf-data))
 		(if (and aref-type
 			 (member (varinfo-type aref-type) '(:double-array :integer-array :float-array))
@@ -886,7 +886,7 @@
 		    (setf (varinfo-type lst) :clm-real))
 		(if arrvar
 		    (setf (varinfo-type arrvar) :float-array))))
-|#	  
+|#
 	  )
 
 	(if (and lst
@@ -909,7 +909,7 @@
 		(if (varinfo-temp arg-info)
 		    (setf (varinfo-type arg-info) :clm-integer)
 		  (setf (varinfo-type arg-info) :integer)))))
-	
+
 	(if arrvar
 	    (if (eq (varinfo-gen-type arrvar) :mus-any-array)
 		(push `(<gen-aref> ,(current-var var) ,@args) new-prog)
@@ -957,7 +957,7 @@
 	  (let ((lst (gethash loc vars)))
 	    (setf (varinfo-parallel lst) nil))))
     (loop for i in (cddr x) do (setf last-var (wf i)))
-    (push `(<setf> ,+setf+ ,(provisional-var var) ,(chained-var last-var var)) new-prog) 
+    (push `(<setf> ,+setf+ ,(provisional-var var) ,(chained-var last-var var)) new-prog)
     (if locals
 	(loop for loc in locals do
 	  (let ((lst (gethash loc vars)))
@@ -1000,7 +1000,7 @@
 		     (varinfo-temp info))
 	      (if *clm-debug* (format t "set ~A as integer~%" (second val)))
 	      (setf (varinfo-type info) :clm-integer))))))
-      
+
 (defun mark-arg1-as-integer (val num)
   (if (= num 0)
       (if (listp val)
@@ -1010,7 +1010,7 @@
 		     (varinfo-temp info))
 	      (if *clm-debug* (format t "set ~A as integer~%" (second val)))
 	      (setf (varinfo-type info) :clm-integer))))))
-      
+
 
 (defvar function-type +as-needed-input+)
 
@@ -1098,7 +1098,7 @@
 								       (let ((data (gethash (second val) vars)))
 									 (if data
 									     (setf (varinfo-gen-type data) 'frample->file))))))
-							       
+
 							       (if *clm-debug* (format t "~A (~D): ~A~%"
 								       val num
 								       (let* ((sym (if (listp val) (second val) val))
@@ -1181,7 +1181,7 @@
 				      (let ((res (gen-package-op '<convolve> var x :clm-real 'convolve)))
 
 					(if *clm-debug* (format t "convolve: ~A ~A~%" old-as-needed *as-needed*))
-					
+
 					(if *as-needed*
 					    (let ((gen (gethash (second x) vars)))
 					      (if gen
@@ -1190,7 +1190,7 @@
 					(setf *as-needed* old-as-needed)
 					(setf *global* *as-needed*)
 					res))))
-						      
+
 (def-clm-fun 'convolve?         #'(lambda (var x) (gen-package-op '<convolve?> var x :clm-boolean :mus-any)))
 
 (def-clm-fun 'src               #'(lambda (var x)
@@ -1204,7 +1204,7 @@
 					    (let ((gen (gethash (second x) vars)))
 					      (if gen
 						  (setf (varinfo-ctr gen) (list :input ctr)))
-					      (push (list :input ctr) *as-needed-function-types*)))					      
+					      (push (list :input ctr) *as-needed-function-types*)))
 					(setf *as-needed* old-as-needed)
 					(setf *global* *as-needed*)
 					res))))
@@ -1295,7 +1295,7 @@
 			     (setf *global* t)
 			     ;; this is the "as-needed" input function for src, granulate, pv, and convolve
 
-			     (let* ((its-return-type 
+			     (let* ((its-return-type
 				     (if (= function-type +as-needed-input+)
 					 :clm-real
 				       (if (= function-type +as-needed-edit+)
@@ -1303,7 +1303,7 @@
 					 (if (= function-type +as-needed-analyze+)
 					     :clm-boolean
 					   :clm-real))))) ; pv synthesize
-			     
+
 			       (push `(<start-function> ,ctr ,function-type) new-prog)
 			       (push (list (first (second (second x))) ctr) lambda-args)
 			       (loop for form in (cddr (second x)) do (setf var (wf form)))
@@ -1497,7 +1497,7 @@
 (def-clm-fun 'locsig-reverb-ref #'(lambda (var x) (gen-package-op '<locsig-reverb-ref> var x :clm-real 'locsig #'mark-arg2-as-integer)))
 (def-clm-fun 'locsig-set!       #'(lambda (var x) (declare (ignore var)) (gen-package-op '<locsig-set!> 0 x nil 'locsig)))
 (def-clm-fun 'locsig-reverb-set! #'(lambda (var x) (declare (ignore var)) (gen-package-op '<locsig-reverb-set!> 0 x nil 'locsig)))
-											 
+
 (def-clm-fun 'frample->frample      #'(lambda (var x) (declare (ignore var)) (gen-package-op '<frample2frample> nil x nil nil #'mark-as-frample2frample) (fourth x)))
 
 (def-clm-fun 'null              #'(lambda (var x) (package-op '<null> var x :clm-boolean)))
@@ -1507,7 +1507,7 @@
 ;;; incf and decf are macros, but they can expand into calls that are specific to a given lisp
 (def-clm-fun 'incf              #'(lambda (var x) (setf-branch var x +incf+)))
 (def-clm-fun 'decf              #'(lambda (var x) (setf-branch var x +decf+)))
-(def-clm-fun '-                 #'(lambda (var x) 
+(def-clm-fun '-                 #'(lambda (var x)
 				   (if (cddr x)
 				       (package-op '<subtract> var x #'arith-type)
 				     (package-op '<negate> var x #'arith-type))))
@@ -1549,10 +1549,10 @@
 (def-clm-fun 'length            #'(lambda (var x) (package-op '<length> var x :clm-integer)))
 (def-clm-fun 'array-in-bounds-p #'(lambda (var x) (package-op '<array-in-bounds-p> var x :clm-boolean)))
 
-;;; array-element-type 
+;;; array-element-type
 
            ;; no progv prog prog*
-(def-clm-fun 'progn  #'(lambda (var x) 
+(def-clm-fun 'progn  #'(lambda (var x)
 			 (declare (ignore var))
 			 (if (not new-prog) (push :prog new-prog))
 			 ;; needed in (run (progn (loop ...))) because the check for the
@@ -1564,7 +1564,7 @@
 			   (loop for i in (cdr x) do (setf last-var (wf i)))
 			   last-var)))
 
-(def-clm-fun 'prog1  #'(lambda (var x) 
+(def-clm-fun 'prog1  #'(lambda (var x)
 			 (declare (ignore var))
 			 ;; (let ((x 3)) (prog1 x (setf x 32))) -- 9-June-98
 			 (push `(<comment> prog1) new-prog)
@@ -1577,7 +1577,7 @@
 			   (loop for i in (cddr x) do (wf i))
 			   saved-value)))
 
-(def-clm-fun 'prog2  #'(lambda (var x) 
+(def-clm-fun 'prog2  #'(lambda (var x)
 			 (declare (ignore var))
 			 (push `(<comment> prog2) new-prog)
 			 (if (not new-prog) (push :prog2 new-prog))
@@ -1590,7 +1590,7 @@
 			   (loop for i in (cdddr x) do (wf i))
 			   saved-value)))
 
-(def-clm-fun 'go     #'(lambda (var x) 
+(def-clm-fun 'go     #'(lambda (var x)
 			 (declare (ignore var))
 			 (push `(<comment> go ,(cadr x)) new-prog)
 			 (let ((lab (if (and loop-label-stack
@@ -1692,19 +1692,19 @@
 ;;; macrolets within the lambda form that loop expands into, but these
 ;;; macrolets appear to me to be very simple.
 
-(defun submac (name body code) 
-  (if (listp code) 
-      (if (eq (first code) name) 
-	  body 
-	(loop for x in code collect (submac name body x))) 
+(defun submac (name body code)
+  (if (listp code)
+      (if (eq (first code) name)
+	  body
+	(loop for x in code collect (submac name body x)))
     code))
 
-(def-clm-fun 'macrolet #'(lambda (var x) 
-			   (declare (ignore var)) 
+(def-clm-fun 'macrolet #'(lambda (var x)
+			   (declare (ignore var))
 			   (submac (first (second x)) (third (second x)) (third x))))
 
 ;;; I suppose we could make a list of macrolet macros with args, then form
-;;; the LETs that are equivalent thereto, then do the substitution with 
+;;; the LETs that are equivalent thereto, then do the substitution with
 ;;; args in submac -- surely someone has already written such a function.
 
 ;;; ACL might use (it did in 4.3) multiple-value-setq during macroexpansion of psetf, so...
@@ -1733,7 +1733,7 @@
     (setf (aref arr loc) (logand anum #xffffff))
     (setf (aref arr (+ loc 1)) (logior (ash anum -24) (ash sign 25)))))
 
-(defconstant +aref-type+ 0) 
+(defconstant +aref-type+ 0)
 (defconstant +aref-iblock+ 1)
 (defconstant +aref-rblock+ 2)
 (defconstant +aref-size+ 3)
@@ -1783,7 +1783,7 @@
 	  (setf n (format nil "_clm_empty_~D" empty-name-ctr))
 	  (incf empty-name-ctr))
 	(if (null ok-chars)
-	    (setf ok-chars '(#\A #\a #\B #\b #\C #\c #\D #\d #\E #\e #\F #\f 
+	    (setf ok-chars '(#\A #\a #\B #\b #\C #\c #\D #\d #\E #\e #\F #\f
 			     #\G #\g #\H #\h #\I #\i #\J #\j #\K #\k #\L #\l
 			     #\M #\m #\N #\n #\O #\o #\P #\p #\Q #\q #\R #\r
 			     #\S #\s #\T #\t #\U #\u #\V #\v #\W #\w #\X #\x
@@ -1806,11 +1806,11 @@
 
 (defun lc (n) (lisp->c-name (symbol-name n)))
 (defun lc2 (n) (lisp->c-name (symbol-name (second n))))
-  
+
 (defun lc-num-ref (n &optional type)
   (if n
-      (if (numberp n) 
-	  (if (integerp n) 
+      (if (numberp n)
+	  (if (integerp n)
 	      n
 	    (let ((*read-default-float-format* 'single-float)) ; I think this is the default
 
@@ -1903,7 +1903,7 @@
 
 		    (if (varinfo-gen-type lst)
 			(format nil "~A = NULL;~%" c-name)
-			    
+
 		      (format nil "clm_int[~A + ~D] = ~A;~%  clm_int[~A + ~D + 1] ~A ~A;"
 			      c-name (* 2 depth) +no-type+ c-name (* 2 depth) op (if (eq val t) 1 (if (eq val nil) 0 val))))
 
@@ -1928,7 +1928,7 @@
 	  (if (or (pointer-var lst)
 		  (varinfo-gen-type lst))
 	      (format nil "~A = ~A;" c-name lcl)
-		  
+
 	  (if (member (varinfo-type lst) '(:clm-integer :clm-boolean :clm-real))
 	      (format nil "~A ~A ~A;"
 		      c-name op
@@ -1937,7 +1937,7 @@
 				   (pointer-var val-lst)))
 			  (format nil "(bool)~A" (lc-bool val))
 			(lc-num-ref val)))
-		      
+
 	    (if (member (varinfo-type lst) '(:integer :real :bignum :boolean))
 		(if (and (varinfo-shadowed lst)
 			 (> depth 0))
@@ -1955,19 +1955,19 @@
 				       (pointer-var val-lst)))
 			      (format nil "(bool)~A" (lc-bool val))
 			    (lc-num-ref val))))
-	      
+
 	      (if (member (varinfo-type val-lst) '(:integer :clm-integer))
 		  (format nil "clm_int[~A + ~D] = ~A;~%  clm_int[~A + ~D + 1] ~A ~A;"
 			  c-name (* 2 depth) +integer+ c-name (* 2 depth) op (lc-num-ref val))
-		
+
 		(if (member (varinfo-type val-lst) '(:boolean :clm-boolean))
 		    (format nil "clm_int[~A + ~D] = ~D;~%  clm_int[~A + ~D + 1] ~A ~A;"
 			  c-name (* 2 depth) +no-type+ c-name (* 2 depth) op (lc-num-ref val))
-		  
+
 		  (if (member (varinfo-type val-lst) '(:real :clm-real))
 		      (format nil "clm_int[~A + ~D] = ~A;~%  clm_double[~A_r+~D] ~A ~A;"
 			      c-name (* 2 depth) +real+ c-name depth op (lc-num-ref val))
-		    
+
 		    ;; general case, copy entire val into var
 		    ;; float here? (i.e. first copy int to real in val?
 		    (progn
@@ -1991,7 +1991,7 @@
 
 (defun lc-type (n)
   (if n
-      (if (numberp n) 
+      (if (numberp n)
 	  (if (integerp n)
 	      :integer
 	    :real)
@@ -2060,7 +2060,7 @@
 		    name (clean-arg arg)))))
     (format *c-file* "  ~A~80,1T/* (~A ~A) */~%"
 	    (lc-set +setf+ res (funcall consf arg) :pboolean) name (clean-arg arg))))
-    
+
 (defmacro <integer?> (res arg)
   (lc-check-type res arg +integer+ "integer?"
 		 #'(lambda (arg) (if (and arg (integerp arg)) "true" "false"))
@@ -2319,21 +2319,21 @@
 	    (clean-arg arg)))
   nil)
 
-(defmacro <sin> (result arg) 
+(defmacro <sin> (result arg)
   (format *c-file* "  ~A~80,1T/* (sin ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "sin((double)(~A))" (lc-num-ref arg)))
 	  (clean-arg arg))
   nil)
 
-(defmacro <cos> (result arg) 
+(defmacro <cos> (result arg)
   (format *c-file* "  ~A~80,1T/* (cos ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "cos((double)(~A))" (lc-num-ref arg)))
 	  (clean-arg arg))
   nil)
 
-(defmacro <tan> (result arg) 
+(defmacro <tan> (result arg)
   (format *c-file* "  ~A~80,1T/* (tan ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "tan((double)(~A))" (lc-num-ref arg)))
@@ -2354,7 +2354,7 @@
 	  (clean-arg arg))
   nil)
 
-(defmacro <atan> (result arg &optional arg2)  
+(defmacro <atan> (result arg &optional arg2)
   (if arg2
       (format *c-file* "  ~A~80,1T/* (atan ~A ~A) */~%"
 	      (lc-set +setf+ result
@@ -2387,21 +2387,21 @@
 	  (clean-arg arg))
   nil)
 
-(defmacro <asinh> (result arg) 
+(defmacro <asinh> (result arg)
   (format *c-file* "  ~A~80,1T/* (asinh ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "asinh((double)(~A))" (lc-num-ref arg)))
 	  (clean-arg arg))
   nil)
 
-(defmacro <acosh> (result arg) 
+(defmacro <acosh> (result arg)
   (format *c-file* "  ~A~80,1T/* (acosh ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "acosh((double)(~A))" (lc-num-ref arg)))
 	  (clean-arg arg))
   nil)
 
-(defmacro <atanh> (result arg) 
+(defmacro <atanh> (result arg)
   (format *c-file* "  ~A~80,1T/* (atanh ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "atanh((double)(~A))" (lc-num-ref arg)))
@@ -2415,70 +2415,70 @@
 	  (clean-arg argy) (clean-arg argx))
   nil)
 
-(defmacro <erf> (result arg) 
+(defmacro <erf> (result arg)
   (format *c-file* "  ~A~80,1T/* (erf ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "erf((double)(~A))" (lc-num-ref arg)))
 	  (clean-arg arg))
   nil)
 
-(defmacro <erfc> (result arg) 
+(defmacro <erfc> (result arg)
   (format *c-file* "  ~A~80,1T/* (erfc ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "erfc((double)(~A))" (lc-num-ref arg)))
 	  (clean-arg arg))
   nil)
 
-(defmacro <lgamma> (result arg) 
+(defmacro <lgamma> (result arg)
   (format *c-file* "  ~A~80,1T/* (lgamma ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "lgamma((double)(~A))" (lc-num-ref arg)))
 	  (clean-arg arg))
   nil)
 
-(defmacro <bes-j0> (result arg) 
+(defmacro <bes-j0> (result arg)
   (format *c-file* "  ~A~80,1T/* (bes-j0 ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "j0((double)(~A))" (lc-num-ref arg)))
 	  (clean-arg arg))
   nil)
 
-(defmacro <bes-j1> (result arg) 
+(defmacro <bes-j1> (result arg)
   (format *c-file* "  ~A~80,1T/* (bes-j1 ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "j1((double)(~A))" (lc-num-ref arg)))
 	  (clean-arg arg))
   nil)
 
-(defmacro <bes-jn> (result arg arg2)  
+(defmacro <bes-jn> (result arg arg2)
   (format *c-file* "  ~A~80,1T/* (bes-jn ~A ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "jn((double)(~A),(double)(~A))" (lc-num-ref arg) (lc-num-ref arg2)))
 	  (clean-arg arg) (clean-arg arg2))
   nil)
 
-(defmacro <bes-y0> (result arg) 
+(defmacro <bes-y0> (result arg)
   (format *c-file* "  ~A~80,1T/* (bes-y0 ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "y0((double)(~A))" (lc-num-ref arg)))
 	  (clean-arg arg))
   nil)
 
-(defmacro <bes-y1> (result arg) 
+(defmacro <bes-y1> (result arg)
   (format *c-file* "  ~A~80,1T/* (bes-y1 ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "y1((double)(~A))" (lc-num-ref arg)))
 	  (clean-arg arg))
   nil)
 
-(defmacro <bes-yn> (result arg arg2)  
+(defmacro <bes-yn> (result arg arg2)
   (format *c-file* "  ~A~80,1T/* (bes-yn ~A ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "yn((double)(~A),(double)(~A))" (lc-num-ref arg) (lc-num-ref arg2)))
 	  (clean-arg arg) (clean-arg arg2))
   nil)
 
-(defmacro <bes-i0> (result arg) 
+(defmacro <bes-i0> (result arg)
   (format *c-file* "  ~A~80,1T/* (bes-i0 ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "mus_bessi0((double)(~A))" (lc-num-ref arg)))
@@ -2497,8 +2497,8 @@
 			   :integer))
 	       #'(lambda (res var)
 		   (declare (ignore res var))
-		   (lc-set +setf+ result (format nil "((~A > 0.0) ? 1.0 : (~A == 0.0) ? 0.0 : -1.0)" 
-						 (lc-num-ref arg :real) 
+		   (lc-set +setf+ result (format nil "((~A > 0.0) ? 1.0 : (~A == 0.0) ? 0.0 : -1.0)"
+						 (lc-num-ref arg :real)
 						 (lc-num-ref arg :real))
 			   :real))
 	       arg)
@@ -2517,7 +2517,7 @@
 	       arg)
   nil)
 
-(defmacro <centered-random> (result arg) 
+(defmacro <centered-random> (result arg)
   (format *c-file* "  ~A = mus_random((double)(~A));~80,1T/* (centered-random ~A) */~%"
 	  (lc2 result)
 	  (lc-num-ref arg)
@@ -2531,7 +2531,7 @@
 	  (clean-arg base) (clean-arg arg))
   nil)
 
-(defmacro <exp> (result arg) 
+(defmacro <exp> (result arg)
   ;; (exp a) = e^a
   (format *c-file* "  ~A~80,1T/* (exp ~A) */~%"
 	  (lc-set +setf+ result
@@ -2541,19 +2541,19 @@
   nil)
 
 #|
-(defmacro <float> (result arg)  
+(defmacro <float> (result arg)
   (format *c-file* "  ~A~80,1T/* (float ~A) */~%"
 	  (lc-set +setf+ result (format nil "(double)(~A)"(lc-num-ref arg)))
 	  (clean-arg arg))
   nil)
 
-(defmacro <double-float> (result arg)  
+(defmacro <double-float> (result arg)
   (format *c-file* "  ~A~80,1T/* (double ~A) */~%"
 	  (lc-set +setf+ result (format nil "(double)(~A)"(lc-num-ref arg)))
 	  (clean-arg arg))
   nil)
 
-(defmacro <double> (result arg)  
+(defmacro <double> (result arg)
   (format *c-file* "  ~A~80,1T/* (double ~A) */~%"
 	  (lc-set +setf+ result (format nil "(double)(~A)"(lc-num-ref arg)))
 	  (clean-arg arg))
@@ -2572,7 +2572,7 @@
 	    (clean-arg arg)))
   nil)
 
-(defmacro <ceiling> (result arg &optional div-1) 
+(defmacro <ceiling> (result arg &optional div-1)
   (if div-1
       (format *c-file* "  ~A~80,1T/* (ceiling ~A ~A) */~%"
 	      (lc-set +setf+ result
@@ -2639,14 +2639,14 @@
 	       arg)
   nil)
 
-(defmacro <sqrt> (result arg)  
+(defmacro <sqrt> (result arg)
   (format *c-file* "  ~A~80,1T/* (sqrt ~A) */~%"
 	  (lc-set +setf+ result
 		  (format nil "sqrt((double)(~A))" (lc-num-ref arg)))
 	  (clean-arg arg))
   nil)
 
-(defmacro <ash> (result arg1 arg2) 
+(defmacro <ash> (result arg1 arg2)
   ;; in C, we need a different operator for left and right shifts, so this has to be dependent on the sign of arg2!
   (let ((l1 (lc-num-ref arg1 :integer))
 	(l2 (lc-num-ref arg2 :integer)))
@@ -2688,7 +2688,7 @@
 		 (list arg1 arg2))
   nil)
 
-(defmacro <rem> (result arg1 arg2) 
+(defmacro <rem> (result arg1 arg2)
   (format *c-file* "  ~A~80,1T/* (rem ~A ~A) */~%"
 	  (lc-set +setf+ result
 		   (format nil "~A~A((double)~A,(double)~A)"
@@ -2736,10 +2736,10 @@
 			  (push #\d ns)
 
 			(if (member arg '(:bignum :integer :clm-integer))
-			    (progn 
+			    (progn
 			      ;; (push #\l ns) (push #\l ns) (push #\d ns) -- mus_long_t is now int64_t, not long long int, 31-Aug-17
-			      (push #\" ns) (push #\Space ns) 
-			      (push #\P ns) (push #\R ns) (push #\I ns) (push #\d ns) (push #\6 ns) (push #\4 ns) 
+			      (push #\" ns) (push #\Space ns)
+			      (push #\P ns) (push #\R ns) (push #\I ns) (push #\d ns) (push #\6 ns) (push #\4 ns)
 			      (push #\" ns) (push #\Space ns))
 
 			  (if (eq arg :string)
@@ -2747,11 +2747,11 @@
 			    (if (member arg '(:float-array :double-array :integer-array))
 				(push #\x ns)
 			      (push #\f ns))))))
-		  (if (member nc '(#\D #\d)) 
-		      (progn 
+		  (if (member nc '(#\D #\d))
+		      (progn
 			;; (push #\l ns) (push #\l ns) (push #\d ns) -- see above
-			(push #\" ns) (push #\Space ns) 
-			(push #\P ns) (push #\R ns) (push #\I ns) (push #\d ns) (push #\6 ns) (push #\4 ns) 
+			(push #\" ns) (push #\Space ns)
+			(push #\P ns) (push #\R ns) (push #\I ns) (push #\d ns) (push #\6 ns) (push #\4 ns)
 			(push #\" ns) (push #\Space ns)
 			(pop argl) (push :integer argtypes))
 
@@ -2771,7 +2771,7 @@
       (format nil "\"~A~A\"~A~{~^~%        ~A~A~^,~}"
 	      newstr
 	      (if nl "\\n" "")
-	      (if args "," "") 
+	      (if args "," "")
 	      (loop for arg in args and typ in argtypes
 		collect (if (eq typ :integer) "(mus_long_t)"
 			  (if (eq typ :real) "(double)"
@@ -2799,11 +2799,11 @@
 		  (lc-num-ref fstr1 :integer))))))
 
 
-(defmacro <warn> (&optional fstr &rest args) 
+(defmacro <warn> (&optional fstr &rest args)
   (format *c-file* "  ~A" (apply #'lisp-to-C-print nil "warning:" fstr args))
   nil)
 
-(defmacro <error> (&optional fstr &rest args) 
+(defmacro <error> (&optional fstr &rest args)
   (format *c-file* "  {~A" (apply #'lisp-to-C-print nil "error:" fstr args))
   (format *c-file* "   clm_int[~D] = -1;~%" +clm-interrupted+) ; normally SIGINT if interrupted else 0
   (format *c-file* "   goto RUN_ALL_DONE;}~%")
@@ -2831,7 +2831,7 @@
   (if nl (format *c-file* "  mus_error(0, \"\\n\");~%"))
   nil)
 
-(defmacro <princ> (fstr) 
+(defmacro <princ> (fstr)
   `(<print> ,fstr nil))
 
 (defmacro <clm-print> (&optional fstr &rest args)
@@ -2928,10 +2928,10 @@
 	  (lc arg))
   nil)
 
-(defmacro <case> (index name-list label-list) 
+(defmacro <case> (index name-list label-list)
   (format *c-file* "  switch ((int)~A){~%" (lc-num-ref index))
   (loop for name in name-list and label in label-list do
-	(format *c-file* "    ~A: goto ~A; break;~%" 
+	(format *c-file* "    ~A: goto ~A; break;~%"
 		(if (not (member name '(t otherwise))) (format nil "case ~A" name) "default") (lc label)))
   (format *c-file* "    }~%")
   nil)
@@ -3052,7 +3052,7 @@
 		      :pboolean)
 	      compare (mapcar #'clean-arg args))))
   nil)
-  
+
 
 
 ;;; ---- AREF ----
@@ -3322,7 +3322,7 @@
 	  (lc-set +setf+ result (array-dims arr))
 	  (clean-arg arr)))
 
-(defmacro <array-total-size> (result arr) 
+(defmacro <array-total-size> (result arr)
   (format *c-file* "  ~A/* (array-total-size ~A) */~%"
 	  (lc-set +setf+ result (array-size arr))
 	  (clean-arg arr)))
@@ -3348,7 +3348,7 @@
   (format *c-file* "  ~A/* (array-dimension ~A ~A) */~%"
 	  (lc-set +setf+ result (format nil "clm_int[~A + CLM_AREF_DIMS + 1 + ~A]" (array-header arr) (lc-num-ref axis :integer)))
 	  (clean-arg arr) (clean-arg axis)))
-  
+
 (defun index->cell (arr indices)
   (let* ((indlen (length indices)))
 
@@ -3385,18 +3385,18 @@
 (defmacro <float-aref> (result arr index)
   (format *c-file* "  ~A = ~A[(int)(~A)];~%" (lc2 result) (lc2 arr) (lc-num-ref index :integer))
   nil)
-	  
+
 (defmacro <setf-float-aref> (type arr index val)
   (format *c-file* "  ~A[(int)(~A)] ~A ~A;~%"
 	  (lc2 arr) (lc-num-ref index :integer)
 	  (setf-type->c-op type)
 	  (lc-num-ref val :real))
   nil)
-	  
+
 (defmacro <double-aref> (result arr &rest indices)
   (format *c-file* "  ~A = ~A[(int)(~A)];~%" (lc2 result) (lc2 arr) (index->cell arr indices))
   nil)
-	  
+
 (defmacro <integer-aref> (result arr &rest indices)
   (format *c-file* "  ~A = ~A[(int)(~A)];~%" (lc2 result) (lc2 arr) (index->cell arr indices))
   nil)
@@ -3405,24 +3405,24 @@
   (let* ((arr (first args))
 	 (val (first (last args)))
 	 (indices (butlast (cdr args))))
-    (format *c-file* "  ~A[(int)(~A)] ~A ~A;~%" 
+    (format *c-file* "  ~A[(int)(~A)] ~A ~A;~%"
 	    (lc2 arr) (index->cell arr indices)
 	    (setf-type->c-op type)
 	    (lc-num-ref val :real))
     nil))
-	  
+
 (defmacro <setf-integer-aref> (type &rest args) ;last arg is new val
   (let* ((arr (first args))
 	 (val (first (last args)))
 	 (indices (butlast (cdr args))))
-    (format *c-file* "  ~A[(int)(~A)] ~A ~A;~%" 
+    (format *c-file* "  ~A[(int)(~A)] ~A ~A;~%"
 	    (lc2 arr) (index->cell arr indices)
 	    (setf-type->c-op type)
 	    (lc-num-ref val :integer))
     nil))
 
 (defmacro <aref> (result arr &rest indices)
-  (if (null indices) (warn "(aref ~A~{ ~A~}))?" arr indices))  
+  (if (null indices) (warn "(aref ~A~{ ~A~}))?" arr indices))
   (let* ((lresname (second result))
 	 (resdepth (* 2 (third result)))
 	 (reslst (gethash lresname vars))
@@ -3743,13 +3743,13 @@
     (setf (aref datai i) +string+)
     (setf (aref datai (+ i 1)) len)
     (progn
-      #-little-endian 
+      #-little-endian
       (loop for k from 0 below len by 4 and j from (+ i 2) do
 	(setf (aref datai j) (+ (if (> len (+ k 3)) (char-code (char gen (+ k 3))) 0)
 				(if (> len (+ k 2)) (ash (char-code (char gen (+ k 2))) 8) 0)
 				(if (> len (+ k 1)) (ash (char-code (char gen (+ k 1))) 16) 0)
 				(if (> len k) (ash (char-code (char gen k)) 24) 0))))
-      #+little-endian 
+      #+little-endian
       (loop for k from 0 below len by 4 and j from (+ i 2) do
 	(setf (aref datai j) (+ (if (> len (+ k 3)) (ash (char-code (char gen (+ k 3))) 24) 0)
 				(if (> len (+ k 2)) (ash (char-code (char gen (+ k 2))) 16) 0)
@@ -3828,7 +3828,7 @@
   nil)
 
 (defmacro <sound-comment> (res file)
-  (format *c-file* "  if (~A) free(~A);~%" (lc2 res) (lc2 res))    
+  (format *c-file* "  if (~A) free(~A);~%" (lc2 res) (lc2 res))
   (format *c-file* "  ~A = mus_sound_comment(~A);~%" (lc2 res) (lc2 file))
   nil)
 
@@ -3840,13 +3840,13 @@
 (defun cradr (iloc offset)
   (format nil "clm_double[clm_int[clm_int[~A + 1] + 1] + ~A]" iloc offset))
 
-  
+
 (defmacro <frample2file> (stream pass inf)
   (format *c-file* "  mus_frample_to_file(~A, ~A, ~A);~%" (lc2 stream) (lc-num-ref pass :integer) (lc2 inf))
   nil)
 
-(defmacro <frample2frample> (mx1 fr2 outf) 
-  (format *c-file* "  mus_frample_to_frample(~A, CLM_ARR_SIZE(CLM_VAR_ADDR(~A)), ~A, CLM_ARR_SIZE(CLM_VAR_ADDR(~A)), ~A, CLM_ARR_SIZE(CLM_VAR_ADDR(~A)));~%" 
+(defmacro <frample2frample> (mx1 fr2 outf)
+  (format *c-file* "  mus_frample_to_frample(~A, CLM_ARR_SIZE(CLM_VAR_ADDR(~A)), ~A, CLM_ARR_SIZE(CLM_VAR_ADDR(~A)), ~A, CLM_ARR_SIZE(CLM_VAR_ADDR(~A)));~%"
 	  (lc2 mx1) (varinfo-iloc (gethash (second mx1) vars))
 	  (lc2 fr2)  (varinfo-iloc (gethash (second fr2) vars))
 	  (lc2 outf) (varinfo-iloc (gethash (second outf) vars)))
@@ -4396,7 +4396,7 @@
                          mus_make_ssb_am(clm_double[CLM_RLOC(~A)],~%~A      ~
                           clm_int[CLM_ILOC(~A) + 2]));~%"
 	  indent iloc indent result indent iloc indent iloc))
-  
+
 (defmacro <ssb-am?> (res arg)
   (format *c-file* "  ~A = mus_is_ssb_am(~A);~%" (lc2 res) (lc2 arg))
   nil)
@@ -4441,7 +4441,7 @@
       (list (+ 3 6)
 	    (+ 2 (length (noi-distribution gen))))
     (list 3 2)))
-  
+
 (defmethod gen-size ((gen rand-interp))
   (if (noi-distribution gen)
       (list (+ 3 6)
@@ -4457,7 +4457,7 @@
     (if (> (aref datai (+ i 2)) 0)
 	(setf (noi-distribution s) (unload-real-array (+ i 3) datai datar)))
     s))
-  
+
 (defmethod gen-unload((s rand) i r datai datar)
   (noi-unload s i r datai datar))
 
@@ -4559,7 +4559,7 @@
   (let* ((i (aref datai (+ iadr 1)))
 	 (r (aref datai (+ i 1))))
     (setf (tbl-wave gen) (unload-real-array (+ i 4) datai datar))
-    (setf (mus-frequency gen) (aref datar r)) 
+    (setf (mus-frequency gen) (aref datar r))
     (setf (mus-phase gen) (aref datar (+ r 1)))
     gen))
 
@@ -4581,7 +4581,7 @@
 
 (defmacro <array-interp> (result s index &optional size)
   (if (integerp index)
-      (format *c-file* "  ~A = ~A;~%" 
+      (format *c-file* "  ~A = ~A;~%"
 	      (lc2 result) (real-array-ref s index))
     (format *c-file* "  ~A = mus_array_interp(~A, ~A, ~A);~%"
 	    (lc2 result) (lc-arr-ref s) (lc-num-ref index) (if size (lc-num-ref size :integer) (array-size s))))
@@ -4669,7 +4669,7 @@
 	    (lc2 s) (clean-arg s) (lc2 s)))
   (format *c-file* "  ~A = mus_one_pole(~A, ~A);~80,1T/* (one-pole ~A ~A) */~%"
 	  (lc2 result) (lc2 s) (lc-num-ref arg)
-	  (clean-arg s) (clean-arg arg))	  
+	  (clean-arg s) (clean-arg arg))
   nil)
 
 (defmacro <one-pole?> (res arg)
@@ -4722,7 +4722,7 @@
 	    (lc2 s) (clean-arg s) (lc2 s)))
   (format *c-file* "  ~A = mus_one_zero(~A, ~A);~80,1T/* (one-zero ~A ~A) */~%"
 	  (lc2 result) (lc2 s) (lc-num-ref arg)
-	  (clean-arg s) (clean-arg arg))	  
+	  (clean-arg s) (clean-arg arg))
   nil)
 
 (defmacro <one-zero?> (res arg)
@@ -4778,7 +4778,7 @@
 	    (lc2 s) (clean-arg s) (lc2 s)))
   (format *c-file* "  ~A = mus_two_pole(~A, ~A);~80,1T/* (two-pole ~A ~A) */~%"
 	  (lc2 result) (lc2 s) (lc-num-ref arg)
-	  (clean-arg s) (clean-arg arg))	  
+	  (clean-arg s) (clean-arg arg))
   nil)
 
 (defmacro <two-pole?> (res arg)
@@ -5128,7 +5128,7 @@
 
 ;;; ---- ASYMMETRIC-FM ----
 ;;;
-;;; 0:type 1:datar 
+;;; 0:type 1:datar
 ;;; 0:freq 1:phase 2:ratio 3:r
 
 (defmethod gen-load ((w asymmetric-fm) i r datai datar)
@@ -5163,7 +5163,7 @@
 	  (lc2 result) (lc2 s) (lc-num-ref index)
 	  (if fm (lc-num-ref fm) "0.0")
 	  (clean-arg s) (clean-arg index)
-	  (if fm (format nil " ~A" (clean-arg fm)) ""))	  
+	  (if fm (format nil " ~A" (clean-arg fm)) ""))
   nil)
 
 (defmethod gen-reflect ((gen asymmetric-fm) key val)
@@ -5317,7 +5317,7 @@
 
 (defmacro <file2frample> (i-stream samp outf)
   (format *c-file* "  mus_file_to_frample(~A, ~A, ~A);~%"
-	  (lc2 i-stream) (lc-num-ref samp :integer) (lc2 outf))  
+	  (lc2 i-stream) (lc-num-ref samp :integer) (lc2 outf))
   nil)
 
 (defmethod gen-reflect ((gen file->sample) key val)
@@ -5564,7 +5564,7 @@
     ;; here are 7 empty var (2wd) locations (pointers to locations set below, dependent on various sizes)
     (setf ploc iloc) ; base of pointer table
     (incf iloc 14)
-    
+
     ;; doppler delay
     (gen-load doppler-delay iloc rloc datai datar)
     (setf (aref datai (+ ploc 0)) +delay+)
@@ -5688,7 +5688,7 @@
 
   (format stream "~Ailoc = CLM_ILOC(~A) + 18;~%~A" indent iloc indent)
   (format stream "out_map = (int *)(clm_int + CLM_ARR_IBLOCK(CLM_ILOC(iloc)));~%~A" indent)
-  
+
   (format stream "~%~A~A = clm_add_gen_to_genbag(all_gens, ~%~A    ~
                          mus_make_move_sound(~%~A      ~
                            clm_int[CLM_ILOC(~A) + 2],   /* start */~%~A      ~
@@ -5854,7 +5854,7 @@
     (setf (flt-x s) (unload-real-array (+ i 3) datai datar))
     (setf (flt-state s) (unload-real-array (+ i 3 6) datai datar))
     s))
-  
+
 (defmacro <fir-filter> (result s inval)
   (when (> *safety* 0)
     (format *c-file* "  if (!(mus_is_fir_filter(~A))) {mus_error(0, \"fir-filter ~(~A~) is %s\", mus_describe(~A)); goto RUN_ALL_DONE;}~%"
@@ -5975,7 +5975,7 @@
   (format *c-file* "  ~A = mus_delay_tick(~A, ~A);~%" (lc2 result) (lc2 s) (lc-num-ref inval))
   nil)
 
-(defmacro <tap> (result s &optional pm) 
+(defmacro <tap> (result s &optional pm)
   (when (> *safety* 0)
     (format *c-file* "  if (!(mus_is_delay(~A))) {mus_error(0, \"delay ~(~A~) is %s\", mus_describe(~A)); goto RUN_ALL_DONE;}~%"
 	    (lc2 s) (clean-arg s) (lc2 s)))
@@ -6028,7 +6028,7 @@
 	 (r (aref datai (+ i 1))))
     (setf (dly-xscl d) (aref datar r))
     (setf (dly-line d) (unload-real-array (+ i 5) datai datar))
-    (setf (dly-size d) (length (dly-line d)))    
+    (setf (dly-size d) (length (dly-line d)))
     d))
 
 (defmacro <comb> (result s inval &optional pm)
@@ -6094,7 +6094,7 @@
 	 (r (aref datai (+ i 1))))
     (setf (dly-xscl d) (aref datar r))
     (setf (dly-line d) (unload-real-array (+ i 5) datai datar))
-    (setf (dly-size d) (length (dly-line d)))    
+    (setf (dly-size d) (length (dly-line d)))
     d))
 
 (defmacro <filtered-comb> (result s inval &optional pm)
@@ -6284,7 +6284,7 @@
   (setf (aref datai (+ i 1)) r)
   (setf (aref datai (+ i 2)) (floor (dly-size d)))
   (load-real-array (dly-line d) (+ i 3) r datai datar (dly-zsize d)))
-  
+
 (defmethod gen-size ((d moving-average)) (list (+ 3 6) (dly-size d)))
 
 (defmethod gen-unload ((d moving-average) iadr radr datai datar)
@@ -6424,17 +6424,17 @@
 
 (defmacro <start-function> (ctr type)
   (if (= type +as-needed-input+)
-      (format *c-file* "static mus_float_t as_needed_~D(void *gen, int direction)~%" ctr)					       
+      (format *c-file* "static mus_float_t as_needed_~D(void *gen, int direction)~%" ctr)
     (if (= type +as-needed-edit+)
-	(format *c-file* "static int as_needed_~D(void *closure)~%" ctr)				       
+	(format *c-file* "static int as_needed_~D(void *closure)~%" ctr)
       (if (= type +as-needed-analyze+)
 	  (format *c-file* "static bool as_needed_~D(void *closure, mus_float_t (*input)(void *arg1, int direction))~%" ctr)
-	(format *c-file* "static mus_float_t as_needed_~D(void *closure)~%" ctr))))				       
+	(format *c-file* "static mus_float_t as_needed_~D(void *closure)~%" ctr))))
   (format *c-file* "{~%")
   nil)
 
 (defmacro <end-function> (var ctr)
-  (declare (ignore ctr))  
+  (declare (ignore ctr))
   (format *c-file* "  return(~A);~%" (if (numberp var) var (lc var)))
   (format *c-file* "}~%")
   nil)
@@ -6475,7 +6475,7 @@
   nil)
 
 (defmacro <convolve> (result s &optional func)
-  (declare (ignore func))  
+  (declare (ignore func))
   (when (> *safety* 0)
     (format *c-file* "  if (!(mus_is_convolve(~A))) {mus_error(0, \"convolve ~(~A~) is %s\", mus_describe(~A)); goto RUN_ALL_DONE;}~%"
 	    (lc2 s) (clean-arg s) (lc2 s)))
@@ -6641,7 +6641,7 @@
 
 ;;; ---- GRANULATE ----
 
-;;; I think it would work to pass the edit and input funcs at run-time via mus_granulate_with_editor 
+;;; I think it would work to pass the edit and input funcs at run-time via mus_granulate_with_editor
 
 (defmethod gen-load ((s granulate) i r datai datar)
   (setf (aref datai i) +granulate+)
@@ -6672,7 +6672,7 @@
   nil)
 
 (defmacro <granulate> (result s &optional input-func edit-func)
-  (declare (ignore input-func edit-func))    
+  (declare (ignore input-func edit-func))
   (when (> *safety* 0)
     (format *c-file* "  if (!(mus_is_granulate(~A))) {mus_error(0, \"granulate ~(~A~) is %s\", mus_describe(~A)); goto RUN_ALL_DONE;}~%"
 	    (lc2 s) (clean-arg s) (lc2 s)))
@@ -6778,7 +6778,7 @@
   (setf (aref datar r) (double (pv-pitch s)))
   (setf (aref datai (+ i 2)) (or (pv-N s) 0)) ;fftsize
   (setf (aref datai (+ i 3)) (pv-interp s))
-  (setf (aref datai (+ i 4)) (or (pv-overlap s) 0))  
+  (setf (aref datai (+ i 4)) (or (pv-overlap s) 0))
   (setf (aref datai (+ i 5)) (if (mus-input? (pv-input s)) 1 0))
   (setf (aref datai (+ i 6)) (if (mus-input? (pv-input s)) (mus-channel (pv-input s)) 0))
   (to-bignum (if (mus-input? (pv-input s)) (mus-location (pv-input s)) 0) datai (+ i 7))
@@ -6830,7 +6830,7 @@
 		      (if (and (cdr ctr)
 			       (eq (car (cadr ctr)) :synthesize))
 			  (cadr (cadr ctr))))))
-	  
+
   (if (not input-ctr)
       (progn
 	(format stream "~Aif (CLM_PHASE_VOCODER_P(~A))~%~A  ~
@@ -6946,8 +6946,8 @@
 	      #+(or clozure excl) (compile load eval)
      (progn
        (defstruct (,name (:type vector) :named)
-	 ,@(loop for fld in fields collect 
-	     (if (listp fld) 
+	 ,@(loop for fld in fields collect
+	     (if (listp fld)
 		 (if (not (symbolp (second fld)))
 		     fld
 		   (if (not (member (second fld) (list 'integer 'float 'double-float 'real 'short-float 'single-float 'rational 'number 'bignum 'fixnum)))
@@ -6969,8 +6969,8 @@
 	      #+(or clozure excl) (compile load eval)
      (progn
        (defstruct (,name (:type (vector double-float)))
-	 ,@(loop for fld in fields collect 
-	     (if (listp fld) 
+	 ,@(loop for fld in fields collect
+	     (if (listp fld)
 		 (if (not (symbolp (second fld)))
 		     fld
 		   (if (not (member (second fld) (list 'float 'double-float 'real 'short-float 'single-float 'number)))
@@ -7013,20 +7013,20 @@
 		    (when val (setf ,v val))))))))))
 
 
-;;; This is the story, a sad tale but true 
+;;; This is the story, a sad tale but true
 ;;; Of a programmer who had far too little to do.
-;;; One day as he sat in his hut swilling stew, 
+;;; One day as he sat in his hut swilling stew,
 ;;; He cried "CLM takes forever, it's stuck in a slough!,
 ;;; Its C code is slow, too slow by a few.
 ;;; Why, with just a small effort, say one line or two,
 ;;; It could outpace a no-op, you could scarcely say 'boo'"!
 ;;; So he sat in his kitchen and worked like a dog.
-;;; He typed and he typed 'til his mind was a fog. 
-;;; Now 6000 lines later, what wonders we see!  
+;;; He typed and he typed 'til his mind was a fog.
+;;; Now 6000 lines later, what wonders we see!
 ;;; CLM is much faster, and faster still it will be!
-;;; In fact, for most cases, C beats the DSP!  
-;;; But bummed is our coder; he grumbles at night.  
-;;; That DSP code took him a year to write.  
+;;; In fact, for most cases, C beats the DSP!
+;;; But bummed is our coder; he grumbles at night.
+;;; That DSP code took him a year to write.
 ;;; He was paid many dollars, and spent them with glee,
 ;;; But his employer might mutter, this result were he to see.
 
@@ -7038,7 +7038,7 @@
   (let ((var (gethash (second gen) vars)))
     (and var
 	 (varinfo-gen-type var))))
-    
+
 (defmacro <mus-frequency> (res gen)
   (if (generator? gen)
       (format *c-file* "  ~A = mus_frequency(~A);~%" (lc2 res) (lc2 gen))
@@ -7219,7 +7219,7 @@
 	(format *c-file* "  mus_set_xcoeff(~A, ~A, mus_xcoeff(~A, ~A) ~A ~A);~%"
 		(lc2 gen) (lc-num-ref index :integer)
 		(lc2 gen) (lc-num-ref index :integer)
-		(if (= type +incf+) "+" "-") 
+		(if (= type +incf+) "+" "-")
 		(lc-num-ref val :real))))
   nil)
 
@@ -7231,7 +7231,7 @@
 	(format *c-file* "  mus_set_ycoeff(~A, ~A, mus_ycoeff(~A, ~A) ~A ~A);~%"
 		(lc2 gen) (lc-num-ref index :integer)
 		(lc2 gen) (lc-num-ref index :integer)
-		(if (= type +incf+) "+" "-") 
+		(if (= type +incf+) "+" "-")
 		(lc-num-ref val :real))))
   nil)
 
@@ -7244,7 +7244,7 @@
 (defmacro <mus-set-location> (type gen val)
   (if (generator? gen)
       (if (= type +setf+)
-	  (format *c-file* "  mus_set_location(~A, ~A);~%" (lc2 gen) (lc-num-ref val))      
+	  (format *c-file* "  mus_set_location(~A, ~A);~%" (lc2 gen) (lc-num-ref val))
 	(format *c-file* "  mus_set_location(~A, mus_location(~A) ~A ~A);~%"
 		(lc2 gen) (lc2 gen) (if (= type +incf+) "+" "-") (lc-num-ref val))))
   nil)
@@ -7411,7 +7411,7 @@
 	  (unchain-variable var))
       (if (varinfo-refd var)
 	  (setf (varinfo-refd lst) t)))))
-  
+
 (defvar variable-load-list nil)
 
 (defmacro <start> (end)
@@ -7450,7 +7450,7 @@
 	 (g-double-arrays nil)
 	 (g-strs nil)
 	 (g-gens nil)
-	 (g-gen-arrays nil)	 
+	 (g-gen-arrays nil)
 	 (lcoop (and loop-var (lc loop-var)))
 	 (loopv (and loop-var (gethash loop-var vars))))
     (when loop-var
@@ -7460,7 +7460,7 @@
 
     (if *clm-report-untyped-vars*
 	(format t "~%untyped variables: "))
-    
+
     (maphash #'(lambda (key lst)
 		 (when (varinfo-refd lst)
 		   (let ((depth (varinfo-max-depth lst)))
@@ -7498,48 +7498,48 @@
 			    (if (varinfo-global lst)
 				(push (lc key) g-floats)
 			      (push (lc key) floats)))
-			     
+
 			   ((eq (varinfo-type lst) :clm-integer)
 			    (if (varinfo-global lst)
 				(push (lc key) g-ints)
 			      (push (lc key) ints)))
-			       
+
 			   ((eq (varinfo-type lst) :clm-boolean)
 			    (if (varinfo-global lst)
 				(push (lc key) g-bools)
 			      (push (lc key) bools)))
-				 
+
 			   ((eq (varinfo-type lst) :string)
 			    (if (not (varinfo-temp lst))
 				(progn
-				  (push (list key dat-i 0 :string) variable-load-list)				     
+				  (push (list key dat-i 0 :string) variable-load-list)
 				  (setf (varinfo-iloc lst) dat-i)))
 			    (if (varinfo-global lst)
 				(push (lc key) g-strs)
 			      (push (lc key) strs))
 			    (incf dat-i depth))
-				   
+
 			   ((eq (varinfo-type lst) :float-array)
 			    (if (varinfo-global lst)
 				(push (lc key) g-float-arrays)
 			      (push (lc key) float-arrays)))
-				     
+
 			   ((eq (varinfo-type lst) :double-array)
 			    (if (not (varinfo-temp lst))
 				(progn
-				  (push (list key dat-i 0 :double-array) variable-load-list)				     
+				  (push (list key dat-i 0 :double-array) variable-load-list)
 				  (setf (varinfo-iloc lst) dat-i)
-				  (incf dat-i (* 2 depth))))					       
+				  (incf dat-i (* 2 depth))))
 			    (if (varinfo-global lst)
 				(push (lc key) g-double-arrays)
 			      (push (lc key) double-arrays)))
-				       
+
 			   ((eq (varinfo-type lst) :integer-array)
 			    (if (not (varinfo-temp lst))
 				(progn
-				  (push (list key dat-i 0 :integer-array) variable-load-list)				     
+				  (push (list key dat-i 0 :integer-array) variable-load-list)
 				  (setf (varinfo-iloc lst) dat-i)
-				  (incf dat-i (* 2 depth))))				       
+				  (incf dat-i (* 2 depth))))
 			    (if (varinfo-global lst)
 				(push (lc key) g-integer-arrays)
 			      (push (lc key) integer-arrays)))
@@ -7568,7 +7568,7 @@
 	     vars)
     (if *clm-report-untyped-vars*
 	(format t "~%~%"))
-    
+
     (when (or g-ints g-floats g-float-arrays g-strs g-gens g-gen-arrays g-bools g-double-arrays g-integer-arrays)
       (setf got-globals t)
       (format *c-file* "/* variables used by anonymous \"as-needed\" functions */~%")
@@ -7589,12 +7589,12 @@
 		(ctr (cadr func)))
 	    (if *clm-debug* (format t "func ~A ~A~%" type ctr))
 	    (if (eq type :input)
-		(format *c-file* "static mus_float_t as_needed_~D(void *gen, int direction);~%" ctr)					       
+		(format *c-file* "static mus_float_t as_needed_~D(void *gen, int direction);~%" ctr)
 	      (if (eq type :edit)
-		  (format *c-file* "static int as_needed_~D(void *closure);~%" ctr)				       
+		  (format *c-file* "static int as_needed_~D(void *closure);~%" ctr)
 		(if (eq type :analyze)
 		    (format *c-file* "static bool as_needed_~D(void *closure, mus_float_t (*input)(void *arg1, int direction));~%" ctr)
-		  (format *c-file* "static mus_float_t as_needed_~D(void *closure);~%" ctr)))))))			       
+		  (format *c-file* "static mus_float_t as_needed_~D(void *closure);~%" ctr)))))))
     (if (or g-ints g-floats g-gens g-gen-arrays g-strs g-float-arrays g-double-arrays g-integer-arrays (> function-ctr 0))
 	(format *c-file* "~%"))
 
@@ -7613,7 +7613,7 @@
     (if floats (format *c-file* "  double~{ ~A~^,~};~%" floats))
     (if float-arrays (format *c-file* "  double~{ *~A = NULL~^,~};~%" float-arrays))
     (if double-arrays (format *c-file* "  double~{ *~A = NULL~^,~};~%" double-arrays))
-    (if integer-arrays (format *c-file* "  int~{ *~A = NULL~^,~};~%" integer-arrays)) ; it's a pointer into clm_int which is declared int 
+    (if integer-arrays (format *c-file* "  int~{ *~A = NULL~^,~};~%" integer-arrays)) ; it's a pointer into clm_int which is declared int
     (if gens (format *c-file* "  mus_any~{ *~A = NULL~^,~};~%" gens))
     (if gen-arrays (format *c-file* "  mus_any~{ **~A_array = NULL~^,~};~%" gen-arrays))
     (format *c-file* "  void *all_gens = NULL;~%")
@@ -7639,7 +7639,7 @@
 				     (format *c-file* "double ~A_~A; " c-name i)))))))))
 	     vars)
     (format *c-file* "~%")
-    
+
     #+sgi (progn
 	    (format *c-file* "  union fpc_csr fpunder_f;~%")
 	    (format *c-file* "  fpunder_f.fc_word = get_fpc_csr();  fpunder_f.fc_struct.flush = 1;  set_fpc_csr(fpunder_f.fc_word);~%"))
@@ -7670,16 +7670,16 @@
 					 (varinfo-ctr val))
 			     (setf (varinfo-loaded val) t))))))
 	     vars)
-		   
+
     (maphash #'(lambda (key val)
 		 (let* ((c-name (lc key)))
 		   ;; :clm-* temps are already allocated and need no initialization
 		   ;; here we are defining offsets into clm_int and clm_double
-		   
+
 		   (cond ((eq (varinfo-type val) :integer)
 			  (if (varinfo-iloc val)
 			      (progn
-				(format *c-file* "  ~A = clm_int[~D];~%" c-name (varinfo-iloc val))			     
+				(format *c-file* "  ~A = clm_int[~D];~%" c-name (varinfo-iloc val))
 				(if (varinfo-shadowed val)
 				    (loop for i from 1 below (varinfo-max-depth val) do
 				      (format *c-file* "  ~A_~A = clm_int[~D];~%" c-name i (+ i (varinfo-iloc val))))))))
@@ -7687,7 +7687,7 @@
 			 ((eq (varinfo-type val) :boolean)
 			  (if (varinfo-iloc val)
 			      (progn
-				(format *c-file* "  ~A = (bool)clm_int[~D];~%" c-name (varinfo-iloc val))			     
+				(format *c-file* "  ~A = (bool)clm_int[~D];~%" c-name (varinfo-iloc val))
 				(if (varinfo-shadowed val)
 				    (loop for i from 1 below (varinfo-max-depth val) do
 				      (format *c-file* "  ~A_~A = (bool)clm_int[~D];~%" c-name i (+ i (varinfo-iloc val))))))))
@@ -7814,7 +7814,7 @@
   (if *with-reflection*
       (maphash #'(lambda (key val)
 		   (let* ((c-name (lc key)))
-		     (if (not (varinfo-shadowed val)) 
+		     (if (not (varinfo-shadowed val))
 			 (if (and (or (eq (varinfo-type val) :integer)
 				      (eq (varinfo-type val) :boolean))
 				  (varinfo-iloc val))
@@ -7838,7 +7838,7 @@
   (format *c-file* "~%  return(1);~%}~%~%")
   (setf *safety* 0) ; don't try to goto RUN_ALL_DONE in the as-needed-input functions
   nil)
-  
+
 (defmacro <end-2> (beg end end-specified)
    `(let ((vardata (list ,@(map 'list #'(lambda (var)
 					    (let ((lst (gethash (first var) vars)))
@@ -7855,13 +7855,13 @@
 		(*clm-datai* (make-integer-array *clm-datai-len* :initial-element 0))
 		;; type must not be 'integer here because ACL shifts every element over 3 from C's point of view.
 		(*clm-datar* (make-double-array *clm-datar-len*)))
-       
+
 ;	    (format t "var sizes: ~A ~A~%" *clm-datai-len* *clm-datar-len*)
 
 	    (load-vars ,dat-i ,dat-r ',variable-load-list vardata *clm-datai* *clm-datar*)
 	    (to-bignum *clm-beg* *clm-datai* +clm-beg+)
 	    (to-bignum (or *clm-end* 0) *clm-datai* +clm-end+)
-	    
+
 	    (if (and ,end-specified
 		     (< *clm-end* *clm-beg*))
 		(warn "end time < begin time: ~A from ~A to ~A?" ',*lisp-proc* *clm-beg* *clm-end*))

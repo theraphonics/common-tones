@@ -2,7 +2,7 @@
 ;;;
 ;;; backwards compatibility stuff for clm4
 
-(in-package :clm)
+(in-package :common-tones)
 (export '(
 	  #+linux mus-audio-set-oss-buffers
 	  sound-format-name 

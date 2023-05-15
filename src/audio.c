@@ -21,7 +21,7 @@
  *    HPUX
  *    OpenBSD
  *    NetBSD
- *    PulseAudio
+ *    PulseAudio (in progress?)
  *    PortAudio
  */
 
@@ -1118,7 +1118,7 @@ static int to_alsa_device(int dev, int *adev, snd_pcm_stream_t *achan)
     {
       /* default values are a problem because the concept does
        * not imply a direction (playback or capture). This works
-       * fine as long as both directions of a device are symmetric,
+       * fine as long as both directions of a device are symetric,
        * the Midiman 1010, for example, has 10 channel frames for
        * playback and 12 channel frames for capture and breaks 
        * the recorder (probes the default, defaults to output, 
@@ -2496,7 +2496,7 @@ int mus_audio_open_input(int ur_dev, int srate, int chans, mus_sample_t samp_typ
 	      __FILE__, __LINE__, 
 	      info.record.channels, chans);
 
-  info.record.precision = bits; /* was play, changed 10-Jul-03 thanks to Jurgen Keil */
+  info.record.precision = bits; /* was play, changed 10-Jul-03 thanks to Jürgen Keil */
   info.record.encoding = encode;
   err = ioctl(audio_fd, AUDIO_SETINFO, &info); 
   if (err == -1) 
@@ -3164,9 +3164,6 @@ static bool writing = false, open_for_input = false;
 #if HAVE_OSX_10_5
   static AudioDeviceIOProcID read_procId, write_procId;
 #endif 
-#if (!defined(MAC_OS_VERSION_12_0)) || (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_VERSION_12_0)
-  #define kAudioObjectPropertyElementMain kAudioObjectPropertyElementMaster
-#endif
 
 int mus_audio_close(int line) 
 {
@@ -3209,7 +3206,7 @@ int mus_audio_close(int line)
 	      {
 		AudioObjectPropertyAddress device_address = { kAudioDevicePropertyDeviceIsRunning,
 							      kAudioDevicePropertyScopeOutput,
-							      kAudioObjectPropertyElementMain};
+							      kAudioObjectPropertyElementMaster };
 		err = AudioObjectGetPropertyData(device, &device_address, 0, NULL, &sizeof_running, &running);
 	      }	      
 	    }
@@ -3219,7 +3216,7 @@ int mus_audio_close(int line)
 	      {
 		AudioObjectPropertyAddress device_address = { kAudioDevicePropertyDeviceIsRunning,
 							      kAudioDevicePropertyScopeOutput,
-							      kAudioObjectPropertyElementMain};
+							      kAudioObjectPropertyElementMaster };
 		err = AudioObjectGetPropertyData(device, &device_address, 0, NULL, &sizeof_running, &running);
 	      }
 	    }
@@ -3277,7 +3274,7 @@ int mus_audio_open_output(int dev, int srate, int chans, mus_sample_t samp_type,
   {
     AudioObjectPropertyAddress device_address = { kAudioHardwarePropertyDefaultOutputDevice,
 						  kAudioObjectPropertyScopeGlobal,
-						  kAudioObjectPropertyElementMain};
+						  kAudioObjectPropertyElementMaster };
     err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &device_address, 0, NULL, &sizeof_device, &device);
   }
 
@@ -3288,7 +3285,7 @@ int mus_audio_open_output(int dev, int srate, int chans, mus_sample_t samp_type,
       {
 	AudioObjectPropertyAddress device_address = { kAudioDevicePropertyBufferSize,
 						      kAudioDevicePropertyScopeOutput,
-						      kAudioObjectPropertyElementMain};
+						      kAudioObjectPropertyElementMaster };
 	err = AudioObjectGetPropertyData(device, &device_address, 0, NULL, &sizeof_bufsize, &bufsize);
       }
     }
@@ -3303,7 +3300,7 @@ int mus_audio_open_output(int dev, int srate, int chans, mus_sample_t samp_type,
   {
     AudioObjectPropertyAddress device_address = { kAudioDevicePropertyStreamFormat,
 						  kAudioDevicePropertyScopeOutput,
-						  kAudioObjectPropertyElementMain};
+						  kAudioObjectPropertyElementMaster };
     err = AudioObjectGetPropertyData(device, &device_address, 0, NULL, &sizeof_format, &device_desc);
   }
 
@@ -3333,7 +3330,7 @@ int mus_audio_open_output(int dev, int srate, int chans, mus_sample_t samp_type,
 	  {
 	    AudioObjectPropertyAddress device_address = { kAudioDevicePropertyStreamFormat,
 							  kAudioDevicePropertyScopeOutput,
-							  kAudioObjectPropertyElementMain};
+							  kAudioObjectPropertyElementMaster };
 	    err = AudioObjectSetPropertyData(device, &device_address, 0, NULL, sizeof_format, &device_desc);
 	  }
 	  
@@ -3358,7 +3355,7 @@ int mus_audio_open_output(int dev, int srate, int chans, mus_sample_t samp_type,
 	      {
 		AudioObjectPropertyAddress device_address = { kAudioDevicePropertyStreamFormat,
 							      kAudioDevicePropertyScopeOutput,
-							      kAudioObjectPropertyElementMain};
+							      kAudioObjectPropertyElementMaster };
 		err = AudioObjectSetPropertyData(device, &device_address, 0, NULL, sizeof_format, &device_desc);
 	      }
 	      if (err != noErr)
@@ -3368,7 +3365,7 @@ int mus_audio_open_output(int dev, int srate, int chans, mus_sample_t samp_type,
 		  {
 		    AudioObjectPropertyAddress device_address = { kAudioDevicePropertyStreamFormatMatch,
 								  kAudioDevicePropertyScopeOutput,
-								  kAudioObjectPropertyElementMain};
+								  kAudioObjectPropertyElementMaster };
 		    err = AudioObjectGetPropertyData(device, &device_address, 0, NULL, &sizeof_format, &device_desc);
 		  }
 
@@ -3383,7 +3380,7 @@ int mus_audio_open_output(int dev, int srate, int chans, mus_sample_t samp_type,
 		      {
 			AudioObjectPropertyAddress device_address = { kAudioDevicePropertyStreamFormat,
 								      kAudioDevicePropertyScopeOutput,
-								      kAudioObjectPropertyElementMain};
+								      kAudioObjectPropertyElementMaster };
 			err = AudioObjectSetPropertyData(device, &device_address, 0, NULL, sizeof_format, &device_desc);
 		      }
 		      if (err != noErr) 
@@ -3394,7 +3391,7 @@ int mus_audio_open_output(int dev, int srate, int chans, mus_sample_t samp_type,
 			  {
 			    AudioObjectPropertyAddress device_address = { kAudioDevicePropertyStreamFormat,
 									  kAudioDevicePropertyScopeOutput,
-									  kAudioObjectPropertyElementMain};
+									  kAudioObjectPropertyElementMaster };
 			    err = AudioObjectGetPropertyData(device, &device_address, 0, NULL, &sizeof_format, &device_desc);
 			  }
 			}
@@ -3408,7 +3405,7 @@ int mus_audio_open_output(int dev, int srate, int chans, mus_sample_t samp_type,
 		  {
 		    AudioObjectPropertyAddress device_address = { kAudioDevicePropertyStreamFormat,
 								  kAudioDevicePropertyScopeOutput,
-								  kAudioObjectPropertyElementMain};
+								  kAudioObjectPropertyElementMaster };
 		    err = AudioObjectGetPropertyData(device, &device_address, 0, NULL, &sizeof_format, &device_desc);
 		  }
 		}
@@ -3628,7 +3625,7 @@ int mus_audio_write(int line, char *buf, int bytes)
 	  {
 	    AudioObjectPropertyAddress device_address = { kAudioDevicePropertyDeviceIsRunning,
 							  kAudioDevicePropertyScopeOutput,
-							  kAudioObjectPropertyElementMain};
+							  kAudioObjectPropertyElementMaster };
 	    err = AudioObjectGetPropertyData(device, &device_address, 0, NULL, &sizeof_running, &running);
 	  }
 	  /* usleep(10); */
@@ -3661,7 +3658,7 @@ int mus_audio_open_input(int dev, int srate, int chans, mus_sample_t samp_type, 
   {
     AudioObjectPropertyAddress device_address = { kAudioHardwarePropertyDefaultInputDevice,
 						  kAudioObjectPropertyScopeGlobal,
-						  kAudioObjectPropertyElementMain};
+						  kAudioObjectPropertyElementMaster };
     err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &device_address, 0, NULL, &sizeof_device, &device);
   }
 
@@ -3672,7 +3669,7 @@ int mus_audio_open_input(int dev, int srate, int chans, mus_sample_t samp_type, 
       {
 	AudioObjectPropertyAddress device_address = { kAudioDevicePropertyBufferSize,
 						      kAudioDevicePropertyScopeInput,
-						      kAudioObjectPropertyElementMain};
+						      kAudioObjectPropertyElementMaster };
 	err = AudioObjectGetPropertyData(device, &device_address, 0, NULL, &sizeof_bufsize, &bufsize);
       }
     }
@@ -3736,7 +3733,7 @@ int mus_audio_read(int line, char *buf, int bytes)
 	  {
 	    AudioObjectPropertyAddress device_address = { kAudioDevicePropertyDeviceIsRunning,
 							  kAudioDevicePropertyScopeInput,
-							  kAudioObjectPropertyElementMain};
+							  kAudioObjectPropertyElementMaster };
 	    err = AudioObjectGetPropertyData(device, &device_address, 0, NULL, &sizeof_running, &running);
 	  }
 	  if (err != noErr) 
@@ -3783,10 +3780,41 @@ char *mus_audio_moniker(void) {return((char *)"Mac OSX audio");}
 
 #define SRC_QUALITY SRC_SINC_BEST_QUALITY
 
-static inline void atomic_add(int *mem, int how_much){
-  __atomic_fetch_add(mem, how_much, __ATOMIC_SEQ_CST);
+#if defined(__i386__) || defined(__x86_64)
+
+static inline void __attribute__ ((__unused__)) atomic_add(volatile int* __mem, int __val)
+{
+  __asm__ __volatile__ ("lock; addl %1,%0"
+			: "=m" (*__mem) : "ir" (__val), "m" (*__mem));
 }
 
+#elif defined(__powerpc__) || defined(__ppc__)
+
+#ifdef __PPC405__ 
+#define _STWCX "sync \n\tstwcx. " 
+#else 
+#define _STWCX "stwcx. " 
+#endif 
+
+static inline void __attribute__ ((__unused__)) atomic_add(volatile int* __mem, int __val)
+{
+  int __tmp;
+  __asm__ __volatile__ (
+	"/* Inline atomic add */\n"
+	"0:\t"
+	"lwarx    %0,0,%2 \n\t"
+	"add%I3   %0,%0,%3 \n\t"
+	_STWCX "  %0,0,%2 \n\t"
+	"bne-     0b \n\t"
+	"/* End atomic add */"
+	: "=&b"(__tmp), "=m" (*__mem)
+	: "r" (__mem), "Ir"(__val), "m" (*__mem)
+	: "cr0");
+}
+#else
+#error "Seems like an unsupported hardware for jack. Please contact k.s.matheussen@notam02.no"
+#endif
+ 
  
 /*************/
 /* Jack Part */
@@ -4039,17 +4067,14 @@ static int sndjack_getnumoutchannels(void){
       ? 2
       : num_ch;
   }else{
-    int ret = 0;
     int lokke=0;
     const char **ports=jack_get_ports(sndjack_client,NULL,NULL,JackPortIsPhysical|JackPortIsInput);
     while(ports!=NULL && ports[lokke]!=NULL){
-      if (!strcmp(ports[lokke], JACK_DEFAULT_AUDIO_TYPE))
-        ret++;
       lokke++;
     }
     
-    if (ret<2) return 2;
-    return ret;
+    if (lokke<2) return 2;
+    return lokke;
   }
 }
 
@@ -4062,12 +4087,9 @@ static int sndjack_getnuminchannels(void){
       ? 2
       : num_ch;
   }else{
-    int ret = 0;
     int lokke=0;
     const char **ports=jack_get_ports(sndjack_client,NULL,NULL,JackPortIsPhysical|JackPortIsOutput);
     while(ports!=NULL && ports[lokke]!=NULL){
-      if (!strcmp(ports[lokke], JACK_DEFAULT_AUDIO_TYPE))
-        ret++;
       lokke++;
     }
     if (lokke<2) return 2;
@@ -4078,6 +4100,8 @@ static int sndjack_getnuminchannels(void){
 
 static int sndjack_init(void){
   int ch;
+  int numch;
+
   {
     jack_status_t status;
     sndjack_client=jack_client_open("sndlib",JackNoStartServer,&status,NULL);
@@ -4100,11 +4124,9 @@ static int sndjack_init(void){
 
   jack_set_process_callback(sndjack_client,sndjack_process,NULL);
 
-  const int numch = sndjack_getnumoutchannels();
-  
-  sndjack_num_channels_allocated = numch;
-  sndjack_num_read_channels_allocated = sndjack_getnuminchannels();
-  
+  sndjack_num_channels_allocated = numch = sndjack_getnumoutchannels();
+  sndjack_num_read_channels_allocated    = sndjack_getnuminchannels();
+     
   sndjack_channels=(struct SndjackChannel *)calloc(sizeof(struct SndjackChannel),numch);
   sndjack_read_channels=(struct SndjackChannel *)calloc(sizeof(struct SndjackChannel),sndjack_num_read_channels_allocated);
 
@@ -4114,9 +4136,8 @@ static int sndjack_init(void){
   for (ch=0;ch<sndjack_num_read_channels_allocated;ch++){
     sndjack_read_channels[ch].buffer=(sample_t *)calloc(sizeof(sample_t),SNDJACK_BUFFERSIZE);
   }
-  
   sj_buffersize=SNDJACK_BUFFERSIZE;
-  
+
   for (ch=0;ch<numch;ch++){
     char temp[500];
     snprintf(temp, 500, "out_%d",ch+1);
@@ -4164,37 +4185,29 @@ static int sndjack_init(void){
 
     const char **outportnames=jack_get_ports(sndjack_client,NULL,NULL,JackPortIsPhysical|JackPortIsInput);
     for (ch=0;outportnames && outportnames[ch]!=NULL && ch<numch;ch++){
-      jack_port_t *physical_port = jack_port_by_name(sndjack_client, outportnames[ch]);
-      
-      if (physical_port != NULL && !strcmp(jack_port_type(sndjack_channels[ch].port), jack_port_type(physical_port))) {
-        if (
-            jack_connect(
-                         sndjack_client,
-                         jack_port_name(sndjack_channels[ch].port),
-                         outportnames[ch]
-                         )
-            )
-          {
-            printf ("Warning. Cannot connect jack output port %d: \"%s\".\n",ch,outportnames[ch]);
-          }
-      }
+      if (
+	  jack_connect(
+		       sndjack_client,
+		       jack_port_name(sndjack_channels[ch].port),
+		       outportnames[ch]
+		       )
+	  )
+	{
+	  printf ("Warning. Cannot connect jack output port %d: \"%s\".\n",ch,outportnames[ch]);
+	}
     }
 
     const char **inportnames=jack_get_ports(sndjack_client,NULL,NULL,JackPortIsPhysical|JackPortIsOutput);
-    for (ch=0;inportnames && inportnames[ch]!=NULL && ch<sndjack_num_read_channels_allocated;ch++){
-      jack_port_t *physical_port = jack_port_by_name(sndjack_client, inportnames[ch]);
-      
-      if (physical_port != NULL && !strcmp(jack_port_type(sndjack_read_channels[ch].port), jack_port_type(physical_port))) {
-        if (
-            jack_connect(
-                         sndjack_client,
-                         inportnames[ch],
-                         jack_port_name(sndjack_read_channels[ch].port)
-                         )
-            )
-          {
-            printf ("Warning. Cannot connect jack input port %d: \"%s\".\n",ch,inportnames[ch]);
-          }
+    for (ch=0;inportnames && inportnames[ch]!=NULL && ch<numch;ch++){
+    if (
+	jack_connect(
+		     sndjack_client,
+		     inportnames[ch],
+		     jack_port_name(sndjack_read_channels[ch].port)
+		     )
+	)
+      {
+	printf ("Warning. Cannot connect jack input port %d: \"%s\".\n",ch,inportnames[ch]);
       }
     }
   }
@@ -4535,7 +4548,7 @@ int jack_mus_audio_write(int line, char *buf, int bytes){
       break;
     }
     if (len<0){
-      printf("Error. Input buffer to large for mus_audio_write.\n");
+      printf("Errur. Input buffer to large for mus_audio_write.\n");
       return MUS_ERROR;
     }
 
@@ -4553,7 +4566,7 @@ int jack_mus_audio_write(int line, char *buf, int bytes){
 	return MUS_ERROR;
       }
       if (src_data.input_frames!=len){
-	printf("Unsuccessful resampling: Should have used %d bytes, used %ld.",len,(long int)(src_data.input_frames));
+	printf("Unsuccessfull resampling: Should have used %d bytes, used %ld.",len,(long int)(src_data.input_frames));
 	return MUS_ERROR;
       }
       if (ch>0 && src_data.output_frames_gen!=outlen){
@@ -5178,6 +5191,12 @@ int mus_audio_open_input(int ur_dev, int srate, int chans, mus_sample_t samp_typ
 #define AUDIO_OK 1
 
 
+/* this code compiles/loads, but I don't know if it works -- paplay itself
+ *   doesn't work on my machine due to either a libtool/dlopen mismatch
+ *   or some problem with "pulse-rt".
+ */
+
+
 #include <pulse/simple.h>
 #include <pulse/error.h>
 #include <pulse/gccmacro.h>
@@ -5202,23 +5221,7 @@ static int sndlib_to_pa_format(mus_sample_t samp_type)
       return(0);
       break;
     }
-}
-
-
-static int pulseaudio_sample_types(int ur_dev, mus_sample_t *vals)
-{
-  vals[0] = (mus_sample_t)9;
-  vals[1] = MUS_BSHORT;
-  vals[2] = MUS_LSHORT;
-  vals[3] = MUS_BFLOAT;
-  vals[4] = MUS_LFLOAT;
-  vals[5] = MUS_ALAW;
-  vals[6] = MUS_MULAW;
-  vals[7] = MUS_BINT;
-  vals[8] = MUS_LINT;
-  vals[9] = MUS_BYTE;
-  return(MUS_NO_ERROR);
-}
+} 
 
 
 static pa_simple *pa_out = NULL, *pa_in = NULL;
@@ -5684,11 +5687,6 @@ mus_sample_t mus_audio_device_sample_type(int dev) /* snd-dac */
 #endif
 #endif
 
-#if defined(MUS_PULSEAUDIO)
-  if (mixer_vals[0] == MUS_UNKNOWN_SAMPLE)
-    pulseaudio_sample_types(dev, mixer_vals);
-#endif
-
   samp_type = look_for_sample_type(mixer_vals, MUS_AUDIO_COMPATIBLE_SAMPLE_TYPE);
   if (samp_type != MUS_UNKNOWN_SAMPLE)
     return(samp_type);
@@ -5700,10 +5698,7 @@ mus_sample_t mus_audio_device_sample_type(int dev) /* snd-dac */
       samp_type = look_for_sample_type(mixer_vals, MUS_LSHORT);
       if (samp_type == MUS_UNKNOWN_SAMPLE)
 	samp_type = mixer_vals[1];
-      if (samp_type == MUS_UNKNOWN_SAMPLE) 
-	samp_type = MUS_LSHORT; /* jgm */
     }
-  
 #else
   samp_type = look_for_sample_type(mixer_vals, MUS_BFLOAT);
   if (samp_type == MUS_UNKNOWN_SAMPLE)
@@ -5711,8 +5706,6 @@ mus_sample_t mus_audio_device_sample_type(int dev) /* snd-dac */
       samp_type = look_for_sample_type(mixer_vals, MUS_BSHORT);
       if (samp_type == MUS_UNKNOWN_SAMPLE)
 	samp_type = mixer_vals[1];
-      if (samp_type == MUS_UNKNOWN_SAMPLE) 
-	samp_type = MUS_BSHORT; /* jgm */
     }
 #endif
   return(samp_type);

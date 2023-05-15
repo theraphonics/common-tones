@@ -9,7 +9,7 @@
 ;;; mounting the user's directories, so when he loads his instruments, clm has to
 ;;; find the right versions).
 
-(in-package :clm)
+(in-package :common-tones)
 
 (defvar *clm-snd-in-progress* nil)
 (defvar *current-ins-args* nil)

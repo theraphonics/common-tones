@@ -1,6 +1,6 @@
 /* C support code for CLM */
 
-#include "cmus.h"
+#include "../headers/cmus.h"
 #define MUS_SAMPLE_TO_SHORT(n) ((short)((n) * (1 << 15)))
 
 sigfnc *clm_signal(int signo, sigfnc *fnc) 

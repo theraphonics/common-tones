@@ -1,7 +1,7 @@
 #ifndef CMUS_H
 #define CMUS_H
 
-#include <mus-config.h>
+#include "mus-config.h"
 
 #ifndef _MSC_VER
   #include <unistd.h>
@@ -16,7 +16,7 @@
 
 #include "_sndlib.h"
 /* this is setup by configure, so we shouldn't go wandering off to /pkg/opt/sfw or something */
-#include <clm.h>
+#include "clm.h"
 
 #if (!defined(M_PI))
   #define M_PI 3.14159265358979323846264338327

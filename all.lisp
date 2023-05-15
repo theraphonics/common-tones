@@ -1,5 +1,5 @@
 ;;; Load file for CLM.
-;;; 
+;;;
 ;;; The CLM sources are found on the current directory unless the variable clm-directory is set.
 ;;; The binaries (and compiled C modules, where applicable) are written to clm-bin-directory, if bound.
 ;;; See make-clm.cl for one example of how to set everything up.
@@ -23,10 +23,10 @@
 
 (proclaim '(special clm-directory clm-bin-directory))
 
-(if (not (boundp 'clm-directory)) 
-    (setf clm-directory 
+(if (not (boundp 'clm-directory))
+    (setf clm-directory
       (namestring
-       (truename 
+       (truename
 	(directory-namestring (or *load-pathname* "./"))))))
 
 #+openmcl (if (and (stringp clm-directory)
@@ -53,7 +53,7 @@ The *features* that CLM adds itself are:
      :acl-50          Franz changed the foreign function interface in ACL 5
      :acl-60          Franz changed the foreign function interface in ACL 6
      :acl-61 :acl-62  and so on...
-     
+
   The other *features* that CLM currently notices (leaving aside walk.lisp and loop.lisp) are:
 
      :sgi             SGI
@@ -139,7 +139,7 @@ The *features* that CLM adds itself are:
 (if reconfigure
     (progn
       (setf configure (concatenate 'string "cd " clm-directory " && ./configure --quiet"))
-      
+
       #+(and clozure darwinx8632-target)
       (setf configure (concatenate 'string configure " CLFAGS='-arch i386' LDFLAGS='-arch i386'"))
       #+lispworks-32bit (setf configure (concatenate 'string configure " --host=i686"))
@@ -148,7 +148,7 @@ The *features* that CLM adds itself are:
       #+jack (setf configure (concatenate 'string configure " --with-jack"))
       ;#+sb-thread (setf configure (concatenate 'string configure " --enable-threads"))
       ;removed 28-Sep-11
-      
+
       (format t ";   running ~A~%" configure)
       #+excl (excl:run-shell-command configure :wait t)
       #+sbcl (sb-ext:run-program "/bin/csh" (list "-fc" configure) :output t)
@@ -160,10 +160,10 @@ The *features* that CLM adds itself are:
   #-openmcl (format t ";   using existing configuration file mus-config.h~%")
   )
 
-(defvar *shared-object-extension* 
-  #+dlfcn "so" 
-  #+dlhp "sl" 
-  #+(or windoze dlwin) "dll" 
+(defvar *shared-object-extension*
+  #+dlfcn "so"
+  #+dlhp "sl"
+  #+(or windoze dlwin) "dll"
   #+(or (and excl macosx) (and openmcl (not linux-target) (not linuxppc-target))) "dylib"
   #-(or dlfcn dlhp dlwin windoze (and excl macosx) (and openmcl (not linux-target) (not linuxppc-target))) "so"
   )
@@ -203,15 +203,15 @@ The *features* that CLM adds itself are:
 				))
 
 (defvar *lib-ext* #+windoze "lib" #-windoze "a")
-(defvar *ld* #+windoze "cl" 
-             #+(and (or lispworks clisp sbcl openmcl (and mac-osx cmu)) (not linuxppc-target)) "gcc" 
+(defvar *ld* #+windoze "cl"
+             #+(and (or lispworks clisp sbcl openmcl (and mac-osx cmu)) (not linuxppc-target)) "gcc"
 	     #-(or (and (or lispworks clisp sbcl openmcl (and mac-osx cmu)) (not linuxppc-target)) windoze) "ld")
 (defvar *cc* #+windoze "cl" #-windoze "gcc")
 (defvar *ldflags* #+windoze " " #-windoze " -r -o ")
 
 
 ;;; --------------------------------
-;;; Allegro CL 
+;;; Allegro CL
 
 #+excl (setf (excl:package-definition-lock (find-package ':common-lisp)) nil)
 
@@ -260,8 +260,8 @@ The *features* that CLM adds itself are:
   (setq sys:*load-search-list*		;don't want to compile note-lists
     (append sys:*load-search-list* (list (make-pathname :type "ins")
 					 (make-pathname :type "cm")
-					 (make-pathname :type "clm") 
-					 (make-pathname :type "cmn") 
+					 (make-pathname :type "clm")
+					 (make-pathname :type "cmn")
 					 )))
   )
 
@@ -269,20 +269,20 @@ The *features* that CLM adds itself are:
 ;;; --------------------------------
 ;;; OpenMCL
 
-#+openmcl 
-(unless (get-dispatch-macro-character #\# #\,) 
-  ;; since the "#," dispatch macro used by walk.lisp is not part of 
-  ;; ANSI CL it was (rather gratuitously) removed from openmcl 1.0. 
-  ;; we add it back here. 
-  (set-dispatch-macro-character 
-   #\# 
-   #\, 
-   #'(lambda (stream subchar numarg) 
-       (let* ((sharp-comma-token ccl::*reading-for-cfasl*)) 
-         (if (or *read-suppress* (not ccl::*compiling-file*) (not sharp-comma-token)) 
-             (ccl::read-eval stream subchar numarg) 
-             (progn 
-               (ccl::require-no-numarg subchar numarg) 
+#+openmcl
+(unless (get-dispatch-macro-character #\# #\,)
+  ;; since the "#," dispatch macro used by walk.lisp is not part of
+  ;; ANSI CL it was (rather gratuitously) removed from openmcl 1.0.
+  ;; we add it back here.
+  (set-dispatch-macro-character
+   #\#
+   #\,
+   #'(lambda (stream subchar numarg)
+       (let* ((sharp-comma-token ccl::*reading-for-cfasl*))
+         (if (or *read-suppress* (not ccl::*compiling-file*) (not sharp-comma-token))
+             (ccl::read-eval stream subchar numarg)
+             (progn
+               (ccl::require-no-numarg subchar numarg)
                (list sharp-comma-token (read stream t nil t))))))))
 
 #+openmcl
@@ -302,7 +302,7 @@ The *features* that CLM adds itself are:
 ;;; --------------------------------
 ;;; CMU CL
 
-#+cmu (declaim (optimize (extensions:inhibit-warnings 3))) 
+#+cmu (declaim (optimize (extensions:inhibit-warnings 3)))
 #+cmu (setf extensions::*gc-verbose* nil)
 #+cmu (setf *compile-print* nil)
 #+cmu (setf *compile-verbose* nil)
@@ -394,287 +394,24 @@ The *features* that CLM adds itself are:
 			(> (file-write-date (truename cname)) (file-write-date (truename lname))))
 		    (compile-file cname :output-file lname)))
 	    (load lname))))
-	  
 
-;;; --------------------------------
-;;; compile the .c files and build libraries, where applicable
-
-(defvar someone-compiled nil)
-(setf someone-compiled nil)
-(defvar someone-loaded nil)
-(setf someone-loaded nil)
-
-(defvar c-compiler "cc") ; shouldn't this be *cc*? 
-
-(defun cc-it (n) 
-  (let* ((lname (concatenate 'string clm-bin-directory n *obj-ext*))
-	 (cname (concatenate 'string clm-directory n ".c"))
-	 (cc-name (or #+(and excl (not windoze)) (sys:getenv "CC")
-		      #+lucid (lcl:environment-variable "CC")
-		      #+cmu (cdr (assoc (intern "CC" "KEYWORD") ext:*environment-list*))
-		      #+sbcl "gcc"
-		      #+clisp "gcc"
-		      #+lispworks "gcc"
-		      #-(or sun hpux windoze) "cc"
-		      #+(or sun hpux) "gcc"
-		      #+windoze "cl"
-		      "gcc"))
-	 (cstr (concatenate 'string 
-			    cc-name " "
-			    cname
-			    " -c"
-			    *cflags*
-			    #-windoze " -o " #+windoze " -Fo"
-			    lname
-			    )))
-    (setf c-compiler cc-name)
-    (when (or (not (probe-file lname))
-	      (not (probe-file cname))
-	      (> (file-write-date (truename cname)) (file-write-date (truename lname))))
-      (princ (format nil "; Compiling ~S~%" cname)) (force-output)
-      #+debug (princ (format nil "; ~A~%" cstr)) (force-output)
-      (setf someone-compiled t)
-      #+excl (excl:shell cstr)
-      #+lispworks (sys::run-shell-command cstr)
-      #+clisp (ext:shell cstr)
-      #+sbcl (sb-ext:run-program "/bin/csh" (list "-fc" cstr) :output t)
-      #+cmu (extensions:run-program "/bin/csh" (list "-fc" cstr) :output t)
-      #+openmcl (ccl:run-program "/bin/csh" (list "-fc" cstr) :output t)
-      )))
-
-(cc-it "xen")
-(cc-it "io")
-(cc-it "headers")
-(cc-it "audio")
-(cc-it "sound")
-(cc-it "clm")
-(cc-it "vct")
-(cc-it "cmus")
-
-#+(or cmu sbcl excl openmcl clisp lispworks)
-(let ((shared-name (concatenate 'string clm-bin-directory "libclm." *shared-object-extension*)))
-  (when (or someone-compiled (not (probe-file shared-name)))
-    (princ (format nil "; Creating ~S~%" shared-name))
-    (setf someone-loaded t)
-    (let ((str (concatenate 
-		'string
-		*ld* " "
-		#-(and cmu freebsd) *csoflags* " "
-		#+(and cmu freebsd) "-r -L/usr/lib "
-		#+(or (and clisp mac-osx) (and sbcl darwin) (and openmcl (not linux-target) (not linuxppc-target))) "-dynamiclib "
-		#-windoze "-o " #+windoze "-Fe"
-		shared-name " "
-		clm-bin-directory "xen" *obj-ext* " "
-		clm-bin-directory "headers" *obj-ext* " "
-		clm-bin-directory "audio" *obj-ext* " "
-		clm-bin-directory "io" *obj-ext* " "
-		clm-bin-directory "sound" *obj-ext* " "
-		clm-bin-directory "clm" *obj-ext* " "
-		clm-bin-directory "vct" *obj-ext* " "
-		clm-bin-directory "cmus" *obj-ext* " "
-		#+windoze clm-bin-directory #+windoze "libclm.def "
-
-		#+sgi "-laudio "
-		#+alsa "-lasound "
-		#+jack "-ljack -lsamplerate -lasound "
-		;#+sb-thread "-lpthread "
-
-		;; try to find the ACL shared library that has acl_printf and call_lisp_address
-		;#+(and sgi allegro-v5.0) (concatenate 'string (namestring (truename "sys:")) "libacl5.0.so ")
-		
-		;#+(and (or allegro-v5.0 allegro-v5.0.1 allegro-v6.0) (not (or windoze linux)))
-		#+(and acl-50 (or sun (not acl-70)) (not (or windoze linux)))
-		(concatenate 'string (namestring (translate-logical-pathname "sys:")) (excl::get-shared-library-name) " ")
-
-		;; cl-lite version of get-shared-library-name returns a name that doesn't exist
-		;;   and we can't include it anyway because of appalling Windoze file name stupidity
-		;;   windoze users are on their own here -- fixup the &#@%$^# name below.
-		#+(and windoze (not allegro-cl-lite) (not acl-62) (not acl-70)) clm-bin-directory
-		#+(and windoze (not allegro-cl-lite) (not acl-60) (not acl-61) (not acl-62)) "acl503.lib "
-		#+(and windoze (not allegro-cl-lite) acl-60 (not acl-61) (not acl-62)) "acl601.lib "
-		#+(and windoze (not allegro-cl-lite) acl-62 (not acl-70)) (concatenate 'string "\"" (namestring (truename "sys:")) "acli623.lib\"")
-		#+(and windoze (not allegro-cl-lite) acl-70 (not acl-80)) (concatenate 'string "\"" (namestring (truename "sys:")) "acl701.lib\"")
-
-                #+(and windoze (not allegro-cl-professional) acl-80) (concatenate 'string "\"" (namestring (truename "sys:")) "acli8010t.lib\"") 
-                #+(and windoze allegro-cl-professional acl-80) (concatenate 'string "\"" (namestring (truename "sys:")) "acli8010.lib\"") 
-		
-		#+windoze " user32.lib gdi32.lib kernel32.lib comctl32.lib comdlg32.lib winmm.lib advapi32.lib "
-		
-		#-(or windoze (and openmcl linuxppc-target) (and linux (or cmu sbcl acl-50))) " -lm -lc"
-		;;; in linux this -lc can cause "ld: internal error ldlang.c 3088"
-		#+(or macosx mac-osx) " -framework CoreAudio "
-		#+(and sun (not x86-64)) " -lgcc"
-		#+(and clozure darwinx8632-target) " -arch i386"
-		)))
-      (format t ";;~A~%" str)
-      (force-output)
-      #+excl (excl:shell str)
-      #+cmu (extensions:run-program "/bin/csh" (list "-fc" str) :output t)
-      #+openmcl (ccl:run-program "/bin/csh" (list "-fc" str) :output t)
-      #+sbcl (sb-ext:run-program "/bin/csh" (list "-fc" str) :output t)
-      #+clisp (ext::shell str)
-      #+lispworks (sys::run-shell-command str)
-
-      (if (not (probe-file shared-name))
-	  (format t "~S was not created?  Perhaps there was a C compiler or loader error.~%~
-                     You might try the following command in a terminal to see what happened: ~S~%"
-		  shared-name
-		  str))
-      ;; gcc creates a library file even if some error occurs!  So, this check won't usually help.
-      )))
-
-    
-
-;;; --------------------------------
-;;; code walker, package definitions, etc
-
-#-(or excl sbcl)
-  (if (not (find-package :walker))
-      (progn
-	(compile-and-load "walk")
-	;; now check for later versions that do not automatically expand macros during the walk (taken from Common Music's build.lisp)
-	(when (find-symbol "WALK-FORM-EXPAND-MACROS-P" :walker)
-	  (set (find-symbol "WALK-FORM-EXPAND-MACROS-P" :walker) t))
-	#+(and (or clisp cmu) ansi-cl) (load (concatenate 'string clm-directory "special-form-for-cmu.cl"))
-	))
-
-#+cmu (setf walker:walk-form-expand-macros-p t)
-;;; in sbcl it's in the SB-WALKER package (&#%@^$)
-
-(compile-and-load "clm-package")
-(compile-and-load "initmus")
-
-(setf clm::*clm-binary-directory* (namestring (truename clm-bin-directory)))
-(setf clm::*clm-source-directory* (namestring (truename clm-directory)))
-
-(setf clm::*clm-compiler-name* c-compiler)
-#+(or excl cmu sbcl openmcl clisp lispworks) (setf clm::*so-ext* *shared-object-extension*)
-
-#+excl (setf clm::*use-chcon* use-chcon)
-#+excl (if use-chcon (excl:shell (format nil "chcon -t textrel_shlib_t ~A" (concatenate 'string clm-bin-directory "libclm." *shared-object-extension*))))
-#+excl (load (concatenate 'string clm-bin-directory "libclm." *shared-object-extension*))
-#+lispworks (fli:register-module (concatenate 'string clm-bin-directory "libclm." *shared-object-extension*))
-#+cmu (ext:load-foreign (concatenate 'string clm-bin-directory "libclm." *shared-object-extension*))
-#+sbcl (sb-alien:load-shared-object (concatenate 'string clm-bin-directory "libclm." *shared-object-extension*))
-#+(and clozure darwin)
-;;; workaround for a nasty Mac OS X 10.6 "misfeature"
-;;; the CoreFoundation libary is loaded indirectly when libclm.dylib is loaded
-;;; 10.6 disallows loading CoreFoundation outside the main thread
-;;; Clozure CL uses the main thread for housekeeping and spawns an additional listener thread
-;;; so we must force CoreFoundation to load from the main thread
-;;; see http://www.clozure.com/pipermail/openmcl-devel/2010-February/011118.html
-(let ((core-foundation "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation"))
-  (when (not (ccl::shared-library-with-name core-foundation))
-	(let* ((s (make-semaphore)))
-	  (process-interrupt
-	   ccl::*initial-process*
-	   (lambda ()
-		 (open-shared-library core-foundation)
-		 (ccl:signal-semaphore s)))
-	  (ccl:wait-on-semaphore s))))
-
-#+openmcl (ccl:open-shared-library (concatenate 'string clm-bin-directory "libclm." *shared-object-extension*))
-
-#+openmcl (compile-and-load "mcl-doubles")
-
-(compile-and-load "sndlib2clm")
-(compile-and-load "defaults")
-
-
-;;; -------- sndplay
-;;; make a program named sndplay (and sndinfo and audinfo?) that can play most sound files 
-#+windoze
-  (when (or (not (probe-file "sndplay.exe"))
-	    (> (file-write-date "sndplay.c") (file-write-date "sndplay.exe")))
-    #+excl (excl:shell (format nil "cl sndplay.c -I. -DMUS_WINDOZE libclm.lib~%"))
-    )
-
-#-windoze
-  (let ((prog-name (concatenate 'string clm::*clm-binary-directory* "sndplay"))
-	(source-name (concatenate 'string clm::*clm-source-directory* "sndplay.c")))
-    (when (or (not (probe-file prog-name))
-	      (> (file-write-date source-name) (file-write-date prog-name)))
-      (let ((dacstr (concatenate 'string
-				 c-compiler
-				 *cflags*
-				 " "
-				 clm::*clm-binary-directory* "xen.o "
-				 clm::*clm-binary-directory* "headers.o "
-				 clm::*clm-binary-directory* "audio.o "
-				 clm::*clm-binary-directory* "io.o "
-				 clm::*clm-binary-directory* "sound.o "
-				 clm::*clm-binary-directory* "clm.o "
-				 clm::*clm-binary-directory* "vct.o "
-				 source-name
-				 " -o "
-				 prog-name
-				 #+sgi " -laudio"
-				 #+alsa " -lasound"
-				 #+jack " -ljack -lsamplerate -lasound"
-				 ;#+sb-thread " -lpthread"
-				 #+(or macosx mac-osx) " -framework CoreAudio"
-				 " -lm"
-				 )))
-	(princ (format nil "; Building sndplay program: ~S~%" prog-name)) (force-output)
-	#+excl (excl:shell dacstr)
-	#+cmu (extensions:run-program "/bin/csh" (list "-fc" dacstr) :output t)
-	#+lispworks (sys::run-shell-command dacstr)
-	#+openmcl (ccl:run-program "/bin/csh" (list "-fc" dacstr) :output t)
-	#+sbcl (sb-ext:run-program "/bin/csh" (list "-fc" dacstr) :output t)
-	#+clisp (ext::shell dacstr)
-	)))
 
 
 ;;; --------------------------------
 ;;; CLM proper
 
-(compile-and-load "ffi")
-
-#+(and (not (or big-endian little-endian)) clisp)
-  (if (= (clm::clm-little-endian) 1)
-      (pushnew :little-endian *features*)
-    (pushnew :big-endian *features*))
-;; too late for defaults.lisp but what can I do?
-
-(compile-and-load "mus")
-(compile-and-load "run")
-(compile-and-load "sound")
-(compile-and-load "defins")
-(compile-and-load "env")
-(compile-and-load "export")
-(compile-and-load "clm1") ; added 15-Apr-02
-
-;;; --------------------------------
-;;; initialize CLM
-
-#+sbcl (shadowing-import 'clm:double) ;#%$^#@!!!! 
-(use-package :clm)
-
-;#+(and ccrma excl) (with-open-file (ifile "/etc/clm.conf" :direction :input :if-does-not-exist nil) (load ifile))
-;;; it might be nice to make this a documented feature, and perhaps compatible with /etc/snd.conf
-
-#-(or cmu sbcl)
-(let ((init-file (merge-pathnames (or clm::*clm-init* "clm-init") 
-				  #+excl excl::*source-pathname*
-				  #+openmcl ccl:*loading-file-source-file*
-				  #+(or clisp lispworks) *load-pathname*
-				  )))
-  (with-open-file (ifile init-file	;bug -- with-open-file of nonexistent file gets CLOSE error no matter what
-		   :direction :input
-		   :if-does-not-exist nil)
-    (if (streamp ifile) 
-	(load init-file))))
-
-#+(or cmu sbcl)
-(let ((init-file (open (merge-pathnames (or clm::*clm-init* "clm-init") 
- 					(truename *load-pathname*))
-		       :direction :input 
-		       :if-does-not-exist nil)))
-  (if init-file
-      (progn
-	(load init-file)
-	(close init-file))))
-  
-;;; see README.clm for current status
-
-(clm-initialize-links)
+; (compile-and-load "ffi")
+;
+; #+(and (not (or big-endian little-endian)) clisp)
+;   (if (= (clm::clm-little-endian) 1)
+;       (pushnew :little-endian *features*)
+;     (pushnew :big-endian *features*))
+; ;; too late for defaults.lisp but what can I do?
+;
+; (compile-and-load "mus")
+; (compile-and-load "run")
+; (compile-and-load "sound")
+; (compile-and-load "defins")
+; (compile-and-load "env")
+; (compile-and-load "export")
+; (compile-and-load "clm1") ; added 15-Apr-02

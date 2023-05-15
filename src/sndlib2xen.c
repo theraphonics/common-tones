@@ -1,9 +1,9 @@
 /* Tie sndlib into Xen */
 
-#include "mus-config.h"
+#include "../headers/mus-config.h"
 
 #if USE_SND
-  #include "snd.h"
+  #include "../headers/snd.h"
 #else
   #if HAVE_RUBY
     #define PROC_FALSE "false"
@@ -28,12 +28,12 @@
   #pragma warning(disable: 4244)
 #endif
 
-#include "_sndlib.h"
-#include "sndlib-strings.h"
-#include "vct.h"
-#include "clm.h"
-#include "sndlib2xen.h"
-#include "clm2xen.h"
+#include "../headers/_sndlib.h"
+#include "../headers/sndlib-strings.h"
+#include "../headers/vct.h"
+#include "../headers/clm.h"
+#include "../headers/sndlib2xen.h"
+#include "../headers/clm2xen.h"
 
 #ifndef S_set
   #if HAVE_RUBY

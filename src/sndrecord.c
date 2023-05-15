@@ -1,12 +1,12 @@
 /* sndrecord records a sound */
 
-#include <mus-config.h>
+#include "../headers/mus-config.h"
 
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "_sndlib.h"
+#include "../headers/_sndlib.h"
 
 #if (defined(HAVE_LIBC_H) && (!defined(HAVE_UNISTD_H)))
   #include <libc.h>

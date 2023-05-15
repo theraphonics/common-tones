@@ -1,4 +1,4 @@
-#include "mus-config.h"
+#include "../headers/mus-config.h"
 
 #if (defined(__GNUC__)) && (!(defined(__cplusplus)))
   #define _GNU_SOURCE
@@ -33,7 +33,7 @@
 
 #include <sys/stat.h>
 
-#include "_sndlib.h"
+#include "../headers/_sndlib.h"
 
 #if (!USE_SND)
 #define mus_clear_floats(Arr, Len)		\
@@ -2209,12 +2209,14 @@ char *mus_getcwd(void)
 #if (!defined(_MSC_VER)) && (!defined(_WIN32)) /* _WIN32 for mingw */
   path_max = pathconf("/", _PC_PATH_MAX);
 #endif
+  if (path_max < 1024)
+    {
 #if defined(PATH_MAX)
-  if (path_max < 1024)
-    path_max = PATH_MAX;
+      path_max = PATH_MAX;
 #endif
-  if (path_max < 1024)
-    path_max = 1024;
+      if (path_max < 1024) 
+	path_max = 1024;
+    }
   for (i = path_max;; i *= 2)
     {
       char *res;

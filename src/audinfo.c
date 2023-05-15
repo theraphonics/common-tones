@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "sndlib.h"
+#include "../headers/sndlib.h"
 
 int main(int argc, char *argv[])
 {

@@ -18,7 +18,7 @@
 ;;;   windowed-envelope                        return windowed portion of envelope
 ;;;   stretch-envelope                         attack and decay portions
 
-(in-package :clm)
+(in-package :common-tones)
 
 ;;; List Interpolation -- assume a list of x y pairs (i.e. envelope breakpoints or synth tables)
 

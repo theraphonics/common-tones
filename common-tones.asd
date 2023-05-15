@@ -1,37 +1,42 @@
-;;; ASDF system definition file for CLM
-;;; For information on ASDF see: http://www.cliki.net/asdf
-;;;
-;;; To load CLM from a non-standard install location:
-;;;
-;;; (require :asdf)
-;;; (push "/path/to/clm-3/" asdf:*central-registry*)
-;;; (asdf:operate 'asdf:load-source-op :clm)
-;;;
-;;; To download/install/load CLM from its archive:
-;;;
-;;; (require :asdf)
-;;; (progn (push "/path/to/asdf-install/" asdf:*central-registry*)
-;;;        (asdf:operate 'asdf:load-op 'asdf-install))
-;;; (asdf-install:install 'clm)
-;;; (asdf:operate 'asdf:load-source-op 'clm)
+;;; ASDF system definition file for common-tones
+(in-package :asdf)
 
-;; from Rick Taube in 2006:
-; (asdf:defsystem "clm"
-;   :description "Common Lisp Music"
-;   :version "3"
-;   :author "William Schottstaedt <bil (at) ccrma (dot) stanford (dot) edu>"
-;   :licence "BSD or whatever"
-;   :components ((:file "all" )))
+(defsystem "common-tones"
+    :depends-on ("cffi" "bordeaux-threads")
+    :description "common-tones synthesis library (forked from CLM-V)"
+    :version "0.1"
+    :author "Josh Armenta"
+    :licence "BSD"
+    :serial t
+    :components
+    ((:file "common-tones")
+     (:file "constants")
+     (:file "generics")
+     (:file "initmus")
+     (:file "all")
+     (:file "ffi")
+     (:file "mus")
+     (:file "run")
+     (:file "sound")
+     (:file "defins")
+     (:file "env")
+     (:file "export")
+     (:file "clm1")
+     (:file "temp-init")))
 
-(in-package :asdf-user)
-
-;; from Tito Latini 14-Dec-16:
-(asdf:defsystem "clm"
-   :description "Common Lisp Music"
-   :version "5"
-   :author "William Schottstaedt <bil (at) ccrma (dot) stanford (dot) edu>"
-   :licence "BSD or whatever"
-   :perform (compile-op (o c)
-	      (load (system-relative-pathname "clm" "all.lisp"))))
-
-
+(defsystem "common-tones/plugins"
+  :depends-on ("common-tones")
+  :pathname "t/" ;; specify the subdirectory
+  :components
+  ((:file "plugins")
+    (:file "add-and-cut" :depends-on ("plugins"))
+    (:file "db-to-linear" :depends-on ("plugins"))
+    (:file "dur-gliss" :depends-on ("plugins"))
+    (:file "fft-mag-and-phase" :depends-on ("plugins"))
+    (:file "gliss-dur" :depends-on ("plugins"))
+    (:file "hey" :depends-on ("plugins"))
+    (:file "load-ins" :depends-on ("plugins"))
+    (:file "remote-play" :depends-on ("plugins"))
+    (:file "rmix" :depends-on ("plugins"))
+    (:file "sf-ssf" :depends-on ("plugins"))
+    (:file "with-instruments" :depends-on ("plugins"))))

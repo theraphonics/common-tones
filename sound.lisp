@@ -1,4 +1,4 @@
-(in-package :clm)
+(in-package :common-tones)
 
 (defvar *open-input-explicit-output* nil)
 (defvar *open-input-explicit-reverb* nil)
