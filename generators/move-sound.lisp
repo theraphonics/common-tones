@@ -1,5 +1,6 @@
 (in-package :common-tones/generators)
-;;; -------- move-sound (dlocsig) --------
+/*!< -------- move-sound (dlocsig) --------
+
 
 (defclass move-sound ()
   ((outf :initform nil :initarg :outf :accessor dlocs-outf)

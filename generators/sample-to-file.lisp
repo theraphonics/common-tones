@@ -1,5 +1,6 @@
 (in-package :common-tones/generators)
-;;; -------- SAMPLE->FILE --------
+/*!< -------- SAMPLE->FILE --------
+
 
 (defclass sample->file ()
   ((loc :initform 0 :initarg :start :accessor s2f-loc)

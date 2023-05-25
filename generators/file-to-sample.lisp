@@ -1,5 +1,6 @@
 (in-package :common-tones/generators)
-;;; -------- FILE->SAMPLE --------
+/*!< -------- FILE->SAMPLE --------
+
 
 (defclass file->sample ()
   ((fil :initform nil :initarg :fil :accessor f2s-fil)

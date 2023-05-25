@@ -1,16 +1,28 @@
-;;; Moog style four pole lowpass filter clm unit generator
-;;;   low pass, 24db/Oct, variable resonance, warm, analog sound ;-)
-;;;   [all this digital wizardry and we're back where we started!]
-;;;
-;;; original C instrument by Tim Stilson
-;;; translation into clm and tuning by 
-;;;   Fernando Lopez-Lezcano, nando@ccrma.stanford.edu
-;;;   http://ccrma.stanford.edu/~nando/clm/moog
-;;; Michael Edwards added the do-saturate argument, 23-Nov-10
+/*!< Moog style four pole lowpass filter clm unit generator
 
-;;; bil says: if you get "setf: unknown accessor: MOOG-Q in (MOOG-Q F)"
-;;;   or something like that from this code, trying compiling this file
-;;;   before loading it.
+/*!< low pass, 24db/Oct, variable resonance, warm, analog sound ;-)
+
+/*!< [all this digital wizardry and we're back where we started!]
+
+/*!<
+
+/*!< original C instrument by Tim Stilson
+
+/*!< translation into clm and tuning by
+
+/*!< Fernando Lopez-Lezcano, nando@ccrma.stanford.edu
+
+/*!< http://ccrma.stanford.edu/~nando/clm/moog
+
+/*!< Michael Edwards added the do-saturate argument, 23-Nov-10
+
+
+/*!< bil says: if you get "setf: unknown accessor: MOOG-Q in (MOOG-Q F)"
+
+/*!< or something like that from this code, trying compiling this file
+
+/*!< before loading it.
+
 
 
 (defmacro saturate(x)
@@ -21,7 +33,7 @@
 	   ,xs)))))
 
 (defparameter moog-gaincoeffs
-    '(0.999969 0.990082 0.980347 0.970764 0.961304 0.951996 0.94281 0.933777 0.924866 0.916077 
+    '(0.999969 0.990082 0.980347 0.970764 0.961304 0.951996 0.94281 0.933777 0.924866 0.916077
       0.90741 0.898865 0.890442 0.882141  0.873962 0.865906 0.857941 0.850067 0.842346 0.834686
       0.827148 0.819733 0.812378 0.805145 0.798004 0.790955 0.783997 0.77713 0.770355 0.763672
       0.75708  0.75058 0.744141 0.737793 0.731537 0.725342 0.719238 0.713196 0.707245 0.701355
@@ -43,10 +55,10 @@
       0.264252 0.262909 0.261566 0.260223 0.258911 0.257599 0.256317 0.255035 0.25375))
 
 (defparameter moog-gaintable
-    (make-double-array (length moog-gaincoeffs) 
+    (make-double-array (length moog-gaincoeffs)
 		       :initial-contents (mapcar #'double moog-gaincoeffs)))
 
-(defparameter moog-rawdata 
+(defparameter moog-rawdata
     '((1.00 730.1)
       (2.00 1423.8)
       (3.00 2117.4)
@@ -70,8 +82,8 @@
       (19.85 21904.0)))
 
 (defun create-moog-freqtable (&optional (data moog-rawdata))
-  (loop for set in data 
-      collect (/ (second set) 22050) 
+  (loop for set in data
+      collect (/ (second set) 22050)
       collect (if (< (first set) 10)
 		  (- (/ (first set) 10) 1)
 		(/ (- (first set) 10) 10))))
@@ -112,13 +124,20 @@
   (frequency 440.0)
   (Q 0.9))
 
-;;; Create a ug structure. 
-;;;   freq: cutoff frequency in Hertz
-;;;   Q: resonance, 0->no resonance, 1->oscilates at freq
-;;;
-;;; Note: the relation between freq and the actual cutoff is not exactly linear but
-;;;       I prefered to translate Hz into the internal parameter rather than controlling
-;;;       the cutoff frequency in terms of a number that goes between -1 and 1. 
+/*!< Create a ug structure.
+
+/*!< freq: cutoff frequency in Hertz
+
+/*!< Q: resonance, 0->no resonance, 1->oscilates at freq
+
+/*!<
+
+/*!< Note: the relation between freq and the actual cutoff is not exactly linear but
+
+/*!< I prefered to translate Hz into the internal parameter rather than controlling
+
+/*!< the cutoff frequency in terms of a number that goes between -1 and 1.
+
 
 (clm::def-optkey-fun make-moog-filter ((frequency 440)
 				       (Q 0.9))
@@ -127,7 +146,8 @@
 	     :s (make-array 4 :initial-contents '(0 0 0 0))
 	     :A 0.0))
 
-;;; Macro to do the filtering
+/*!< Macro to do the filtering
+
 #|
 (defmacro moog-filter (m sig)
   ;; generate internal symbols so there's no potential name collision
@@ -158,7 +178,7 @@
 	 (setf ,ix (* ,fc 99.0)
 	       ,ixint (floor ,ix)
 	       ,ixfrac (- ,ix ,ixint)
-	       ,A (* ,A (moog-Q ,m) 
+	       ,A (* ,A (moog-Q ,m)
 		     (+ (* (- 1 ,ixfrac)(aref moog-gaintable (+ ,ixint 99)))
 			(* ,ixfrac (aref moog-gaintable (+ ,ixint 100)))))
 	       (moog-A ,m) ,A)
@@ -201,9 +221,8 @@
          (setf ,ix (* ,fc 99.0)
                ,ixint (floor ,ix)
                ,ixfrac (- ,ix ,ixint)
-               ,A (* ,A (moog-Q ,m) 
+               ,A (* ,A (moog-Q ,m)
                      (+ (* (- 1 ,ixfrac)(aref moog-gaintable (+ ,ixint 99)))
                         (* ,ixfrac (aref moog-gaintable (+ ,ixint 100)))))
                (moog-A ,m) ,A)
          ,out))))
- 

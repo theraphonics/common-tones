@@ -1,26 +1,46 @@
-;;; Envelope handlers
-;;;
-;;; I'm using "envelope" to mean a list of breakpoints, and "env" to mean the result of make-env -- the argument to env
-;;;
-;;;   envelope-length e                        number of break points in e
-;;;   envelope-reverse e                       turn e backwards
-;;;   envelope-concatenate es...               concatenate envelopes into one envelope
-;;;   merge-breakpoints brkpts                 sort breakpoints and merge into envelope
-;;;   envelope-funcall, envelope-apply, envelope-map apply or map some function to or across envelope(s)
-;;;   envelope+ es...                          add all envelopes together
-;;;   envelope* es...                          multiply envelopes together 
-;;;   envelope-simplify e &optional ygrid xgrid simplify e
-;;;   fft-envelope-simplify e &optional cutoff same but use fft filtering
-;;;   envelope-repeat                          repeat/reflect envelope
-;;;   envelope-exp                             exp segments
-;;;   power-env, make-power-env                generator for extended envelopes (each segment has its own base)
-;;;   exp-envelope, dB-envelope, make-dB-env, semitones-envelope, make-semitones-env, octaves-envelope, make-octaves-env
-;;;   windowed-envelope                        return windowed portion of envelope
-;;;   stretch-envelope                         attack and decay portions
+/*!< Envelope handlers
+
+/*!<
+
+/*!< I'm using "envelope" to mean a list of breakpoints, and "env" to mean the result of make-env -- the argument to env
+
+/*!<
+
+/*!< envelope-length e                        number of break points in e
+
+/*!< envelope-reverse e                       turn e backwards
+
+/*!< envelope-concatenate es...               concatenate envelopes into one envelope
+
+/*!< merge-breakpoints brkpts                 sort breakpoints and merge into envelope
+
+/*!< envelope-funcall, envelope-apply, envelope-map apply or map some function to or across envelope(s)
+
+/*!< envelope+ es...                          add all envelopes together
+
+/*!< envelope* es...                          multiply envelopes together
+
+/*!< envelope-simplify e &optional ygrid xgrid simplify e
+
+/*!< fft-envelope-simplify e &optional cutoff same but use fft filtering
+
+/*!< envelope-repeat                          repeat/reflect envelope
+
+/*!< envelope-exp                             exp segments
+
+/*!< power-env, make-power-env                generator for extended envelopes (each segment has its own base)
+
+/*!< exp-envelope, dB-envelope, make-dB-env, semitones-envelope, make-semitones-env, octaves-envelope, make-octaves-env
+
+/*!< windowed-envelope                        return windowed portion of envelope
+
+/*!< stretch-envelope                         attack and decay portions
+
 
 (in-package :common-tones)
 
-;;; List Interpolation -- assume a list of x y pairs (i.e. envelope breakpoints or synth tables)
+/*!< List Interpolation -- assume a list of x y pairs (i.e. envelope breakpoints or synth tables)
+
 
 (defun envelope-interp (x fn &optional (base 1)) ;order of args is like NTH
   (cond ((null fn) 0.0)			;no data -- return 0.0
@@ -40,7 +60,7 @@
 	       (+ (second fn)		;y0+[[[y1-y0] [-1.0 + [base ^ [x-x0]/[x1-x0]]] / [base-1]
 		  (* (/ (- (fourth fn) (second fn))
 			(- base 1.0))	;scaled y1-y0
-		     (- (expt base (/ (- x (first fn)) 
+		     (- (expt base (/ (- x (first fn))
 				      (- (third fn) (first fn))))
 			1.0)))))))
 	(t (envelope-interp x (cddr fn) base))))	;go on looking for x segment
@@ -59,7 +79,8 @@
   (if (endp env) nil
       (append (list (car env) (+ offset (* scale (cadr env))))
 	      (scale-envelope (cddr env) scale offset))))
-;;; version using nth and a loop was a little slower than this despite all the appends
+/*!< version using nth and a loop was a little slower than this despite all the appends
+
 
 (defun normalize-envelope (env &optional (new-max 1.0))
   (scale-envelope env (/ new-max (max-envelope env))))
@@ -77,13 +98,13 @@
 
 (defun merge-breakpoints (&rest breakpoints)
   (if breakpoints
-      (apply #'append 
-	     (sort (remove-duplicates breakpoints 
-				      :test #'= 
-				      :key #'car) 
+      (apply #'append
+	     (sort (remove-duplicates breakpoints
+				      :test #'=
+				      :key #'car)
 		   #'< :key #'car))))
 
-(defun envelope-concatenate (&rest envs) 
+(defun envelope-concatenate (&rest envs)
   ;; previous version buggy, fixed by Anders Vinjar 6-Jan-97
   (if (= (length envs) 1)
       (copy-list (first envs))
@@ -116,13 +137,15 @@
 
 (defun envelope-map (function envelope &rest more-envelopes)
   (let ((first-group (envelope-funcall function envelope))
-	(second-group (loop for i in more-envelopes 
+	(second-group (loop for i in more-envelopes
 		       append (envelope-funcall function i))))
     (apply #'merge-breakpoints (append first-group second-group))))
 
 
-;;; what we actually want here is to run through all the envelopes in parallel (as per mapcar, I think)
-;;; using envelope-interp to get y at the current x and then call the function on that list of y's:
+/*!< what we actually want here is to run through all the envelopes in parallel (as per mapcar, I think)
+
+/*!< using envelope-interp to get y at the current x and then call the function on that list of y's:
+
 
 (defun funcall-breakpoint (function x y)
   (list x (funcall function x y)))
@@ -131,59 +154,60 @@
   (let ((new-e nil)
 	(current-x (loop for x in envelopes minimize (car x)))
 	(last-x (loop for x in envelopes maximize (envelope-last-x x))))
-    (setf new-e 
-      (funcall-breakpoint function 
-			  current-x 
-			  (loop for x in envelopes 
+    (setf new-e
+      (funcall-breakpoint function
+			  current-x
+			  (loop for x in envelopes
 			   collect (envelope-interp current-x x))))
     (loop until (>= current-x last-x) do
-      (setf current-x (loop for x in envelopes 
-		       minimize (or (loop for y in x by #'cddr 
-				     if (> y current-x) 
-				     return y) 
+      (setf current-x (loop for x in envelopes
+		       minimize (or (loop for y in x by #'cddr
+				     if (> y current-x)
+				     return y)
 				    last-x)))
-      (setf new-e (append new-e 
-			  (funcall-breakpoint function 
-					      current-x 
-					      (loop for x in envelopes 
+      (setf new-e (append new-e
+			  (funcall-breakpoint function
+					      current-x
+					      (loop for x in envelopes
 					       collect (envelope-interp current-x x))))))
     new-e))
-      
-(defun envelope+ (&rest envelopes) 
-  (apply #'map-across-envelopes 
-	 (append (list #'(lambda (x y) 
-			   (declare (ignore x)) 
-			   (apply #'+ y))) 
+
+(defun envelope+ (&rest envelopes)
+  (apply #'map-across-envelopes
+	 (append (list #'(lambda (x y)
+			   (declare (ignore x))
+			   (apply #'+ y)))
 		 envelopes)))
 
-(defun envelope* (&rest envelopes) 
-  (apply #'map-across-envelopes 
-	 (append (list #'(lambda (x y) 
-			   (declare (ignore x)) 
-			   (apply #'* y))) 
+(defun envelope* (&rest envelopes)
+  (apply #'map-across-envelopes
+	 (append (list #'(lambda (x y)
+			   (declare (ignore x))
+			   (apply #'* y)))
 		 envelopes)))
 
-(defun envelope-max (&rest envelopes) 
-  (apply #'map-across-envelopes 
-	 (append (list #'(lambda (x y) 
-			   (declare (ignore x)) 
-			   (apply #'max y))) 
+(defun envelope-max (&rest envelopes)
+  (apply #'map-across-envelopes
+	 (append (list #'(lambda (x y)
+			   (declare (ignore x))
+			   (apply #'max y)))
 		 envelopes)))
 
 #|
-;;; and so on -- here are env/ and env- 
-(defun envelope/ (&rest envelopes) 
-  (apply #'map-across-envelopes 
-	 (append (list #'(lambda (x y) 
-			   (declare (ignore x)) 
-			   (apply #'/ y))) 
+/*!< and so on -- here are env/ and env-
+
+(defun envelope/ (&rest envelopes)
+  (apply #'map-across-envelopes
+	 (append (list #'(lambda (x y)
+			   (declare (ignore x))
+			   (apply #'/ y)))
 		 envelopes)))
 
-(defun envelope- (&rest envelopes) 
-  (apply #'map-across-envelopes 
-	 (append (list #'(lambda (x y) 
-			   (declare (ignore x)) 
-			   (apply #'- y))) 
+(defun envelope- (&rest envelopes)
+  (apply #'map-across-envelopes
+	 (append (list #'(lambda (x y)
+			   (declare (ignore x))
+			   (apply #'- y)))
 		 envelopes)))
 |#
 
@@ -265,8 +289,8 @@
 	  (let* ((y-scl (/ ygrid (- ymax ymin)))
 		 (x-scl (/ (or xgrid ygrid) (- xmax xmin)))
 		 (px nil) (py nil)
-		 (qx nil) (qy nil) 
-		 (tx nil) (ty nil) 
+		 (qx nil) (qy nil)
+		 (tx nil) (ty nil)
 		 (qtx nil) (qty nil))
 	    (loop for ttx in env by #'cddr and
 	              tty in (cdr env) by #'cddr do
@@ -289,7 +313,7 @@
 	    (push qty new-env)
 	    (nreverse new-env))))
     (copy-seq env)))
-	       
+
 
 
 (defun reduce-amplitude-quantization-noise (e dur amp &optional (ramp-dur .5) (low-amp .005))
@@ -325,7 +349,7 @@
 
 
 (defun meld-envelopes (e0 e1)
-  (if (not e0) 
+  (if (not e0)
       e1
     (if (not e1)
 	e0
@@ -339,16 +363,22 @@
 			      e0 e1)))))
 
 
-;;; fft-envelope-simplify uses fft filtering to smooth an envelope -- aimed at Sansy envelopes -- there
-;;; are lots of variations on this idea depending on the application.  In "Numerical Recipes" they
-;;; remove the linear trend of the data, but I have found that causes confusion when the underlying
-;;; envelope is really a randomly jittered sine wave without any true linear trend.  Also, here I
-;;; believe the min and max values and rescale the result to match the ambitus of the input -- 
-;;; cave canem or whatever.
+/*!< fft-envelope-simplify uses fft filtering to smooth an envelope -- aimed at Sansy envelopes -- there
+
+/*!< are lots of variations on this idea depending on the application.  In "Numerical Recipes" they
+
+/*!< remove the linear trend of the data, but I have found that causes confusion when the underlying
+
+/*!< envelope is really a randomly jittered sine wave without any true linear trend.  Also, here I
+
+/*!< believe the min and max values and rescale the result to match the ambitus of the input --
+
+/*!< cave canem or whatever.
+
 
 (defun fft-envelope-simplify (e &optional cutoff)
-  (let* ((min-step (loop for x0 in e by #'cddr and 
-		             x1 in (cddr e) by #'cddr 
+  (let* ((min-step (loop for x0 in e by #'cddr and
+		             x1 in (cddr e) by #'cddr
 		    minimize (- x1 x0)))
 	 (x-extent (- (envelope-last-x e) (first e)))
 	 (x0 (first e))
@@ -364,7 +394,7 @@
 	   (midpt (* .5 (+ min-y0 max-y0))))
       (loop for i from 0 to pts do
 	(decf (aref datar i) midpt))
-      (fft datar datai n 1)    
+      (fft datar datai n 1)
       (loop for i from cut-n below n do
 	(setf (aref datar i) (double 0.0))
 	(setf (aref datai i) (double 0.0)))
@@ -373,8 +403,8 @@
 	     (max-y1 (loop for i from 0 to pts maximize (aref datar i)))
 	     (inv-n (/ (- max-y0 min-y0) (- max-y1 min-y1)))
 	     (y-off (- (* inv-n min-y1) min-y0)))
-	(loop for i from 0 to pts and x from 0.0 by min-step 
-	 collect x 
+	(loop for i from 0 to pts and x from 0.0 by min-step
+	 collect x
 	 collect (- (* inv-n (aref datar i)) y-off))))))
 
 
@@ -394,17 +424,25 @@
 (defun x-norm (env xmax)
   ;; change x axis values so that they run to xmax
   (let ((scl (/ xmax (lastx env))))
-    (loop for x in env by #'cddr and y in (cdr env) by #'cddr 
+    (loop for x in env by #'cddr and y in (cdr env) by #'cddr
       collect (* x scl) collect y)))
 
-;;; repeat-envelope will repeat an envelope the number of times specified by its second argument.
-;;; Hence if you specify (repeat-envelope '(0 0 100 1) 2) the result will be (0 0 100 1 101 0 201 1).
-;;; Because the final y value was different from the first y value, a quick ramp will be 
-;;; inserted between repeats.  You can have every other repeat be a reflection of the given 
-;;; envelope by setting the optional second argument to t.  In that case,
-;;; (repeat-envelope '(0 0 100 1) 2 t) the result will be (0 0 100 1 200 0).  If 
-;;; you want the original x axis limits respected by the resultant envelope, set
-;;; the third argument ("x-normalized") to t.
+/*!< repeat-envelope will repeat an envelope the number of times specified by its second argument.
+
+/*!< Hence if you specify (repeat-envelope '(0 0 100 1) 2) the result will be (0 0 100 1 101 0 201 1).
+
+/*!< Because the final y value was different from the first y value, a quick ramp will be
+
+/*!< inserted between repeats.  You can have every other repeat be a reflection of the given
+
+/*!< envelope by setting the optional second argument to t.  In that case,
+
+/*!< (repeat-envelope '(0 0 100 1) 2 t) the result will be (0 0 100 1 200 0).  If
+
+/*!< you want the original x axis limits respected by the resultant envelope, set
+
+/*!< the third argument ("x-normalized") to t.
+
 
 (defun envelope-repeat (ur-env ur-num-times &optional reflected x-normalized)
   (let* ((env (if reflected (envelope-there-and-back-again ur-env) ur-env))
@@ -437,16 +475,26 @@
 
 
 
-;;; by Anders Vinjar:
-;;;
-;;; envelope-exp can be used to create exponential segments to include in
-;;; envelopes.  Given 2 or more breakpoints, it approximates the
-;;; curve between them using 'xgrid linesegments and 'power as the
-;;; exponent. 
-;;; 
-;;; env is a list of x-y-breakpoint-pairs,
-;;; power applies to whole envelope,
-;;; xgrid is how fine a solution to sample our new envelope with.
+/*!< by Anders Vinjar:
+
+/*!<
+
+/*!< envelope-exp can be used to create exponential segments to include in
+
+/*!< envelopes.  Given 2 or more breakpoints, it approximates the
+
+/*!< curve between them using 'xgrid linesegments and 'power as the
+
+/*!< exponent.
+
+/*!<
+
+/*!< env is a list of x-y-breakpoint-pairs,
+
+/*!< power applies to whole envelope,
+
+/*!< xgrid is how fine a solution to sample our new envelope with.
+
 
 (defun envelope-exp (env &optional (power 1.0) (xgrid 100))
   (let* ((min (min-envelope env))
@@ -476,13 +524,19 @@
 |#
 
 
-;;; extension of env to provide individual base on each segment (include 1 and 0 => linear and step)
-;;; (make-power-env (envelope (scaler 1.0) (offset 0.0) duration)
-;;;    returns a penv struct containing an array of envelopes
-;;;    where the envelope is a sequence of triples [x y base]
+/*!< extension of env to provide individual base on each segment (include 1 and 0 => linear and step)
 
-;;; (7-17-04): this code was much prettier in CLM-2, but in CLM-3
-;;;   def-struct can't handle generator fields
+/*!< (make-power-env (envelope (scaler 1.0) (offset 0.0) duration)
+
+/*!< returns a penv struct containing an array of envelopes
+
+/*!< where the envelope is a sequence of triples [x y base]
+
+
+/*!< (7-17-04): this code was much prettier in CLM-2, but in CLM-3
+
+/*!< def-struct can't handle generator fields
+
 (defstruct penv envs total-envs current-env current-pass)
 
 (defmacro power-env (envs total-envs current-env current-pass)
@@ -525,9 +579,12 @@
      (loop for i from 0 below nd do
        (outa i (power-env envs total-envs current-env current-pass))))))
 
-;;; (with-sound () (test-power-env 1.0 '(0 0 .325  1 1 32  2 0 0)))
-;;; (with-sound () (test-power-env 1.0 '(0 0 .325  1 1 32  2 .5 1  3 1.0 .1234 4 0.0 0.0)))
-;;; (with-sound () (test-power-env 1.0 '(0 0 0  1 1 1  2 .5 .123  3 1.0 321 4 0.0 0.0)))
+/*!< (with-sound () (test-power-env 1.0 '(0 0 .325  1 1 32  2 0 0)))
+
+/*!< (with-sound () (test-power-env 1.0 '(0 0 .325  1 1 32  2 .5 1  3 1.0 .1234 4 0.0 0.0)))
+
+/*!< (with-sound () (test-power-env 1.0 '(0 0 0  1 1 1  2 .5 .123  3 1.0 321 4 0.0 0.0)))
+
 |#
 
 
@@ -553,7 +610,7 @@
     (print maxdiff)))
 
 ;(with-sound (:channels 2 :statistics t) (expins 1.0 440.0 .5))
-; 8.189678e-5 
+; 8.189678e-5
 ;
 ; you can get as close as you like to a given exponential (i.e.
 ; thinking in terms of e^(-kt)) by fiddling with the base:
@@ -585,26 +642,45 @@
 
 
 
-;;;=============================================================================
-;;; Exponential envelopes
-;;;=============================================================================
+/*!< =============================================================================
 
-;;; Approximate an exponential envelope with a given base and error bound
-;;; by Fernando Lopez-Lezcano (nando@ccrma.stanford.edu)
-;;;
-;;; base:
-;;;   step size of the exponential envelope
-;;; error:
-;;;   error band of the approximation
-;;; scaler:
-;;;   scaling factor for the y coordinates
-;;; offset:
-;;;   offset for the y coordinates
-;;; cutoff:
-;;;   lowest value of the exponentially rendered envelope, values lower than
-;;;   this cutoff value will be approximated as cero.
-;;; out-scaler
-;;;   scaler for the converted values
+/*!< Exponential envelopes
+
+/*!< =============================================================================
+
+
+/*!< Approximate an exponential envelope with a given base and error bound
+
+/*!< by Fernando Lopez-Lezcano (nando@ccrma.stanford.edu)
+
+/*!<
+
+/*!< base:
+
+/*!< step size of the exponential envelope
+
+/*!< error:
+
+/*!< error band of the approximation
+
+/*!< scaler:
+
+/*!< scaling factor for the y coordinates
+
+/*!< offset:
+
+/*!< offset for the y coordinates
+
+/*!< cutoff:
+
+/*!< lowest value of the exponentially rendered envelope, values lower than
+
+/*!< this cutoff value will be approximated as cero.
+
+/*!< out-scaler
+
+/*!< scaler for the converted values
+
 
 (defun exp-envelope (env &key
 		    (base (expt 2 (/ 12)))
@@ -673,12 +749,18 @@
 					(* out-scaler (expt base nyscl))
 				      0))))))))
 
-;;; Amplitude envelope in dBs
-;;;
-;;; The db scale is defined as:
-;;;    value(db)=(* 20 (log10 (/ vin vref)))
-;;;  where:
-;;;    vref=1.0 reference value = digital clipping
+/*!< Amplitude envelope in dBs
+
+/*!<
+
+/*!< The db scale is defined as:
+
+/*!< value(db)=(* 20 (log10 (/ vin vref)))
+
+/*!< where:
+
+/*!< vref=1.0 reference value = digital clipping
+
 
 (def-optkey-fun db-envelope (envelope
 			(cutoff -70)
@@ -699,7 +781,8 @@
 	    :scaler scaler :offset offset
 	    :base base :duration duration :end end))
 
-;;; Pitch envelopes (y units are semitone and octave intervals)
+/*!< Pitch envelopes (y units are semitone and octave intervals)
+
 
 (def-optkey-fun semitones-envelope (envelope
 			       (around 1.0)
@@ -743,8 +826,10 @@
 
 
 
-;;; return portion of env between x values beg and end 
-;;; (useful when checking portions of a mix or when using global envs)
+/*!< return portion of env between x values beg and end
+
+/*!< (useful when checking portions of a mix or when using global envs)
+
 
 (defun window-envelope (beg end env)
   (let ((nenv nil)
@@ -780,10 +865,11 @@
     (push lasty nenv)
     (nreverse nenv)))
 
-;;; return a new envelope taking into account the attack and decay times given
+/*!< return a new envelope taking into account the attack and decay times given
+
 
 (defun stretch-envelope (fn old-att new-att &optional old-dec new-dec)
-  (when (and old-dec (not new-dec)) 
+  (when (and old-dec (not new-dec))
     (setf new-dec (clm-cerror "assume new-decay = old-decay" old-dec #'numberp "incorrect number of arguments to stretch-env")))
   (when fn
     (let* ((x0 (car fn))
@@ -804,7 +890,7 @@
 	  (setf new-x new-att)
 	  (push new-x new-fn)
 	  (push y0 new-fn)
-	  (setf scl (if old-dec 
+	  (setf scl (if old-dec
 			(/ (- new-dec new-att) (- old-dec old-att))
 		      (/ (- last-x new-att) (- last-x old-att)))))
 	(when (and old-dec
@@ -825,7 +911,7 @@
 	  (setf x0 x1)
 	  (setf y0 y1)))
       (nreverse new-fn))))
-		
+
 
 (defun envelope->coeffs (&key (order 4)
 			      (envelope nil)
@@ -858,10 +944,8 @@
 		(incf xt (* (aref a m) .5 (cos (* pi (- am j))))))
 	    (setf (aref x j) (/ (* 2 xt) n))))))
     (let ((len (floor order 2)))
-      (append 
+      (append
        (loop for i from 1 to len collect (aref x i))
-       (if (oddp order) 
+       (if (oddp order)
 	   (loop for i from (1+ len) downto 1 collect (aref x i))
 	 (loop for i from len downto 1 collect (aref x i)))))))
-
-

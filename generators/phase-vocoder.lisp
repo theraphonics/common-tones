@@ -141,7 +141,8 @@
 (defmethod mus-length ((gen phase-vocoder)) (pv-N gen))
 (defmethod mus-increment ((gen phase-vocoder)) (pv-interp gen))
 (defmethod (setf mus-increment) (val (gen phase-vocoder)) (setf (pv-interp gen) val))
-;;;(defmethod mus-data ((gen phase-vocoder)) (pv-in-data gen))
+/*!< (defmethod mus-data ((gen phase-vocoder)) (pv-in-data gen))
+
 (defmethod mus-frequency ((gen phase-vocoder)) (pv-pitch gen))
 (defmethod (setf mus-frequency) (val (gen phase-vocoder)) (setf (pv-pitch gen) val))
 (defmethod mus-run ((gen phase-vocoder) &optional (arg1 0.0) (arg2 0.0)) (declare (ignore arg1 arg2)) (phase-vocoder gen))

@@ -1,5 +1,6 @@
 (in-package :common-tones/generators)
-;;; single sideband suppressed carrier amplitude modulation
+/*!< single sideband suppressed carrier amplitude modulation
+
 
 (defclass ssb-am ()
   ((up :initform nil :initarg :up :accessor ssb-am-up)

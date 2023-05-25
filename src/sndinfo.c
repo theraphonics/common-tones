@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 	    }
 	  chans = mus_sound_chans(argv[ctr]);
 	  samples = mus_sound_samples(argv[ctr]);
-	  comment = mus_sound_comment(argv[ctr]); 
+	  comment = mus_sound_comment(argv[ctr]);
 	  if ((chans > 0) && (srate > 0))
 	    length = (float)((double)samples / (double)(chans * srate));
 	  loops = mus_sound_loop_info(argv[ctr]);

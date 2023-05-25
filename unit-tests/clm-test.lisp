@@ -1,4 +1,5 @@
-;;; CLM-3 test suite
+/*!< CLM-3 test suite
+
 
 (defvar include-notelists nil)
 (defvar play-it t)
@@ -64,8 +65,10 @@
 
 (load "ffi-test.lisp")
 
-;;; --------------------------------------------------------------------------------
-;;; fm-violin, basic with-sound, reverb
+/*!< --------------------------------------------------------------------------------
+
+/*!< fm-violin, basic with-sound, reverb
+
 
 (setup-ins "v" "jcrev" "nrev")
 
@@ -74,7 +77,7 @@
        (dur (mus-sound-duration file)))
   (if (not (= chans 1)) (format t "initial test chans: ~A~%" chans))
   (if (fneq dur .2) (format t "initial test dur: ~A~%" dur)))
-       
+
 (let* ((file (with-sound (:play play-it :channels 2) (fm-violin 0 .2 440 .1)))
        (chans (mus-sound-chans file)))
   (if (not (= chans 2)) (format t "initial test stereo chans: ~A~%" chans)))
@@ -97,8 +100,10 @@
 
 
 
-;;; --------------------------------------------------------------------------------
-;;; ug2 -> all gens
+/*!< --------------------------------------------------------------------------------
+
+/*!< ug2 -> all gens
+
 
 #-acl-80 (when (setup-ins "ug2")
 
@@ -138,11 +143,11 @@
     (simple-env 7.5 .2 440.0 .1)
     (simple-amb 7.75 .2 440.0 .1)
     (simple-fof 8 1 270 .1 .001 730 .6 1090 .3 2440 .1) ;"Ahh"
-    (simple-fof 9 4 270 .1 0.005 730 .6 1090 .3 2440 .1 '(0 0 40 0 75 .2 100 1) 
+    (simple-fof 9 4 270 .1 0.005 730 .6 1090 .3 2440 .1 '(0 0 40 0 75 .2 100 1)
 		'(0 0 .5 1 3 .5 10 .2 20 .1 50 .1 60 .2 85 1 100 0))
-    (simple-fof 9 4 (* 6/5 540) .1 0.005 730 .6 1090 .3 2440 .1 '(0 0 40 0 75 .2 100 1) 
+    (simple-fof 9 4 (* 6/5 540) .1 0.005 730 .6 1090 .3 2440 .1 '(0 0 40 0 75 .2 100 1)
 		'(0 0 .5 .5 3 .25 6 .1 10 .1 50 .1 60 .2 85 1 100 0))
-    (simple-fof 9 4 135 .1 0.005 730 .6 1090 .3 2440 .1 '(0 0 40 0 75 .2 100 1) 
+    (simple-fof 9 4 135 .1 0.005 730 .6 1090 .3 2440 .1 '(0 0 40 0 75 .2 100 1)
 		'(0 0 1 3 3 1 6 .2 10 .1 50 .1 60 .2 85 1 100 0))
     (simple-osc-1 13 .5 440 1)
     (simple-rd 13.5 .45 .75 "oboe.snd")
@@ -165,14 +170,16 @@
     (simple-rdf 19 .45 1 "oboe.snd")
     (simple-f2s 19.5 .45 1 "oboe.snd")
     (simple-loc 20 .2 440 .1)
-    (simple-out 20.25 .2 440 .1)		  
+    (simple-out 20.25 .2 440 .1)
     (simple-dup 20.5 .2 440 .1)
     (simple-dup 20.75 .2 440 .1)
     ))
 
 
-;;; --------------------------------------------------------------------------------
-;;; fm-insect
+/*!< --------------------------------------------------------------------------------
+
+/*!< fm-insect
+
 
 (when (setup-ins "insect")
 
@@ -190,8 +197,10 @@
       (fm-insect 4.300  1.500   900.627  .09  amp 40 -20.707 locust 300.866 bug_hi  .246  .500))))
 
 
-;;; --------------------------------------------------------------------------------
-;;; birds
+/*!< --------------------------------------------------------------------------------
+
+/*!< birds
+
 
 (when (setup-ins "bird" "bigbird")
 
@@ -200,8 +209,10 @@
   (if include-notelists (load "bird.clm")))
 
 
-;;; --------------------------------------------------------------------------------
-;;; bagpipe
+/*!< --------------------------------------------------------------------------------
+
+/*!< bagpipe
+
 
 (when (setup-ins "canter" "drone")
 
@@ -222,7 +233,7 @@
 	(ranf '(0 .5 100 .5))
 	(index '(0 1 100 1))
 	(solid '(0 0 5 1 95 1 100 0))
-	(bassdr2 '(.5 .06 1 .62 1.5 .07 2.0 .6 2.5 .08 3.0 .56 4.0 .24 
+	(bassdr2 '(.5 .06 1 .62 1.5 .07 2.0 .6 2.5 .08 3.0 .56 4.0 .24
 		      5 .98 6 .53 7 .16 8 .33 9 .62 10 .12 12 .14 14 .86
 		      16 .12 23 .14 24 .17))
 	(tenordr '(.3 .04 1 .81 2 .27 3 .2 4 .21 5 .18 6 .35 7 .03 8 .07 9 .02 10 .025 11 .035))
@@ -284,8 +295,10 @@
 	       ind2 fmt2 amp3 ind3 fmt3 amp4 ind4 fmt4  ))))
 
 
-;;; --------------------------------------------------------------------------------
-;;; fm trumpet, reson, jcvoi
+/*!< --------------------------------------------------------------------------------
+
+/*!< fm trumpet, reson, jcvoi
+
 
 (when (setup-ins "trp" "reson" "jcvoi" "cellon" "mlbvoi" "noise" "prc96" "bell")
 
@@ -294,12 +307,12 @@
     (reson .5 1.0 440 .1 2 '(0 0 100 1) '(0 0 100 1) .1 .1 .1 5 .01 5 .01 0 1.0 0.01
 	   '((0 0 100 1) 1200 .5 .1 .1 0 1.0 .1 .1)
 	   '((0 1 100 0) 2400 .5 .1 .1 0 1.0 .1 .1))
-    (let ((ampf '(0 0 1 1 2 1 3 0))) 
+    (let ((ampf '(0 0 1 1 2 1 3 0)))
       (fm-voice 1.5 1 300 .8 3 1 ampf ampf ampf ampf ampf ampf ampf 1 0 0 .25 1 .01 0 ampf .01))
-    (vox-1 2 5 600 .2 '(0 0 25 1 75 1 100 0) '(0 0 5 .5 10 0 100 1) .1 '(0 I 5 OW 10 I 50 AE 100 OO) .01 .1)  
-    (cellon 3 1 220 .1 '(0 0 25 1 75 1 100 0) '(0 0 25 1 75 1 100 0) .75 1.0 0 0 0 0 1 0 0 220 
+    (vox-1 2 5 600 .2 '(0 0 25 1 75 1 100 0) '(0 0 5 .5 10 0 100 1) .1 '(0 I 5 OW 10 I 50 AE 100 OO) .01 .1)
+    (cellon 3 1 220 .1 '(0 0 25 1 75 1 100 0) '(0 0 25 1 75 1 100 0) .75 1.0 0 0 0 0 1 0 0 220
 	    '(0 0 25 1 75 1 100 0) 0 0 0 0 '(0 0 100 0) 0 0 0 0 '(0 0 100 0))
-    (fm-noise 4 2.0 500 .25 '(0 0 25 1 75 1 100 0) .1 .1 1000 
+    (fm-noise 4 2.0 500 .25 '(0 0 25 1 75 1 100 0) .1 .1 1000
 	      '(0 0 100 1) .1 .1 10 1000 '(0 0 100 1) 0 0 100 500 '(0 0 100 1) 0 0)
     (tubebell 3.5 1 440 .1)
     (wurley 4 1 440 .1)
@@ -310,8 +323,10 @@
     ))
 
 
-;;; --------------------------------------------------------------------------------
-;;; additive synthesis
+/*!< --------------------------------------------------------------------------------
+
+/*!< additive synthesis
+
 
 (when (setup-ins "add" "badd" "lbjPiano")
 
@@ -321,8 +336,10 @@
     (lbj-piano 2 1 440 .1)))
 
 
-;;; --------------------------------------------------------------------------------
-;;; physical modeling, part 1
+/*!< --------------------------------------------------------------------------------
+
+/*!< physical modeling, part 1
+
 
 (when (setup-ins "prc-toolkit95" "pluck" "maraca")
 
@@ -336,8 +353,10 @@
     (big-maraca 3 1 .25 0.95 0.9985 .03125 '(2300 5600 8100) '(0.96 0.995 0.995) .01)))
 
 
-;;; --------------------------------------------------------------------------------
-;;; ug3
+/*!< --------------------------------------------------------------------------------
+
+/*!< ug3
+
 
 (when (setup-ins "ug3")
   (with-sound (:play play-it)
@@ -390,12 +409,12 @@
 
 (when (setup-ins "ug4")
   (with-sound (:play play-it)
-    #-clisp (or1) 
-    #-clisp (or2) 
-    #-clisp (or3) 
-    #-clisp (or4) 
-    #-clisp (if1) 
-    #-clisp (let1) 
+    #-clisp (or1)
+    #-clisp (or2)
+    #-clisp (or3)
+    #-clisp (or4)
+    #-clisp (if1)
+    #-clisp (let1)
     (simple-multiarr)
     (doc-1 0 0.2 440.0 0.2)
     (doc-2 .25 0.2 440.0 0.2)
@@ -444,8 +463,10 @@
   ))
 
 
-;;; --------------------------------------------------------------------------------
-;;; simple filters
+/*!< --------------------------------------------------------------------------------
+
+/*!< simple filters
+
 
 (when (setup-ins "resflt" "addflt" "zd")
   (with-sound (:play play-it)
@@ -455,11 +476,13 @@
 	     '((0 0 100 1) (0 0 100 1) 1200 2400 .9 .995 .005)
 	     '((0 0 100 1) (0 0 100 1) 600 1200 .95 .995 .01))
     (zc 3 3 100 .1 20 100 .5)
-    (zc 3.5 3 100 .1 100 20 .95)))  
+    (zc 3.5 3 100 .1 100 20 .95)))
 
 
-;;; --------------------------------------------------------------------------------
-;;; pqw
+/*!< --------------------------------------------------------------------------------
+
+/*!< pqw
+
 
 (when (setup-ins "pqw" "pqwvox" "vox" "wavetrain")
   (with-sound (:play play-it)
@@ -472,16 +495,20 @@
     (grain-simp-sound "oboe.snd" 6 10 :grain-interval .15 :grain-interval-env '(0 .01 1 1))))
 
 
-;;; --------------------------------------------------------------------------------
-;;; pins
+/*!< --------------------------------------------------------------------------------
+
+/*!< pins
+
 
 (when (setup-ins "san")
   (with-sound (:play play-it)
     (pins 0 1 "oboe.snd" 1.0 :max-peaks 8)))
 
 
-;;; --------------------------------------------------------------------------------
-;;; expsrc
+/*!< --------------------------------------------------------------------------------
+
+/*!< expsrc
+
 
 (when (setup-ins "expsrc")
   (with-sound (:play play-it)
@@ -493,8 +520,10 @@
     (interleave-files 15 2 .2 .01 .1 "oboe.snd" "pistol.snd")))
 
 
-;;; --------------------------------------------------------------------------------
-;;; singer
+/*!< --------------------------------------------------------------------------------
+
+/*!< singer
+
 
 #-clisp
 (when (setup-ins "singer")
@@ -502,8 +531,10 @@
     (singer 0 .1 '((.4 ehh.shp test.glt 523.0 .8 0.0 .01) (.6 oo.shp test.glt 523.0 .7 .1 .01)))))
 
 
-;;; --------------------------------------------------------------------------------
-;;; formants
+/*!< --------------------------------------------------------------------------------
+
+/*!< formants
+
 
 (when (setup-ins "fade" #-clisp "tb")
   (with-sound (:play play-it)
@@ -512,9 +543,11 @@
     #-clisp (formant-noise 5 .1 .1)
     ))
 
-  
-;;; --------------------------------------------------------------------------------
-;;; old arithmetic tests
+
+/*!< --------------------------------------------------------------------------------
+
+/*!< old arithmetic tests
+
 
 (when (setup-ins "arith" "arith1" "arith2" "tnot" "btest")
   (with-sound (:play nil)
@@ -525,8 +558,10 @@
     (btest)))
 
 
-;;; --------------------------------------------------------------------------------
-;;; old gen tests
+/*!< --------------------------------------------------------------------------------
+
+/*!< old gen tests
+
 
 (when (setup-ins "ug" "ug1")
   (with-sound (:play play-it :channels 2)
@@ -542,11 +577,11 @@
     #-clisp (ha0 0 5000)
     (ha1 .5 .5))
   (with-sound (:play play-it :channels 2)
-    (let ((dur 15000)) 
+    (let ((dur 15000))
          #-clisp (ender)
-	 (s22 0 dur) (s25 (* dur 1) dur) 
+	 (s22 0 dur) (s25 (* dur 1) dur)
 	 (s27 (* dur 3) dur) (s29 (* dur 5) dur)
-	 (s34 (* dur 8) dur) (s36 (* dur 9) dur) 
+	 (s34 (* dur 8) dur) (s36 (* dur 9) dur)
 	 (s38 (* dur 11) dur 440.0)
 	 (arrclr)
 	 (mapenv2 0 .001 440 .1 '(0 0 1 1))))
@@ -560,8 +595,10 @@
       (simp8r (concatenate 'string "s8.snd") 0 120000 i 0))))
 
 
-;;; --------------------------------------------------------------------------------
-;;; mix
+/*!< --------------------------------------------------------------------------------
+
+/*!< mix
+
 
 (defun max-amp (file)
   (let* ((chans (sound-chans file))
@@ -589,72 +626,72 @@
 			  (fullmix "oboe.snd"))))
     (if (not (= (sound-chans file) 1)) (format t ";chans fullmix 1: ~A~%" (sound-chans file)))
     (if (fneq (max-amp file) (max-amp "oboe.snd")) (format t ";max fullmix 1: ~A ~A~%" (max-amp file) (max-amp "oboe.snd")))
-    (if (> (abs (- (sound-framples file) (sound-framples "oboe.snd"))) 1) 
+    (if (> (abs (- (sound-framples file) (sound-framples "oboe.snd"))) 1)
 	(format t ";framples fullmix 1: ~A != ~A~%" (sound-framples file) (sound-framples "oboe.snd")))
     )
-  
+
   (let ((file (with-sound (:play nil)
 			  (fullmix "oboe.snd" 0.0 1.0 0.0 (list (list .5))))))
     (if (not (= (sound-chans file) 1)) (format t ";chans fullmix 2: ~A~%" (sound-chans file)))
     (if (fneq (max-amp file) .07086) (format t ";max fullmix 2: ~A~%" (max-amp file)))
-    (if (> (abs (- (sound-framples file) *srate*)) 1) 
+    (if (> (abs (- (sound-framples file) *srate*)) 1)
 	(format t ";framples fullmix 2: ~A != ~A~%" (sound-framples file) *srate*))
     )
-  
+
   (let ((file (with-sound (:play nil)
 			  (fullmix "oboe.snd" 0.0 1.0 0.0 (list (list .5)) 2.0))))
     (if (not (= (sound-chans file) 1)) (format t ";chans fullmix 3: ~A~%" (sound-chans file)))
     (if (fneq (max-amp file) .0727) (format t ";max fullmix 3: ~A~%" (max-amp file)))
-    (if (> (abs (- (sound-framples file) *srate*)) 1) 
+    (if (> (abs (- (sound-framples file) *srate*)) 1)
 	(format t ";framples fullmix 3: ~A != ~A~%" (sound-framples file) *srate*))
     )
-  
+
   (let ((file (with-sound (:play nil :reverb jc-reverb)
 			  (fullmix "oboe.snd" 0.0 1.0 0.0 (list (list .5)) 2.0 .1))))
     (if (not (= (sound-chans file) 1)) (format t ";chans fullmix 4: ~A~%" (sound-chans file)))
-    (if (> (abs (- (sound-framples file) 44101)) 1) 
+    (if (> (abs (- (sound-framples file) 44101)) 1)
 	(format t ";framples fullmix 4: ~A != ~A~%" (sound-framples file) 44101))
     )
-  
+
   (let ((file (with-sound (:play nil)
 			  (fullmix "oboe.snd")
 			  (fullmix "pistol.snd" 1.0))))
     (if (not (= (sound-chans file) 1)) (format t ";chans fullmix 5: ~A~%" (sound-chans file)))
     (if (fneq (max-amp file) .5134) (format t ";max fullmix 5: ~A~%" (max-amp file)))
-    (if (> (abs (- (sound-framples file) (+ *srate* (sound-framples "pistol.snd")))) 1) 
-	(format t ";framples fullmix 5: ~A != ~A~%" 
+    (if (> (abs (- (sound-framples file) (+ *srate* (sound-framples "pistol.snd")))) 1)
+	(format t ";framples fullmix 5: ~A != ~A~%"
 		(sound-framples file)
 		(+ *srate* (sound-framples "pistol.snd"))))
     )
-  
+
   (let ((file (with-sound (:play nil)
 			  (fullmix "oboe.snd")
 			  (fm-violin 0.5 1.0 660 .1)
 			  (fullmix "pistol.snd" 1.0))))
     (if (not (= (sound-chans file) 1)) (format t ";chans fullmix 6: ~A~%" (sound-chans file)))
-    (if (> (abs (- (sound-framples file) (+ *srate* (sound-framples "pistol.snd")))) 1) 
-	(format t ";framples fullmix 6: ~A != ~A~%" 
+    (if (> (abs (- (sound-framples file) (+ *srate* (sound-framples "pistol.snd")))) 1)
+	(format t ";framples fullmix 6: ~A != ~A~%"
 		(sound-framples file)
 		(+ *srate* (sound-framples "pistol.snd"))))
     )
-  
+
   (let ((file (with-sound (:channels 2 :play nil)
 			  (fullmix "oboe.snd" 1 2 0 (list (list .1 1.0))))))
     (if (not (= (sound-chans file) 2)) (format t ";chans fullmix 7: ~A~%" (sound-chans file)))
     (let ((mxs (max-amps file)))
       (if (fneq (* 10 (aref mxs 0)) (aref mxs 1)) (format t ";maxs fullmix 7: ~A" mxs)))
-    (if (> (abs (- (sound-framples file) (* 3 *srate*))) 1) 
+    (if (> (abs (- (sound-framples file) (* 3 *srate*))) 1)
 	(format t ";framples fullmix 7: ~A != ~A~%" (sound-framples file) (* 3 *srate*)))
     )
-  
+
   (let ((file (with-sound (:channels 2 :play nil)
 			  (fullmix "oboe.snd" 0 2 0 (list (list .1 (make-env '(0 0 1 1) :duration 2 :scaler .5)))))))
     (if (not (= (sound-chans file) 2)) (format t ";chans fullmix 8: ~A~%" (sound-chans file)))
     (if (fneq (max-amp file) .0525) (format t ";max fullmix 8: ~A~%" (max-amp file)))
-    (if (> (abs (- (sound-framples file) (* 2 *srate*))) 1) 
+    (if (> (abs (- (sound-framples file) (* 2 *srate*))) 1)
 	(format t ";framples fullmix 8: ~A != ~A~%" (sound-framples file) (* 2 *srate*)))
     )
-  
+
   (let ((file (with-sound (:channels 2 :play nil)
 			  (fullmix "oboe.snd" 0 2 0 (list (list .1 (make-env '(0 0 1 1) :duration 2 :scaler .5)))))))
     (if (not (= (sound-chans file) 2)) (format t ";chans fullmix 9: ~A~%" (sound-chans file)))
@@ -662,10 +699,10 @@
       (if (or (fneq (aref mxs 0) .0147)
 	      (fneq (aref mxs 1) .053))
 	  (format t ";maxs fullmix 9: ~A" mxs)))
-    (if (> (abs (- (sound-framples file) (* 2 *srate*))) 1) 
+    (if (> (abs (- (sound-framples file) (* 2 *srate*))) 1)
 	(format t ";framples fullmix 9: ~A != ~A~%" (sound-framples file) (* 2 *srate*)))
     )
-  
+
   (let ((file (with-sound (:channels 2 :play nil)
 			  (fullmix "oboe.snd" 0 nil nil (list (list (make-env '(0 0 1 1 2 0) :duration 2.3) (make-env '(0 0 1 1) :duration 2.3)))))))
     (if (not (= (sound-chans file) 2)) (format t ";chans fullmix 10: ~A~%" (sound-chans file)))
@@ -673,12 +710,12 @@
       (if (or (fneq (aref mxs 0) .147)
 	      (fneq (aref mxs 1) .091))
 	  (format t ";maxs fullmix 10: ~A" mxs)))
-    (if (> (abs (- (sound-framples file) (sound-framples "oboe.snd"))) 1) 
-	(format t ";framples fullmix 10: ~A != ~A~%" 
+    (if (> (abs (- (sound-framples file) (sound-framples "oboe.snd"))) 1)
+	(format t ";framples fullmix 10: ~A != ~A~%"
 		(sound-framples file)
 		(sound-framples "oboe.snd")))
     )
-  
+
   (let ((file (with-sound (:channels 2 :play nil)
 			  (mix-1 "oboe.snd" :srate 2 :matrix '((.5 .5))))))
     (if (not (= (sound-chans file) 2)) (format t ";chans mix-1 11: ~A~%" (sound-chans file)))
@@ -686,12 +723,12 @@
       (if (or (fneq (aref mxs 0) .0727)
 	      (fneq (aref mxs 1) .0727))
 	  (format t ";maxs fullmix 11: ~A" mxs)))
-    (if (> (abs (- (sound-framples file) (/ (sound-framples "oboe.snd") 2))) 1) 
-	(format t ";framples fullmix 11: ~A != ~A~%" 
+    (if (> (abs (- (sound-framples file) (/ (sound-framples "oboe.snd") 2))) 1)
+	(format t ";framples fullmix 11: ~A != ~A~%"
 		(sound-framples file)
 		(/ (sound-framples "oboe.snd") 2)))
     )
-  
+
   (let ((file (with-sound (:channels 2 :play nil)
 			  (mix-1 "oboe.snd" :srate 2 :matrix (list (list .25 (list 0 0 1 1)))))))
     (if (not (= (sound-chans file) 2)) (format t ";chans mix-1 12: ~A~%" (sound-chans file)))
@@ -700,27 +737,27 @@
 	      (fneq (aref mxs 1) .0897))
 	  (format t ";maxs fullmix 12: ~A" mxs)))
     (if (> (abs (- (sound-framples file) (/ (sound-framples "oboe.snd") 2))) 1)
-	(format t ";framples fullmix 12: ~A != ~A~%" 
+	(format t ";framples fullmix 12: ~A != ~A~%"
 		(sound-framples file)
 		(/ (sound-framples "oboe.snd") 2)))
     )
-  
+
   (let ((file (with-sound (:channels 2 :play nil :reverb jc-reverb)
 			  (mix-1 "oboe.snd" :srate 2 :reverb-amount .1 :matrix '((2.5 .5))))))
     (if (not (= (sound-chans file) 2)) (format t ";chans mix-1 13: ~A~%" (sound-chans file))))
-  
+
   (with-sound (:channels 2 :output "mixtest.snd" :play nil)
 	      (fm-violin 0 1 440 .1 :degrees 0)
 	      (fm-violin 0 1 440 .3 :degrees 90))
-  
+
   (let ((file (with-sound (:play nil)
 			  (fullmix "mixtest.snd"))))
     (if (not (= (sound-chans file) 1)) (format t ";chans fullmix 14: ~A~%" (sound-chans file)))
     (if (fneq (max-amp file) .1) (format t ";max fullmix 14: ~A~%" (max-amp file)))
-    (if (> (abs (- (sound-framples file) *srate*)) 1) 
+    (if (> (abs (- (sound-framples file) *srate*)) 1)
 	(format t ";framples fullmix 14: ~A != ~A~%" (sound-framples file) *srate*))
     )
-  
+
   (let ((file (with-sound (:play nil :channels 2)
 			  (fullmix "mixtest.snd"))))
     (if (not (= (sound-chans file) 2)) (format t ";chans fullmix 15: ~A~%" (sound-chans file)))
@@ -728,10 +765,10 @@
       (if (or (fneq (aref mxs 0) .1)
 	      (fneq (aref mxs 1) .3))
 	  (format t ";max fullmix 15: ~A~%" mxs)))
-    (if (> (abs (- (sound-framples file) *srate*)) 1) 
+    (if (> (abs (- (sound-framples file) *srate*)) 1)
 	(format t ";framples fullmix 15: ~A != ~A~%" (sound-framples file) *srate*))
     )
-  
+
   (let ((file (with-sound (:play nil :channels 2)
 			  (fullmix "mixtest.snd" nil nil nil '((0 1.0) (1.0 0))))))
     (if (not (= (sound-chans file) 2)) (format t ";chans fullmix 16: ~A~%" (sound-chans file)))
@@ -739,41 +776,45 @@
       (if (or (fneq (aref mxs 0) .3)
 	      (fneq (aref mxs 1) .1))
 	  (format t ";max fullmix 16: ~A~%" mxs)))
-    (if (> (abs (- (sound-framples file) *srate*)) 1) 
+    (if (> (abs (- (sound-framples file) *srate*)) 1)
 	(format t ";framples fullmix 16: ~A != ~A~%" (sound-framples file) *srate*))
     ))
 
 
-;;; --------------------------------------------------------------------------------
-;;; cnv
+/*!< --------------------------------------------------------------------------------
+
+/*!< cnv
+
 
 (when (setup-ins "cnv" #-clisp "freeverb.ins")
   (with-sound (:play play-it)
     (cnvo 0 1 '(.5 .2 .1 .05 0 0 0 0) "pistol.snd" 64))
   (with-sound (:play play-it :scaled-to .5 :srate 44100 :channels 2)
     (cnvrev "oboe.snd" "fyow.snd"))
-  (with-sound (:play-it nil) 
+  (with-sound (:play-it nil)
     (cnv 0 1 "fyow.snd" "fyow.snd" .1))
   #-clisp (with-sound (:reverb freeverb) (fm-violin 0 .1 440 .1))
   )
 
 
-;;; --------------------------------------------------------------------------------
-;;; leftovers
+/*!< --------------------------------------------------------------------------------
+
+/*!< leftovers
+
 
 (load "spectr.clm")
 
-(when (setup-ins "butterworth" 
-		 "moog" 
-		 #-clisp "grani" 
-		 "one-cut" 
-		 #-clisp "track-rms" 
+(when (setup-ins "butterworth"
+		 "moog"
+		 #-clisp "grani"
+		 "one-cut"
+		 #-clisp "track-rms"
 		 "kiprev"
 		 #-clisp "rmsenv"
 		 "addsnd" "zipper" "granular" "roomsig" "backandforth"
-		 "ring-modulate" "ugex" 
-		 #-clisp "sndwarp" 
-		 "vowel" 
+		 "ring-modulate" "ugex"
+		 #-clisp "sndwarp"
+		 "vowel"
 		 #-clisp "filter-noise"
 		 )
   (with-sound (:play play-it :channels 2)
@@ -790,7 +831,7 @@
 	   (tline (sort (loop for i below ngrn collect (incf sum (env hopev))) '<)))
       (granular 6 ngrn (concatenate 'string "oboe.snd") :amp 1 :ampenv '(0 1 1 1) :maxsize .7
 		:wnd1 '(0 0 .1 1 1 0) :wbase1 1 :wnd2 '(0 0 .1 1 1 0) :wbase2 25 :wndSiz 32
-		:interp-env '(0 0 1 1) :base-intp 1 :Gs '(1) :dirct '(1) 
+		:interp-env '(0 0 1 1) :base-intp 1 :Gs '(1) :dirct '(1)
 		:coord '(.2 .2 -.2 .9 -.2 .2 .2 .9)
 		:frqns (loop for i below ngrn collect (env frqns))
 		:posit (loop for i below ngrn collect (env posit))
@@ -806,24 +847,26 @@
     (spectrum 10 1 440.0 .1 p-a4 '(0.0 0.0 1.0 1.0 5.0 0.9 12.0 0.5 25.0 0.25 100.0 0.0))
     (make-phoneme 11 1.0 150 0.5 'OO 'ER)
     (noi-attempt 11 2 .3 .99 1200)
-    (filter-white-noise (* 22050 11) (+ (* 22050 11) 10000) .99 1000 1.0)    
+    (filter-white-noise (* 22050 11) (+ (* 22050 11) 10000) .99 1000 1.0)
     (testR (* 22050 12) (+ (* 22050 12) 10000) .9 .99 440 1.0)
     (vowel 12.5 .5 .3)
     #-clisp (rmsenv "oboe.snd")
-    #-clisp (filter-noise 0 5 0.041 
-                :res-env '(0 0.94 1 0.94) 
-                :freq-env '(0 50 1 22050) 
+    #-clisp (filter-noise 0 5 0.041
+                :res-env '(0 0.94 1 0.94)
+                :freq-env '(0 50 1 22050)
                 :noise-freq 22050)
     ))
 
 
-;;; --------------------------------------------------------------------------------
-;;; with-mix etc
+/*!< --------------------------------------------------------------------------------
+
+/*!< with-mix etc
+
 
 (with-sound (:reverb jc-reverb :decay-time 3  :play play-it)
   (fm-violin 0 .1 440 .1 :reverb-amount .75))
 
-(with-sound (:reverb nrev  :play play-it :reverb-data (:reverb-factor 1.2 :lp-coeff .95 :amp-env (0 0 1 1 2 1 3 0))) 
+(with-sound (:reverb nrev  :play play-it :reverb-data (:reverb-factor 1.2 :lp-coeff .95 :amp-env (0 0 1 1 2 1 3 0)))
   (fm-violin 0 .1 440 .1))
 
 (with-sound (:output "tst.snd"  :play play-it
@@ -839,8 +882,8 @@
   (loop for i from 0 to 9 do
     (fm-violin i 1 (* (1+ i) 100) .1)))
 
-(with-sound (:output "2.snd" :play play-it :channels 2 
-	     :header-type mus-riff 
+(with-sound (:output "2.snd" :play play-it :channels 2
+	     :header-type mus-riff
 	     :data-format mus-lshort)
   (fm-violin 0 1 440 .1 :amp-env '(0 1 100 1) :degree 60))
 
@@ -851,11 +894,11 @@
 (with-sound (:output "8.snd" :play nil :channels 8)
   (fm-violin 0 1 440 .1 :amp-env '(0 1 100 1) :degree 220))
 
-(with-sound (:play play-it)   
+(with-sound (:play play-it)
   (sound-let ((temp-1 () (fm-violin 0 1 440 .1))
 	      (temp-2 () (fm-violin 0 2 660 .1 :base 32.0)
 		         (fm-violin .125 .5 880 .1)))
-    (mix temp-1) 
+    (mix temp-1)
     (mix temp-2)))
 
 (with-sound (:play play-it :channels 2)
@@ -882,11 +925,11 @@
   (with-mix () "section-1" 0 (fm-violin 0 1 440 .1)
 	                     (fm-violin 1 2 660 .1)))
 
-(with-sound (:play play-it :reverb jc-reverb) 
+(with-sound (:play play-it :reverb jc-reverb)
   (with-mix () "section-3" 0 (fm-violin 0 1 440 .1 :reverb-amount .3)
 	                     (fm-violin 1 2 660 .1)))
 
-(with-sound (:play play-it :reverb jc-reverb) 
+(with-sound (:play play-it :reverb jc-reverb)
   (with-mix () "section-3" 0 (fm-violin 0 1 440 .1 :reverb-amount .3)
 	                     (fm-violin 1 2 660 .1)))
 
@@ -914,7 +957,7 @@
     (with-mix (:channels 2) "sect3" 0 (with-offset 1.0 (fm-violin 0 1 770 .1))))
   (with-mix (:channels 2) "sect2" 0 (fm-violin 0 1 660 .1)))
 
-(with-open-file 
+(with-open-file
     (file "clm-test.clm" :direction :output :if-exists :supersede :if-does-not-exist :create)
   (format file "(fm-violin 0 .1 440 .1)~%"))
 (clm-load "clm-test.clm" :scaled-to .3 :statistics t :play play-it )
@@ -936,7 +979,7 @@
       (mix tmp1)
       (mix tmp :output-frample *srate*))
     (fm-violin .5 .1 330 .1)))
-	
+
 (with-sound (:play play-it :verbose t)
   (sound-let ((tmp ()
 		(with-mix () "s3" 0
@@ -948,8 +991,10 @@
 	     (mix tmp)))
 
 
-;;; --------------------------------------------------------------------------------
-;;; physical modeling part 2
+/*!< --------------------------------------------------------------------------------
+
+/*!< physical modeling part 2
+
 
 (when (setup-ins "piano" "strad" "scanned" "pvoc" "circular-scanned"
 		 #-clisp "expandn"
@@ -984,7 +1029,7 @@
 					;0 no open string resonance
 					;1.0 is about full resonance of dampers raised
 					;can be greater than 1.0
-     
+
      ;;modification to do detunedness
      :detuningfactor-table '(24 5 36 7.0 48 7.5 60 12.0 72 20
 				84 30 96 100 108 300)
@@ -992,7 +1037,7 @@
 					;  so 1.0 is nominal detuning
 					;  0.0 is exactly in tune (no two stage decay...)
 					;  > 1.0 is out of tune...
-     
+
      ;;modification to do stiffness
      :stiffnessfactor-table '(21 1.5 24 1.5 36 1.5 48 1.5 60 1.4
 				 72 1.3 84 1.2 96 1.0 108 1.0)
@@ -1013,7 +1058,7 @@
 					;0 no open string resonance
 					;1.0 is about full resonance of dampers raised
 					;can be greater than 1.0
-     
+
      ;;modifications to do damped sounds
      :singlestringdecayrate-table '(21 -5 24.000 -5.000 36.000 -5.4
 				       41.953 -5.867 48.173 -7.113 53.818 -8.016
@@ -1043,7 +1088,7 @@
 					;0 no open string resonance
 					;1.0 is about full resonance of dampers raised
 					;can be greater than 1.0
-     
+
      ;;modification for long duration notes
      :singlestringdecayratefactor 1/10
 					;scales attenuation rate (1/2 means twice as long duration)
@@ -1057,19 +1102,20 @@
     #-clisp (expandn 0 1 "oboe.snd" 1.0)
     )
   )
-  
 
 
-(let ((mydat (clm::init-with-sound 
-	      :output "test.aiff" :play nil :data-format 1 
-	      :header-type 2 :srate 44100 :channels 2 
+
+(let ((mydat (clm::init-with-sound
+	      :output "test.aiff" :play nil :data-format 1
+	      :header-type 2 :srate 44100 :channels 2
 	      :reverb 'nrev)))
-  (loop for i from 1 to 10 do (fm-violin i 2 440 .5)) 
+  (loop for i from 1 to 10 do (fm-violin i 2 440 .5))
   (clm::finish-with-sound mydat))
 
-  
 
-;;; --------------------------------------------------------------------------------
+
+/*!< --------------------------------------------------------------------------------
+
 
 (when include-notelists
   (load "fmviolin.clm")
@@ -1078,5 +1124,3 @@
   (load "popi.clm")
   (load "clm-example.lisp")
   )
-
-

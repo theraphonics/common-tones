@@ -48,9 +48,9 @@
 		(let ((args (list filename)))
 		  (if (not *clm-player*)
 		      (progn
-			(if start 
+			(if start
 			    (setf args (append args (list "-start" (format nil "~A" start)))))
-			(if end 
+			(if end
 			    (setf args (append args (list "-end" (format nil "~A" end)))))
 			#+mac-osx (if (= *clm-output-properties-mutable* 0)
 				      (setf args (append args (list "-mutable 0"))))
@@ -123,26 +123,42 @@
   (play name-1 :start start :end end :wait wait))
 
 (defun stop-dac () (stop-playing))
-	
+
 
 (defvar *force-recomputation* nil)
 
-;;; in all that follows, we have nested with-sounds, so various globals like *offset*
-;;; need to be handled dynamically, but we also need to protect against two kinds of errors --
-;;; exit from the debugger, wherein we have to leave CLM/Lisp in a clean state, and user-forgetfulness
-;;; with regard to open-input (it's easy to leave files open accidentally).  Additionally, with-sound
-;;; can be called within the debugger while in with-sound.  We used to call clm-cleanup all the time
-;;; but that closed all open files, and cleared *offset* which was the wrong thing, especially
-;;; if the user was handling mus_any structs globally across a with-mix call.  So, we try to see the normal
-;;; exit via *clm-with-sound-depth*, and error exits via *clm-within-with-sound*.  clm-cleanup from
-;;; io.lisp is still a complete wipe-the-slate function.  
-;;; An added complication is that mix can open files in C (hidden from clm's list of open files),
-;;; an IO error can occur (disk full), then checked_write can exit back to lisp, whereupon the
-;;; caller can :reset from the debugger, leaving files open with no way to free the space except
-;;; exit from lisp!  So I added (22-Oct-98) mus_file_cleanup_descriptors which runs through
-;;; the entire C array of file descriptors, tries to deduce which files are still open, and
-;;; close them -- this means the error exit from with-sound will clobber any files global
-;;; to that call.  Can't decide whether something fancier is needed.
+/*!< in all that follows, we have nested with-sounds, so various globals like *offset*
+
+/*!< need to be handled dynamically, but we also need to protect against two kinds of errors --
+
+/*!< exit from the debugger, wherein we have to leave CLM/Lisp in a clean state, and user-forgetfulness
+
+/*!< with regard to open-input (it's easy to leave files open accidentally).  Additionally, with-sound
+
+/*!< can be called within the debugger while in with-sound.  We used to call clm-cleanup all the time
+
+/*!< but that closed all open files, and cleared *offset* which was the wrong thing, especially
+
+/*!< if the user was handling mus_any structs globally across a with-mix call.  So, we try to see the normal
+
+/*!< exit via *clm-with-sound-depth*, and error exits via *clm-within-with-sound*.  clm-cleanup from
+
+/*!< io.lisp is still a complete wipe-the-slate function.
+
+/*!< An added complication is that mix can open files in C (hidden from clm's list of open files),
+
+/*!< an IO error can occur (disk full), then checked_write can exit back to lisp, whereupon the
+
+/*!< caller can :reset from the debugger, leaving files open with no way to free the space except
+
+/*!< exit from lisp!  So I added (22-Oct-98) mus_file_cleanup_descriptors which runs through
+
+/*!< the entire C array of file descriptors, tries to deduce which files are still open, and
+
+/*!< close them -- this means the error exit from with-sound will clobber any files global
+
+/*!< to that call.  Can't decide whether something fancier is needed.
+
 
 (defvar *clm-with-sound-depth* 0)
 (defvar *clm-within-with-sound* nil)
@@ -167,7 +183,7 @@
     (setf out-file (subseq out-file 0 (- (length out-file) 5)))
     (setf *offset* 0)
     (let ((oldamp (if stats
-		      clm-max-stat-amp 
+		      clm-max-stat-amp
 		    (loop for i from 0 below (length ovals) maximize (aref ovals i)))))
       (if (= oldamp 0.0) (setf oldamp 1.0))
       (setf *clm-scaled-amp* (/ scaled-to oldamp))
@@ -192,12 +208,12 @@
 		       (if (> (length comment) 0)
 			   (format nil "#| ~A |#" comment))
 		     (if *open-input-explicit-output*
-			 (concatenate 'string 
+			 (concatenate 'string
 				      (make-banner)
-				      (format nil " (from ~A via open-input)" 
+				      (format nil " (from ~A via open-input)"
 					      (filename->string *open-input-truename*)))
 		       (make-banner))))
-	       (if save-body 
+	       (if save-body
 		   (format nil " #| ~A |#" (write-to-string *clm-with-sound-body*))
 		 "")))
 
@@ -237,8 +253,8 @@
 	    nil))
 	nil))))
 
-(defun end-with-sound (scaled-to out-file revf statistics 
-		       header-type data-format reverb decay-time reverb-data 
+(defun end-with-sound (scaled-to out-file revf statistics
+		       header-type data-format reverb decay-time reverb-data
 		       channels play scaled-by)
   (let ((rev-name (if *reverb* (mus-file-name *reverb*))))
     (when revf
@@ -253,11 +269,11 @@
 	    (if (and *clm-delete-reverb*
 		     (probe-file full-reverb-name))
 		(delete-file full-reverb-name))))))
-    
+
     (clm-close-output)
-    (if statistics 
+    (if statistics
 	(print-statistics (if scaled-to :scaled statistics) channels t scaled-to))
-    (when scaled-to 
+    (when scaled-to
       (setf out-file (scale-to-file out-file scaled-to data-format statistics header-type)))
     (when scaled-by
       (setf out-file (scale-by-file out-file scaled-by data-format statistics header-type)))
@@ -321,22 +337,22 @@
        (if old-output (clm-close-output))
        (if old-reverb (clm-close-reverb))
        ;(format t "old output: ~A~%" old-output)
-       
+
        (unwind-protect
 	   (let* ((out-file (or *open-input-explicit-output*
-				(filename->string 
-				 (full-merge-pathnames 
+				(filename->string
+				 (full-merge-pathnames
 				  (translate-logical-pathname (->pathname (filename->string ,output)))
 				  *clm-file-name*))))
 		  (*clm-with-sound-depth* (1+ *clm-with-sound-depth*))
 		  (our-srate ,(or sampling-rate srate))
 		  (our-type ,header-type)
-		  (our-format 
+		  (our-format
 		   (let ((first-guess ,data-format))
-		     (if (and (= first-guess mus-bshort) 
+		     (if (and (= first-guess mus-bshort)
 			      (= our-type mus-riff))
 			 mus-lshort
-		       (if (and (= first-guess mus-bint) 
+		       (if (and (= first-guess mus-bint)
 				(= our-type mus-riff))
 			   mus-lint
 			 first-guess))))
@@ -345,7 +361,7 @@
 		  (reverb-filename (concatenate 'string (subseq out-file 0 (- (length out-file) (length (pathname-type out-file))))
 						#-windoze "reverb"
 						#+windoze "rev"))
-		  (revf (if (or ,revfile our-reverb) 
+		  (revf (if (or ,revfile our-reverb)
 			    (or ,revfile *open-input-explicit-reverb* reverb-filename)))
 		  (*ws-reverb-file* revf))
 	     (if (and (frample->file? old-output)
@@ -353,14 +369,14 @@
 		 (warn "we're about to overwrite ~A..." out-file))
 	     (setf out-file (begin-with-sound our-srate ,channels ,scaled-to out-file revf ,statistics
 					      ,continue-old-file ,reverb-channels our-type
-					      our-format ,clipped ,scaled-by 
-					      (and (not (eq ,comment :none)) 
+					      our-format ,clipped ,scaled-by
+					      (and (not (eq ,comment :none))
 						   (make-default-comment ,comment ,info ,save-body))))
 	     (if out-file
 		 ;; run with-sound body
 		 (tagbody
 		  (restart-case
-		   (catch :FINISH 
+		   (catch :FINISH
 		     ,.body)	; mimic old style
 		   (nil ()
 			:report "close files and return to top-level."
@@ -448,22 +464,22 @@
        (if old-output (clm-close-output))
        (if old-reverb (clm-close-reverb))
        ;(format t "old output: ~A~%" old-output)
-       
+
        (unwind-protect
 	   (let* ((out-file (or *open-input-explicit-output*
-				(filename->string 
-				 (full-merge-pathnames 
+				(filename->string
+				 (full-merge-pathnames
 				  (translate-logical-pathname (->pathname (filename->string ,output)))
 				  *clm-file-name*))))
 		  (*clm-with-sound-depth* (1+ *clm-with-sound-depth*))
 		  (our-srate ,(or sampling-rate srate))
 		  (our-type ,header-type)
-		  (our-format 
+		  (our-format
 		   (let ((first-guess ,data-format))
-		     (if (and (= first-guess mus-bshort) 
+		     (if (and (= first-guess mus-bshort)
 			      (= our-type mus-riff))
 			 mus-lshort
-		       (if (and (= first-guess mus-bint) 
+		       (if (and (= first-guess mus-bint)
 				(= our-type mus-riff))
 			   mus-lint
 			 first-guess))))
@@ -472,7 +488,7 @@
 		  (reverb-filename (concatenate 'string (subseq out-file 0 (- (length out-file) (length (pathname-type out-file))))
 						#-windoze "reverb"
 						#+windoze "rev"))
-		  (revf (if (or ,revfile our-reverb) 
+		  (revf (if (or ,revfile our-reverb)
 			    (or ,revfile *open-input-explicit-reverb* reverb-filename)))
 		  (*ws-reverb-file* revf))
 	     (if (and (frample->file? old-output)
@@ -480,8 +496,8 @@
 		 (warn "we're about to overwrite ~A..." out-file))
 	     (setf out-file (begin-with-sound our-srate ,channels ,scaled-to out-file revf ,statistics
 					      ,continue-old-file ,reverb-channels our-type
-					      our-format ,clipped ,scaled-by 
-					      (and (not (eq ,comment :none)) 
+					      our-format ,clipped ,scaled-by
+					      (and (not (eq ,comment :none))
 						   (make-default-comment ,comment ,info ,save-body))))
 
 	     (clm-set-output-safety ,output-safety)
@@ -491,11 +507,11 @@
 		 ;; run with-sound body
 		 (tagbody
 		  (restart-case
-		   (catch :FINISH 
+		   (catch :FINISH
 
 		     (let ((threads '()))
-		       ,@(mapcar (lambda (expr) 
-				   `(let ((thread (sb-thread:make-thread (lambda () 
+		       ,@(mapcar (lambda (expr)
+				   `(let ((thread (sb-thread:make-thread (lambda ()
 									   ,expr))))
 				      (setf threads (cons thread threads))
 				      (if (> (length threads) *clm-threads*)
@@ -559,7 +575,7 @@
 	       :channels channels :comment comment :info info
 	       :srate (or sampling-rate srate)
 	       :reverb-func reverb :revfile revfile :reverb-args reverb-data :reverb-channels reverb-channels :decay-time decay-time
-	       :play play :force-recomputation force-recomputation 
+	       :play play :force-recomputation force-recomputation
 	       :statistics statistics :notehook notehook
 	       :header-type header-type :data-format data-format :verbose verbose :clipped clipped
 	       :save-body save-body :scaled-to scaled-to :scaled-by scaled-by
@@ -596,18 +612,26 @@
      (with-current-sound (:output tempf :scaled-to ,val) ,.body)
      (mix tempf)
      (delete-file tempf)))
-     
 
 
 
-;;; ---------------- OPEN-INPUT OPEN-OUTPUT ----------------
-;;;
-;;; for a "make" facility for sound file pieces.   Here we tie into the
-;;; sound file headers etc.  mix is called if the file-to-be-merged
-;;; is up-to-date.  We need the name of the output file, input file,
-;;; sample number in the output to begin at, sample number in the input
-;;; to start at, number of channel-independent samples to merge (i.e. seconds*srate).
-;;; Output header may be changed.
+
+/*!< ---------------- OPEN-INPUT OPEN-OUTPUT ----------------
+
+/*!<
+
+/*!< for a "make" facility for sound file pieces.   Here we tie into the
+
+/*!< sound file headers etc.  mix is called if the file-to-be-merged
+
+/*!< is up-to-date.  We need the name of the output file, input file,
+
+/*!< sample number in the output to begin at, sample number in the input
+
+/*!< to start at, number of channel-independent samples to merge (i.e. seconds*srate).
+
+/*!< Output header may be changed.
+
 
 (defun mix-wrapper (file output-sample input-file dur)
   (let ((framples (if dur (floor (* dur *srate*)) (sound-framples input-file))))
@@ -619,20 +643,28 @@
   (make-pathname :type ext :defaults name))
 
 
-;;; this version is like lisp's load function to some extent in that
-;;; if it gets an incomplete file name, or a cm/clm file name, it
-;;; checks to see if the associated sound file is either not present
-;;; or out of date and recomputes it if so.  In any case, open-input
-;;; opens the sound file and returns an mus_any structure for it.  If it
-;;; has to recompute the file, it must also close the current computation,
-;;; open the new computation, run it to completion, then reopen the
-;;; previous computation where it left off.
+/*!< this version is like lisp's load function to some extent in that
+
+/*!< if it gets an incomplete file name, or a cm/clm file name, it
+
+/*!< checks to see if the associated sound file is either not present
+
+/*!< or out of date and recomputes it if so.  In any case, open-input
+
+/*!< opens the sound file and returns an mus_any structure for it.  If it
+
+/*!< has to recompute the file, it must also close the current computation,
+
+/*!< open the new computation, run it to completion, then reopen the
+
+/*!< previous computation where it left off.
+
 
 (defvar last-open-input-file-name nil)
 
 (defun open-input (&optional name
-		   &key (verbose nil verbose-p) 
-			(element-type nil element-p) ;can be :sound :clm :cm :lisp 
+		   &key (verbose nil verbose-p)
+			(element-type nil element-p) ;can be :sound :clm :cm :lisp
 			(if-does-not-exist :error)
 			(mix-at nil) (mix-duration nil) (channel 0)
 			(start 0) (force-recomputation *force-recomputation*))
@@ -669,7 +701,7 @@
 	      (let* ((old-output *output*)
 		     (old-reverb *reverb*))
 		(if (and *output*
-			 (string-equal (filename->string (make-typed-file-name fname sound-file-extension)) 
+			 (string-equal (filename->string (make-typed-file-name fname sound-file-extension))
 				       (mus-file-name *output*)))
 		    (warn "we're about to overwrite ~A..." (mus-file-name *output*)))
 		(if old-output (clm-close-output))
@@ -679,7 +711,7 @@
 		       (*clm-file-name* *open-input-explicit-output*)
 		       ;; this is to turn off the directory fill-in in clm-open-input
 		       ;; we can't use truename because it dies if it's passed a non-existent file
-		       (*open-input-explicit-reverb* (filename->string 
+		       (*open-input-explicit-reverb* (filename->string
 						      (make-pathname
 						       :defaults fname
 						       :name (concatenate 'string (pathname-name fname) #-openmcl ".rev" #+openmcl "-rev")
@@ -714,11 +746,11 @@
 			(clm-continue-reverb (mus-file-name old-reverb))
 			(setf *reverb* old-reverb))
 		    (setf *reverb* nil))
-	     
+
 		  (setf sound-file-name (truename *open-input-explicit-output*))))
 	    (if snd-file (setf sound-file-name snd-file))))
       (let ((filename (search-full-merge-pathnames fname *clm-file-name* "test.snd")))
-	(if filename (setf sound-file-name (filename->string filename))))) ;%#$@& namestring!  
+	(if filename (setf sound-file-name (filename->string filename))))) ;%#$@& namestring!
 
     (if (and sound-file-name
 	     (probe-file sound-file-name))
@@ -729,16 +761,17 @@
 		(clm-open-input :file sound-file-name :start start :channel channel))
 	    (let* ((beg (floor (* mix-at *srate*))))
 	      (mix-wrapper *output*
-			   beg 
+			   beg
 			   (if (pathnamep sound-file-name)
-			       (filename->string sound-file-name) 
+			       (filename->string sound-file-name)
 			     (expand-filename->string sound-file-name))
 			   mix-duration))))
       (if (eq if-does-not-exist :error)
 	  (error "can't find ~A~A" name (if (not (eq name sound-file-name)) (format nil " (~A)" sound-file-name) ""))))))
 
 
-;;; ---------------- WITH-MIX, SOUND-LET ----------------
+/*!< ---------------- WITH-MIX, SOUND-LET ----------------
+
 
 (defvar *clm-mix-calls* nil)
 (defvar *clm-mix-options* nil)
@@ -785,8 +818,8 @@
 						   (concatenate 'string "snd" (format nil "~D" (incf temp-sound-ctr))))
 						 *clm-file-name*))
 	       sound-file-list)))
-     (let* (,@(loop for (snd opts calls) in sounds and i from 0 and all-calls in sounds 
-	       collect 
+     (let* (,@(loop for (snd opts calls) in sounds and i from 0 and all-calls in sounds
+	       collect
 	        (progn
 	        `(,snd (progn
 			 (with-sound (,@opts
@@ -804,7 +837,7 @@
 				      :play nil)
 			   ,@(cddr all-calls))
 			 (nth ,i sound-file-list))))))
-       
+
        (locally ,@body))
      (setf *force-recomputation* old-recompute)
      (setf *clm-ins* nil)
@@ -812,15 +845,24 @@
      (loop for snd in sound-file-list do (delete-file snd))
      ))
 
-;;; WITH-MIX
-;;;
-;;; weird syntax = with-mix (with-sound-args) file-name start-in-output &body body
-;;;
-;;; (with-sound () 
-;;;   (with-mix () "section-1" 0 (fm-violin 0 1 440 .1)
-;;;                              (fm-violin 1 2 660 .1))
-;;;   (with-mix (:reverb nrev) "section-2" ...)
-;;;   )
+/*!< WITH-MIX
+
+/*!<
+
+/*!< weird syntax = with-mix (with-sound-args) file-name start-in-output &body body
+
+/*!<
+
+/*!< (with-sound ()
+
+/*!< (with-mix () "section-1" 0 (fm-violin 0 1 440 .1)
+
+/*!< (fm-violin 1 2 660 .1))
+
+/*!< (with-mix (:reverb nrev) "section-2" ...)
+
+/*!< )
+
 
 (defun mix-in (source-file begin-time &optional duration)
   (open-input source-file :mix-at begin-time :mix-duration duration))
@@ -848,9 +890,9 @@
 	     (option-str (write-to-string ',options))
 	     (sndf (full-merge-pathnames (make-typed-file-name chkpt-file (pathname-type *clm-file-name*)) *clm-file-name*))
 	     (errf (full-merge-pathnames (make-typed-file-name chkpt-file "error") *clm-file-name*))
-	     (revf (full-merge-pathnames 
-		    (make-typed-file-name 
-		     chkpt-file 
+	     (revf (full-merge-pathnames
+		    (make-typed-file-name
+		     chkpt-file
 		     #+clisp "rev"
 		     #-clisp (concatenate 'string #-sbcl "rev." #+sbcl "rev-" (pathname-type *clm-file-name*)))
 		    *clm-file-name*)))
@@ -867,8 +909,8 @@
 	   (let ((finished-ok nil))
 	     (unwind-protect
 		 (let ((clmf (full-merge-pathnames (make-typed-file-name chkpt-file "clm") *clm-file-name*)))
-		   (if *verbose* 
-		       (if (probe-file errf) 
+		   (if *verbose*
+		       (if (probe-file errf)
 			   (cl-printf (format nil "; ~A was interrupted during previous computation -- will recompute it~%" (filename->string sndf)))
 			 (cl-printf (format nil "; Computing ~A " (filename->string sndf)))))
 		   (with-open-file (fil clmf :direction :output :if-does-not-exist :create :if-exists :supersede)
@@ -888,7 +930,7 @@
 			      (if (and *reverb* (not (find :reverb ',options)))
 				  (format nil " :revfile ~S" (filename->string revf))
 				  "")
-			      (format nil "~A~%  (setf *clm-mix-calls* '~A)~%  (setf *clm-mix-options* '~A)~%" 
+			      (format nil "~A~%  (setf *clm-mix-calls* '~A)~%  (setf *clm-mix-options* '~A)~%"
 				      (make-banner) call-str option-str)
 			      ',body))
 		   (rev-mix-in clmf beg (and *reverb* (filename->string revf)))
@@ -930,7 +972,8 @@
 
 
 
-;;; ---------------- COMMON MUSIC INTERFACE TO WITH-SOUND ----------------
+/*!< ---------------- COMMON MUSIC INTERFACE TO WITH-SOUND ----------------
+
 
 (defstruct wsdat revfun revdat revdecay outtype play stats wait scaled-to format file channels scaled-by)
 
@@ -938,7 +981,7 @@
 			     (channels *clm-channels*)
 			     (srate *clm-srate*) continue-old-file
 			     reverb reverb-data (reverb-channels *clm-reverb-channels*) revfile (decay-time 1.0)
-			     (play *clm-play*) 
+			     (play *clm-play*)
 			     (notehook *clm-notehook*)
 			     (statistics *clm-statistics*)
 			     type
@@ -965,7 +1008,7 @@
     (setf *force-recomputation* force-recomputation)
     (setf out-file (begin-with-sound srate channels scaled-to out-file revf statistics continue-old-file
 				     reverb-channels our-type our-format clipped scaled-by comment))
-    (make-wsdat :revfun reverb :revdat reverb-data :revdecay decay-time 
+    (make-wsdat :revfun reverb :revdat reverb-data :revdecay decay-time
 		:outtype our-type :play play :stats statistics :channels channels
 		:format our-format :scaled-to scaled-to :file out-file
 		:scaled-by scaled-by

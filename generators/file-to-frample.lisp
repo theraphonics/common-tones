@@ -1,4 +1,5 @@
-;;; -------- FILE->FRAMPLE --------
+/*!< -------- FILE->FRAMPLE --------
+
 
 (defclass file->frample ()
   ((fil :initform nil :initarg :fil :accessor f2f-fil)

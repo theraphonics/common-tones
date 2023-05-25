@@ -1,8 +1,11 @@
 (in-package :common-tones)
 
-;;; import some sndlib names to CLM
-;;;
-;;; file name is no longer accurate (this is now CL/CLM-specific, but aims at sndlib stuff mostly)
+/*!< import some sndlib names to CLM
+
+/*!<
+
+/*!< file name is no longer accurate (this is now CL/CLM-specific, but aims at sndlib stuff mostly)
+
 
 (cffi:defcfun ("mus_error_type_to_string" mus-error-type->string) :cstring
   (err :int))

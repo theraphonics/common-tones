@@ -173,17 +173,17 @@ Xen xen_set_assoc(Xen key, Xen val, Xen alist)
 }
 
 
-Xen xen_assoc(Xen key, Xen alist) 
-{ 
-  if (Xen_is_cons(alist)) 
-    { 
-      Xen val; 
-      val = rb_ary_assoc(alist, key); 
-      if (val != Qnil) 
-	return(rb_ary_entry(val, 1)); 
-    } 
-  return(Qfalse); 
-} 
+Xen xen_assoc(Xen key, Xen alist)
+{
+  if (Xen_is_cons(alist))
+    {
+      Xen val;
+      val = rb_ary_assoc(alist, key);
+      if (val != Qnil)
+	return(rb_ary_entry(val, 1));
+    }
+  return(Qfalse);
+}
 
 
 static char *scheme_to_ruby(const char *name)
@@ -200,7 +200,7 @@ static char *scheme_to_ruby(const char *name)
 	{
 	  if (isalnum(name[i]))
 	    new_name[j++] = name[i];
-	  else 
+	  else
 	    {
 	      if (name[i] != '!')
 		{
@@ -247,7 +247,7 @@ char *xen_scheme_procedure_to_ruby(const char *name)
 	{
 	  if ((isalnum(name[i])) || (name[i] == '!') || (name[i] == '?'))
 	    new_name[j++] = name[i];
-	  else 
+	  else
 	    {
 	      if ((name[i] == '-') &&
 		  (name[i + 1] == '>'))
@@ -375,23 +375,23 @@ Xen xen_rb_define_class(const char *name)
 
 
 
-#ifndef RARRAY_PTR 
-  #define RB_ARRAY_PTR(Ary) RARRAY(Ary)->ptr 
-  #define RB_ARRAY_LEN(Ary) RARRAY(Ary)->len 
-#else 
-  #define RB_ARRAY_PTR(Ary) RARRAY_PTR(Ary) 
-  #define RB_ARRAY_LEN(Ary) RARRAY_LEN(Ary) 
-#endif 
- 
+#ifndef RARRAY_PTR
+  #define RB_ARRAY_PTR(Ary) RARRAY(Ary)->ptr
+  #define RB_ARRAY_LEN(Ary) RARRAY(Ary)->len
+#else
+  #define RB_ARRAY_PTR(Ary) RARRAY_PTR(Ary)
+  #define RB_ARRAY_LEN(Ary) RARRAY_LEN(Ary)
+#endif
 
-int xen_rb_list_length(Xen obj) 
-{ 
-  if (Xen_is_vector(obj)) 
-     return((int)RB_ARRAY_LEN(obj)); 
-  if (obj == Xen_empty_list) 
-    return(0); 
-  return(-1); 
-} 
+
+int xen_rb_list_length(Xen obj)
+{
+  if (Xen_is_vector(obj))
+     return((int)RB_ARRAY_LEN(obj));
+  if (obj == Xen_empty_list)
+    return(0);
+  return(-1);
+}
 
 
 Xen xen_rb_list_ref(Xen obj, int index)
@@ -523,15 +523,15 @@ void xen_rb_load_file_with_error(const char *file)
 }
 
 
-Xen xen_rb_add_to_load_path(char *path) 
-{ 
- Xen rpath, load_path; 
- rpath = rb_str_new2(path); 
+Xen xen_rb_add_to_load_path(char *path)
+{
+ Xen rpath, load_path;
+ rpath = rb_str_new2(path);
  load_path = rb_gv_get("$:");
- if (Xen_is_false(rb_ary_includes(load_path, rpath))) 
-   rb_ary_unshift(load_path, rpath); 
- return(Xen_false); 
-} 
+ if (Xen_is_false(rb_ary_includes(load_path, rpath)))
+   rb_ary_unshift(load_path, rpath);
+ return(Xen_false);
+}
 
 
 static char *lstbuf = NULL;
@@ -539,7 +539,7 @@ static char *lstbuf = NULL;
 static char *xen_rb_list_to_s(Xen lst)
 {
   int i, len;
-  if (!lstbuf) 
+  if (!lstbuf)
     lstbuf = (char *)calloc(512, sizeof(char));
   else lstbuf[0] = '\0';
   len = Xen_list_length(lst);
@@ -554,8 +554,8 @@ static char *xen_rb_list_to_s(Xen lst)
 
 void xen_rb_raise(Xen type, Xen info)
 {
-  rb_raise(rb_eStandardError, "%s: %s\n", 
-	   rb_id2name(type), 
+  rb_raise(rb_eStandardError, "%s: %s\n",
+	   rb_id2name(type),
 	   xen_rb_list_to_s(info));
 }
 
@@ -564,7 +564,7 @@ int xen_rb_required_args(Xen val)
 {
   int args;
   args = Xen_integer_to_C_int(val);
-  if (args == -1) return(1); 
+  if (args == -1) return(1);
   if (args < 0) return(abs(args + 1));
   return(args);
 }
@@ -585,18 +585,18 @@ Xen xen_rb_obj_as_string(Xen obj)
 
 #if HAVE_RB_PROC_NEW
 
-static Xen xen_rb_apply_1(Xen args) 
-{ 
-  return(rb_apply(Xen_car(args), rb_intern("call"), Xen_cadr(args))); 
-} 
+static Xen xen_rb_apply_1(Xen args)
+{
+  return(rb_apply(Xen_car(args), rb_intern("call"), Xen_cadr(args)));
+}
 
 #else
 
 static Xen xen_rb_apply_1(Xen args)
 {
-  if (Xen_is_procedure(Xen_car(args))) 
-    return(rb_apply(Xen_car(args), rb_intern("call"), Xen_cadr(args))); 
-  return(rb_apply(rb_mKernel, Xen_car(args), Xen_cadr(args))); 
+  if (Xen_is_procedure(Xen_car(args)))
+    return(rb_apply(Xen_car(args), rb_intern("call"), Xen_cadr(args)));
+  return(rb_apply(rb_mKernel, Xen_car(args), Xen_cadr(args)));
 }
 
 #endif
@@ -634,12 +634,12 @@ Xen xen_rb_funcall_0(Xen func)
 }
 
 
-Xen xen_rb_copy_list(Xen val) 
-{ 
+Xen xen_rb_copy_list(Xen val)
+{
   if ((val == Xen_empty_list) || (!Xen_is_cons(val)))
-    return Xen_empty_list; 
-  return rb_ary_dup(val); 
-} 
+    return Xen_empty_list;
+  return rb_ary_dup(val);
+}
 
 
 Xen xen_rb_str_new2(char *arg)
@@ -649,7 +649,7 @@ Xen xen_rb_str_new2(char *arg)
 
 
 /* class Hook */
- 
+
 static Xen xen_rb_cHook;
 
 static Xen hook_alloc(Xen klass)
@@ -666,12 +666,12 @@ bool xen_rb_hook_p(Xen obj)
 }
 
 
-bool xen_rb_hook_empty_p(Xen obj) 
-{ 
-  if (Xen_is_class_hook(obj)) 
-    return(RB_ARRAY_LEN(rb_iv_get(obj, "@procs")) == 0); 
-  return(true); 
-} 
+bool xen_rb_hook_empty_p(Xen obj)
+{
+  if (Xen_is_class_hook(obj))
+    return(RB_ARRAY_LEN(rb_iv_get(obj, "@procs")) == 0);
+  return(true);
+}
 
 
 /*
@@ -756,7 +756,7 @@ bool xen_rb_arity_ok(int rargs, int args)
     return((rargs >= 0) ? (rargs == args) : (abs(rargs) <= args));
 }
 
- 
+
 static Xen xen_rb_hook_add_hook(int argc, Xen *argv, Xen hook)
 {
   Xen name, func;
@@ -773,18 +773,18 @@ static Xen xen_rb_hook_add_hook(int argc, Xen *argv, Xen hook)
 
 #if HAVE_RB_PROC_NEW
 
-static Xen xen_proc_call(Xen args, Xen id) 
-{ 
-  return(rb_apply(rb_mKernel, (ID)id, Xen_is_cons(args) ? args : Xen_list_1(args))); 
-} 
+static Xen xen_proc_call(Xen args, Xen id)
+{
+  return(rb_apply(rb_mKernel, (ID)id, Xen_is_cons(args) ? args : Xen_list_1(args)));
+}
 
 #if 0
-  VALUE rb_proc_new((VALUE (*)(ANYARGS/* VALUE yieldarg[, VALUE procarg] */), VALUE)); 
+  VALUE rb_proc_new((VALUE (*)(ANYARGS/* VALUE yieldarg[, VALUE procarg] */), VALUE));
   void rb_define_module_function(VALUE,const char*,VALUE(*)(ANYARGS),int);
 #endif
 
-static Xen xen_rb_proc_new(const char *name, VALUE (*func)(ANYARGS), int arity, const char* doc) 
-{ 
+static Xen xen_rb_proc_new(const char *name, VALUE (*func)(ANYARGS), int arity, const char* doc)
+{
   switch (arity) /* g++ 10 insists that arity arg must be a constant! */
     {
     case 0: rb_define_module_function(rb_mKernel, name, func, 0); break;
@@ -798,41 +798,41 @@ static Xen xen_rb_proc_new(const char *name, VALUE (*func)(ANYARGS), int arity, 
     case 8: rb_define_module_function(rb_mKernel, name, func, 8); break;
     default: fprintf(stderr, "arity: %d\n", arity);
     }
-  if (doc) C_SET_OBJECT_HELP(name, doc); 
-  return(rb_proc_new(Xen_procedure_cast xen_proc_call, rb_intern(name))); 
-} 
+  if (doc) C_SET_OBJECT_HELP(name, doc);
+  return(rb_proc_new(Xen_procedure_cast xen_proc_call, rb_intern(name)));
+}
 
 
-static Xen xen_rb_hook_arity(Xen hook); 
+static Xen xen_rb_hook_arity(Xen hook);
 
-Xen xen_rb_add_hook(Xen hook, VALUE (*func)(ANYARGS), const char *name, const char* doc) 
-{ 
-  /* called from C, not Ruby, to add a function to a Ruby-side hook */ 
-  char *temp; 
-  temp = xen_scheme_procedure_to_ruby(name); 
-  rb_ary_push(rb_iv_get(hook, "@procs"), rb_ary_new3(2, C_string_to_Xen_string(temp), xen_rb_proc_new(temp, func, Xen_integer_to_C_int(xen_rb_hook_arity(hook)), doc))); 
-  if (temp) free(temp); 
-  return(hook); 
-} 
+Xen xen_rb_add_hook(Xen hook, VALUE (*func)(ANYARGS), const char *name, const char* doc)
+{
+  /* called from C, not Ruby, to add a function to a Ruby-side hook */
+  char *temp;
+  temp = xen_scheme_procedure_to_ruby(name);
+  rb_ary_push(rb_iv_get(hook, "@procs"), rb_ary_new3(2, C_string_to_Xen_string(temp), xen_rb_proc_new(temp, func, Xen_integer_to_C_int(xen_rb_hook_arity(hook)), doc)));
+  if (temp) free(temp);
+  return(hook);
+}
 
 #else
 
-Xen xen_rb_add_hook(Xen hook, VALUE (*func)(), const char *name, const char* doc) 
+Xen xen_rb_add_hook(Xen hook, VALUE (*func)(), const char *name, const char* doc)
 {
-  /* called from C, not Ruby, to add a function to a Ruby-side hook 
+  /* called from C, not Ruby, to add a function to a Ruby-side hook
    *   this doesn't work in g++ because it thinks the funcs are invalid:
    *   "error: invalid conversion from 'VALUE (*)(VALUE, VALUE)' to 'VALUE (*)(...)'" (snd-file.c etc)
-   */ 
-  Xen var, avar; 
-  char *temp; 
-  temp = xen_scheme_procedure_to_ruby(name); 
+   */
+  Xen var, avar;
+  char *temp;
+  temp = xen_scheme_procedure_to_ruby(name);
   avar = rb_iv_get(hook, "@arity");
-  rb_define_module_function(rb_mKernel, temp, Xen_procedure_cast func, (Xen_is_integer(avar)) ? Xen_integer_to_C_int(avar) : 0); 
-  if (doc) C_SET_OBJECT_HELP(temp, doc); 
-  var = rb_intern(temp); 
-  rb_ary_push(rb_iv_get(hook, "@procs"), rb_ary_new3(2, C_string_to_Xen_string(temp), var)); 
-  if (temp) free(temp); 
-  return(hook); 
+  rb_define_module_function(rb_mKernel, temp, Xen_procedure_cast func, (Xen_is_integer(avar)) ? Xen_integer_to_C_int(avar) : 0);
+  if (doc) C_SET_OBJECT_HELP(temp, doc);
+  var = rb_intern(temp);
+  rb_ary_push(rb_iv_get(hook, "@procs"), rb_ary_new3(2, C_string_to_Xen_string(temp), var));
+  if (temp) free(temp);
+  return(hook);
 }
 
 #endif
@@ -859,7 +859,7 @@ static Xen xen_rb_hook_names(Xen hook)
   Xen ary, ret = Qnil;
   long len;
   ary = rb_iv_get(hook, "@procs");
-  len = RB_ARRAY_LEN(ary); 
+  len = RB_ARRAY_LEN(ary);
   if (len > 0)
     {
       long i;
@@ -894,7 +894,7 @@ Xen xen_rb_hook_to_a(Xen hook)
 
 static Xen xen_rb_hook_run_hook(Xen hook)
 {
-  if (RB_ARRAY_LEN(rb_iv_get(hook, "@procs"))) 
+  if (RB_ARRAY_LEN(rb_iv_get(hook, "@procs")))
     rb_ary_each(xen_rb_hook_to_a(hook));
   return(hook);
 }
@@ -914,7 +914,7 @@ static Xen xen_rb_hook_call(int argc, Xen *argv, Xen hook)
   if (procs != Qnil)
     {
       long i;
-      for (i = 0; i < RB_ARRAY_LEN(procs); i++) 
+      for (i = 0; i < RB_ARRAY_LEN(procs); i++)
 	result = xen_rb_apply(rb_ary_entry(procs, i), rest);
     }
   return(result);
@@ -923,13 +923,13 @@ static Xen xen_rb_hook_call(int argc, Xen *argv, Xen hook)
 
 static Xen xen_rb_hook_is_empty_p(Xen hook)
 {
-  return(C_bool_to_Xen_boolean(RB_ARRAY_LEN(rb_iv_get(hook, "@procs")) == 0)); 
+  return(C_bool_to_Xen_boolean(RB_ARRAY_LEN(rb_iv_get(hook, "@procs")) == 0));
 }
 
- 
+
 static Xen xen_rb_hook_length(Xen hook)
 {
-  return(C_int_to_Xen_integer(RB_ARRAY_LEN(rb_iv_get(hook, "@procs")))); 
+  return(C_int_to_Xen_integer(RB_ARRAY_LEN(rb_iv_get(hook, "@procs"))));
 }
 
 
@@ -963,7 +963,7 @@ static Xen xen_rb_hook_inspect(Xen hook)
   rb_str_append(str, rb_inspect(xen_rb_hook_names(hook)));
   rb_str_cat2(str, ">");
   return(str);
-}    
+}
 
 
 /* bil -- added xen_rb_create_hook for Xen_define_hook in xen.h, 13-Jun-05 --
@@ -983,19 +983,19 @@ Xen xen_rb_create_hook(char *name, int arity, char *help)
   return(var);
 }
 
-static int simple_hook_number = 0; 
- 
+static int simple_hook_number = 0;
 
-Xen xen_rb_create_simple_hook(int arity) 
-{ 
-  char *name; 
-  Xen hook; 
-  name = (char *)calloc(20, sizeof(char)); 
-  snprintf(name, 20, "simple_%02d_hook", simple_hook_number++); 
-  hook = xen_rb_create_hook(name, arity, NULL); 
-  free(name); 
-  return(hook); 
-} 
+
+Xen xen_rb_create_simple_hook(int arity)
+{
+  char *name;
+  Xen hook;
+  name = (char *)calloc(20, sizeof(char));
+  snprintf(name, 20, "simple_%02d_hook", simple_hook_number++);
+  hook = xen_rb_create_hook(name, arity, NULL);
+  free(name);
+  return(hook);
+}
 
 
 /*
@@ -1007,17 +1007,17 @@ Xen xen_rb_create_simple_hook(int arity)
  *   == $var_hook = Hook.new("var_hook", 1)
  * make_hook("var_hook", 1, "help $var_hook")
  *   == $var_hook = Hook.new("var_hook", 1, "help $var_hook")
- * 
+ *
  * make_hook("var_hook", 1, "help $var_hook", "1st proc") do |a| ... end
  *   == $var_hook = Hook.new("var_hook", 1, "help $var_hook")
  *      $var_hook.add_hook!("1st proc") do |a| ... end
  */
 
-#ifndef RSTRING_LEN 
-  #define RB_STR_LEN(str)                RSTRING(str)->len 
-#else 
-  #define RB_STR_LEN(str)                RSTRING_LEN(str) 
-#endif 
+#ifndef RSTRING_LEN
+  #define RB_STR_LEN(str)                RSTRING(str)->len
+#else
+  #define RB_STR_LEN(str)                RSTRING_LEN(str)
+#endif
 
 static Xen xen_rb_make_hook(int argc, Xen *argv, Xen klass)
 {
@@ -1040,15 +1040,15 @@ static Xen xen_rb_make_hook(int argc, Xen *argv, Xen klass)
   else Xen_error(Xen_make_error_type("wrong-number-of-args"),
 		 Xen_list_1(C_string_to_Xen_string("make_hook(name, arity=0, help=\"\", hook_name=\"\", &func)")));
   name = xen_rb_hook_name(hook);
-  if (Xen_char_to_C_char(name) != '$') 
+  if (Xen_char_to_C_char(name) != '$')
     {
       char *temp;
-      temp = xen_scheme_global_variable_to_ruby(Xen_string_to_C_string(name)); 
+      temp = xen_scheme_global_variable_to_ruby(Xen_string_to_C_string(name));
       name = C_string_to_Xen_string(temp);
       if (temp) free(temp);
     }
-  Xen_check_type(RB_STR_LEN(name) >= 2, name, 1, __func__, "a char*, len >= 2"); 
-  return(rb_gv_set(Xen_string_to_C_string(name), hook)); 
+  Xen_check_type(RB_STR_LEN(name) >= 2, name, 1, __func__, "a char*, len >= 2");
+  return(rb_gv_set(Xen_string_to_C_string(name), hook));
 }
 
 
@@ -1064,7 +1064,7 @@ static Xen xen_rb_is_hook_p(Xen klass, Xen obj)
  * $my_hook = Hook.new("my_hook", 2, "info of my_hook")
  * $my_hook.add_hook!("1st proc") do |a, b| ... end
  *     or make_hook("my_hook", 2, "info of my_hook", "1st proc") do |a, b| ... end
- * 
+ *
  * $my_hook.add_hook!("2nd proc") do |a, b| ... end
  * $my_hook.inspect   --> #<Hook name: "$my_hook", arity: 2, procs[2]: ["1st proc", "2nd proc"]>
  *
@@ -1074,7 +1074,7 @@ static Xen xen_rb_is_hook_p(Xen klass, Xen obj)
  * $my_hook.help      --> info of my_hook
  * $my_hook.remove_hook!("1st proc")
  * $my_hook.inspect   --> #<Hook name: "$my_hook", arity: 2, procs[1]: ["2nd proc"]>
- * 
+ *
  * $my_hook.remove_hook!("2nd proc")
  * $my_hook.inspect   --> #<Hook name: "$my_hook", arity: 2, procs[0]: nil>
  */
@@ -1101,7 +1101,7 @@ Xen rb_property(Xen obj, Xen key)
 #define H_property S_property "(obj, key)  \
 if key exists, return obj's value (maybe nil) associated with key otherwise false"
   Xen props = Xen_false;
-  
+
   if (Xen_is_false(rb_object_properties))
     return(Xen_false);
 
@@ -1127,10 +1127,10 @@ set key-value pair for obj and return value"
     }
   else
     props = rb_hash_aref(rb_object_properties, obj);
-  
+
   if (Xen_is_false(props) || props == Qnil)
     props = rb_hash_new();
-  
+
   rb_hash_aset(props, key, value);
   rb_hash_aset(rb_object_properties, obj, props);
   return(value);
@@ -1144,7 +1144,7 @@ Xen rb_properties(void)
 }
 
 
-static Xen g_gc_off(void) 
+static Xen g_gc_off(void)
 {
   #define H_gc_off "(" S_gc_off ") turns off garbage collection"
   rb_gc_disable();
@@ -1152,7 +1152,7 @@ static Xen g_gc_off(void)
 }
 
 
-static Xen g_gc_on(void) 
+static Xen g_gc_on(void)
 {
   #define H_gc_on "(" S_gc_on ") turns on garbage collection"
   rb_gc_enable();
@@ -1176,7 +1176,7 @@ void Init_Hook(void)
 {
   if (hook_inited) return;
   hook_inited = true;
- 
+
   xen_rb_cHook = rb_define_class("Hook", rb_cObject);
   rb_include_module(xen_rb_cHook, rb_mEnumerable);
 #if HAVE_RB_DEFINE_ALLOC_FUNC
@@ -1184,7 +1184,7 @@ void Init_Hook(void)
 #else
   rb_define_singleton_method(xen_rb_cHook, "new", Xen_procedure_cast xen_rb_new, -1);
 #endif
-    
+
   rb_define_method(xen_rb_cHook, "initialize", Xen_procedure_cast xen_rb_hook_initialize, -1);
   rb_define_method(xen_rb_cHook, "add_hook!", Xen_procedure_cast xen_rb_hook_add_hook, -1);
   rb_define_method(xen_rb_cHook, "remove_hook!", Xen_procedure_cast xen_rb_hook_remove_hook, 1);
@@ -1203,7 +1203,7 @@ void Init_Hook(void)
   rb_define_alias(xen_rb_cHook, "help", "describe");
   rb_define_alias(xen_rb_cHook, "documentation", "describe");
   rb_define_method(xen_rb_cHook, "inspect", Xen_procedure_cast xen_rb_hook_inspect, 0);
-  
+
   rb_define_global_function("make_hook", Xen_procedure_cast xen_rb_make_hook, -1);
   rb_define_global_function("hook?", Xen_procedure_cast xen_rb_is_hook_p, 1);
 
@@ -1244,7 +1244,7 @@ void xen_gc_mark(Xen val)
  * A simple interpreter:
  *
  *  #include <xen.h>
- *  
+ *
  *  int main(int argc, char **argv)
  *  {
  *    xen_repl(argc, argv);
@@ -1260,19 +1260,19 @@ void xen_repl(int argc, char **argv)
 }
 
 
-static ficlWord *snd_exit_xt; 
+static ficlWord *snd_exit_xt;
 
-static void fth_snd_exit(int n) 
-{ 
-  if (!snd_exit_xt) 
-    snd_exit_xt = ficlSystemLookup(FTH_FICL_SYSTEM(), (char *)"snd-exit"); 
-  ficlStackPushInteger(FTH_FICL_STACK(), n); 
-  ficlVmExecuteXT(FTH_FICL_VM(), snd_exit_xt); 
-  ficlStackDrop(FTH_FICL_STACK(), 1); 
-} 
- 
+static void fth_snd_exit(int n)
+{
+  if (!snd_exit_xt)
+    snd_exit_xt = ficlSystemLookup(FTH_FICL_SYSTEM(), (char *)"snd-exit");
+  ficlStackPushInteger(FTH_FICL_STACK(), n);
+  ficlVmExecuteXT(FTH_FICL_VM(), snd_exit_xt);
+  ficlStackDrop(FTH_FICL_STACK(), 1);
+}
 
-static Xen g_gc_off(void) 
+
+static Xen g_gc_off(void)
 {
   #define H_gc_off "(" S_gc_off ") turns off garbage collection"
   fth_gc_on();
@@ -1280,7 +1280,7 @@ static Xen g_gc_off(void)
 }
 
 
-static Xen g_gc_on(void) 
+static Xen g_gc_on(void)
 {
   #define H_gc_on "(" S_gc_on ") turns on garbage collection"
   fth_gc_on();
@@ -1291,7 +1291,7 @@ static Xen g_gc_on(void)
 void xen_initialize(void)
 {
   fth_init();
-  fth_exit_hook = fth_snd_exit; 
+  fth_exit_hook = fth_snd_exit;
 
   Xen_define_procedure(S_gc_off, g_gc_off, 0, 0, 0, H_gc_off);
   Xen_define_procedure(S_gc_on,  g_gc_on,  0, 0, 0, H_gc_on);
@@ -1377,7 +1377,7 @@ void xen_repl(int argc, char **argv)
 	      if (!str) {expr_ok = false; continue;}
 	      len = strlen(str) + 16;
 	      temp = (char *)malloc(len * sizeof(char));
-	      snprintf(temp, len, "(write %s)", str);  
+	      snprintf(temp, len, "(write %s)", str);
 	      Xen_eval_C_string(temp);
 	      free(temp);
 	      stdin_free_str();
@@ -1595,7 +1595,7 @@ static Xen g_ftell(Xen fd)
 }
 
 
-static Xen g_gc_off(void) 
+static Xen g_gc_off(void)
 {
   #define H_gc_off "(" S_gc_off ") turns off garbage collection"
   s7_gc_on(s7, false);
@@ -1603,7 +1603,7 @@ static Xen g_gc_off(void)
 }
 
 
-static Xen g_gc_on(void) 
+static Xen g_gc_on(void)
 {
   #define H_gc_on "(" S_gc_on ") turns on garbage collection"
   s7_gc_on(s7, true);
@@ -1648,7 +1648,7 @@ s7_scheme *s7_xen_initialize(s7_scheme *sc)
   if (!sc)
     {
       s7 = s7_init();
-      if (!s7) 
+      if (!s7)
 	{
 	  fprintf(stderr, "Can't initialize s7!\n");
 	  return(NULL);

@@ -33,14 +33,14 @@ typedef struct {
 } mus_any;
 
 
-typedef enum {MUS_INTERP_NONE, MUS_INTERP_LINEAR, MUS_INTERP_SINUSOIDAL, MUS_INTERP_ALL_PASS, 
+typedef enum {MUS_INTERP_NONE, MUS_INTERP_LINEAR, MUS_INTERP_SINUSOIDAL, MUS_INTERP_ALL_PASS,
 	      MUS_INTERP_LAGRANGE, MUS_INTERP_BEZIER, MUS_INTERP_HERMITE} mus_interp_t;
 
 typedef enum {MUS_RECTANGULAR_WINDOW, MUS_HANN_WINDOW, MUS_WELCH_WINDOW, MUS_PARZEN_WINDOW, MUS_BARTLETT_WINDOW,
 	      MUS_HAMMING_WINDOW, MUS_BLACKMAN2_WINDOW, MUS_BLACKMAN3_WINDOW, MUS_BLACKMAN4_WINDOW,
 	      MUS_EXPONENTIAL_WINDOW, MUS_RIEMANN_WINDOW, MUS_KAISER_WINDOW, MUS_CAUCHY_WINDOW, MUS_POISSON_WINDOW,
-	      MUS_GAUSSIAN_WINDOW, MUS_TUKEY_WINDOW, MUS_DOLPH_CHEBYSHEV_WINDOW, MUS_HANN_POISSON_WINDOW, 
-	      MUS_CONNES_WINDOW, MUS_SAMARAKI_WINDOW, MUS_ULTRASPHERICAL_WINDOW, 
+	      MUS_GAUSSIAN_WINDOW, MUS_TUKEY_WINDOW, MUS_DOLPH_CHEBYSHEV_WINDOW, MUS_HANN_POISSON_WINDOW,
+	      MUS_CONNES_WINDOW, MUS_SAMARAKI_WINDOW, MUS_ULTRASPHERICAL_WINDOW,
 	      MUS_BARTLETT_HANN_WINDOW, MUS_BOHMAN_WINDOW, MUS_FLAT_TOP_WINDOW,
 	      MUS_BLACKMAN5_WINDOW, MUS_BLACKMAN6_WINDOW, MUS_BLACKMAN7_WINDOW, MUS_BLACKMAN8_WINDOW, MUS_BLACKMAN9_WINDOW, MUS_BLACKMAN10_WINDOW,
 	      MUS_RV2_WINDOW, MUS_RV3_WINDOW, MUS_RV4_WINDOW, MUS_MLT_SINE_WINDOW, MUS_PAPOULIS_WINDOW, MUS_DPSS_WINDOW, MUS_SINC_WINDOW,
@@ -79,9 +79,9 @@ MUS_EXPORT void mus_initialize(void);
 MUS_EXPORT int mus_make_generator_type(void);
 
 MUS_EXPORT mus_any_class *mus_generator_class(mus_any *ptr);
-MUS_EXPORT mus_any_class *mus_make_generator(int type, char *name, 
-					     void (*release)(mus_any *ptr), 
-					     char *(*describe)(mus_any *ptr), 
+MUS_EXPORT mus_any_class *mus_make_generator(int type, char *name,
+					     void (*release)(mus_any *ptr),
+					     char *(*describe)(mus_any *ptr),
 					     bool (*equalp)(mus_any *gen1, mus_any *gen2));
 
 MUS_EXPORT void mus_generator_set_length(mus_any_class *p, mus_long_t (*length)(mus_any *ptr));
@@ -93,7 +93,7 @@ MUS_EXPORT void mus_generator_set_channel(mus_any_class *p, int (*channel)(mus_a
 MUS_EXPORT void mus_generator_set_file_name(mus_any_class *p, char *(*file_name)(mus_any *ptr));
 MUS_EXPORT void mus_generator_set_extended_type(mus_any_class *p, mus_clm_extended_t extended_type);
 MUS_EXPORT void mus_generator_set_read_sample(mus_any_class *p, mus_float_t (*read_sample)(mus_any *ptr, mus_long_t samp, int chan));
-MUS_EXPORT void mus_generator_set_feeders(mus_any *g, 
+MUS_EXPORT void mus_generator_set_feeders(mus_any *g,
 					  mus_float_t (*feed)(void *arg, int direction),
 					  mus_float_t (*block_feed)(void *arg, int direction, mus_float_t *block, mus_long_t start, mus_long_t end));
 MUS_EXPORT void mus_generator_copy_feeders(mus_any *dest, mus_any *source);
@@ -320,7 +320,7 @@ MUS_EXPORT mus_float_t mus_triangle_wave(mus_any *gen, mus_float_t fm);
 MUS_EXPORT mus_any *mus_make_triangle_wave(mus_float_t freq, mus_float_t amp, mus_float_t phase);
 MUS_EXPORT bool mus_is_triangle_wave(mus_any *gen);
 MUS_EXPORT mus_float_t mus_triangle_wave_unmodulated(mus_any *ptr);
- 
+
 MUS_EXPORT mus_float_t mus_pulse_train(mus_any *gen, mus_float_t fm);
 MUS_EXPORT mus_any *mus_make_pulse_train(mus_float_t freq, mus_float_t amp, mus_float_t phase);
 MUS_EXPORT bool mus_is_pulse_train(mus_any *gen);
@@ -371,7 +371,7 @@ MUS_EXPORT mus_float_t mus_one_pole_all_pass(mus_any *f, mus_float_t input);
 MUS_EXPORT mus_any *mus_make_one_pole_all_pass(int size, mus_float_t coeff);
 MUS_EXPORT bool mus_is_one_pole_all_pass(mus_any *ptr);
 
-MUS_EXPORT mus_float_t mus_formant(mus_any *ptr, mus_float_t input); 
+MUS_EXPORT mus_float_t mus_formant(mus_any *ptr, mus_float_t input);
 MUS_EXPORT mus_any *mus_make_formant(mus_float_t frequency, mus_float_t radius);
 MUS_EXPORT bool mus_is_formant(mus_any *ptr);
 MUS_EXPORT mus_float_t mus_set_formant_frequency(mus_any *ptr, mus_float_t freq_in_hz);
@@ -439,7 +439,7 @@ MUS_EXPORT mus_float_t mus_chebyshev_tu_sum(mus_float_t x, int n, mus_float_t *t
 MUS_EXPORT mus_float_t (*mus_polywave_function(mus_any *g))(mus_any *gen, mus_float_t fm);
 
 MUS_EXPORT mus_float_t mus_env(mus_any *ptr);
-MUS_EXPORT mus_any *mus_make_env(mus_float_t *brkpts, int npts, mus_float_t scaler, mus_float_t offset, mus_float_t base, 
+MUS_EXPORT mus_any *mus_make_env(mus_float_t *brkpts, int npts, mus_float_t scaler, mus_float_t offset, mus_float_t base,
 				 mus_float_t duration, mus_long_t end, mus_float_t *odata);
 MUS_EXPORT bool mus_is_env(mus_any *ptr);
 MUS_EXPORT mus_float_t mus_env_interp(mus_float_t x, mus_any *env);
@@ -486,10 +486,10 @@ MUS_EXPORT mus_any *mus_make_frample_to_file_with_comment(const char *filename, 
 MUS_EXPORT mus_any *mus_continue_frample_to_file(const char *filename);
 
 MUS_EXPORT void mus_file_mix_with_reader_and_writer(mus_any *outf, mus_any *inf,
-						    mus_long_t out_start, mus_long_t out_framples, mus_long_t in_start, 
+						    mus_long_t out_start, mus_long_t out_framples, mus_long_t in_start,
 						    mus_float_t *mx, int mx_chans, mus_any ***envs);
-MUS_EXPORT void mus_file_mix(const char *outfile, const char *infile, 
-			     mus_long_t out_start, mus_long_t out_framples, mus_long_t in_start, 
+MUS_EXPORT void mus_file_mix(const char *outfile, const char *infile,
+			     mus_long_t out_start, mus_long_t out_framples, mus_long_t in_start,
 			     mus_float_t *mx, int mx_chans, mus_any ***envs);
 
 MUS_EXPORT bool mus_is_sample_to_file(mus_any *ptr);
@@ -506,7 +506,7 @@ MUS_EXPORT bool mus_out_any_is_safe(mus_any *IO);
 MUS_EXPORT mus_float_t mus_out_any_to_file(mus_any *ptr, mus_long_t samp, int chan, mus_float_t val);
 
 MUS_EXPORT void mus_locsig(mus_any *ptr, mus_long_t loc, mus_float_t val);
-MUS_EXPORT mus_any *mus_make_locsig(mus_float_t degree, mus_float_t distance, mus_float_t reverb, int chans, 
+MUS_EXPORT mus_any *mus_make_locsig(mus_float_t degree, mus_float_t distance, mus_float_t reverb, int chans,
 				    mus_any *output, int rev_chans, mus_any *revput, mus_interp_t type);
 MUS_EXPORT bool mus_is_locsig(mus_any *ptr);
 MUS_EXPORT mus_float_t mus_locsig_ref(mus_any *ptr, int chan);
@@ -563,9 +563,9 @@ MUS_EXPORT mus_float_t *mus_cepstrum(mus_float_t *data, mus_long_t n);
 MUS_EXPORT bool mus_is_granulate(mus_any *ptr);
 MUS_EXPORT mus_float_t mus_granulate(mus_any *ptr, mus_float_t (*input)(void *arg, int direction));
 MUS_EXPORT mus_float_t mus_granulate_with_editor(mus_any *ptr, mus_float_t (*input)(void *arg, int direction), int (*edit)(void *closure));
-MUS_EXPORT mus_any *mus_make_granulate(mus_float_t (*input)(void *arg, int direction), 
-				       mus_float_t expansion, mus_float_t length, mus_float_t scaler, 
-				       mus_float_t hop, mus_float_t ramp, mus_float_t jitter, int max_size, 
+MUS_EXPORT mus_any *mus_make_granulate(mus_float_t (*input)(void *arg, int direction),
+				       mus_float_t expansion, mus_float_t length, mus_float_t scaler,
+				       mus_float_t hop, mus_float_t ramp, mus_float_t jitter, int max_size,
 				       int (*edit)(void *closure),
 				       void *closure);
 MUS_EXPORT int mus_granulate_grain_max_length(mus_any *ptr);
@@ -577,18 +577,18 @@ MUS_EXPORT mus_long_t mus_file_buffer_size(void);
 MUS_EXPORT mus_float_t mus_apply(mus_any *gen, mus_float_t f1, mus_float_t f2);
 
 MUS_EXPORT bool mus_is_phase_vocoder(mus_any *ptr);
-MUS_EXPORT mus_any *mus_make_phase_vocoder(mus_float_t (*input)(void *arg, int direction), 
+MUS_EXPORT mus_any *mus_make_phase_vocoder(mus_float_t (*input)(void *arg, int direction),
 					   int fftsize, int overlap, int interp,
 					   mus_float_t pitch,
 					   bool (*analyze)(void *arg, mus_float_t (*input)(void *arg1, int direction)),
 					   int (*edit)(void *arg), /* return value is ignored (int return type is intended to be consistent with granulate) */
-					   mus_float_t (*synthesize)(void *arg), 
+					   mus_float_t (*synthesize)(void *arg),
 					   void *closure);
 MUS_EXPORT mus_float_t mus_phase_vocoder(mus_any *ptr, mus_float_t (*input)(void *arg, int direction));
-MUS_EXPORT mus_float_t mus_phase_vocoder_with_editors(mus_any *ptr, 
+MUS_EXPORT mus_float_t mus_phase_vocoder_with_editors(mus_any *ptr,
 						mus_float_t (*input)(void *arg, int direction),
 						bool (*analyze)(void *arg, mus_float_t (*input)(void *arg1, int direction)),
-						int (*edit)(void *arg), 
+						int (*edit)(void *arg),
 						mus_float_t (*synthesize)(void *arg));
 
 MUS_EXPORT mus_float_t *mus_phase_vocoder_amp_increments(mus_any *ptr);
@@ -700,8 +700,8 @@ MUS_EXPORT mus_any *mus_bank_generator(mus_any *g, int i);
  * 26-Feb:     removed mus_cosines (use mus_length)
  * 24-Feb:     removed mus_make_env_with_start, added mus_make_env_with_length
  * 20-Feb:     clm 4:
- *             polywave for polyshape and waveshape.  
- *             mus_formant_with_frequency. 
+ *             polywave for polyshape and waveshape.
+ *             mus_formant_with_frequency.
  *             firmant generator.
  *             removed mus_formant_radius and mus_set_formant_radius.
  *             removed "gain" arg from mus_make_formant.
@@ -725,7 +725,7 @@ MUS_EXPORT mus_any *mus_bank_generator(mus_any *g, int i);
  * 16-July:    removed start arg from mus_make_env (see mus_make_env_with_start).
  * 5-July:     changed some mus_float_ts to doubles in env funcs.
  *               exp envs now use repeated multiplies rather than direct exp call.
- * 19-June:    mus-increment on gens with a notion of frequency (phase increment); 
+ * 19-June:    mus-increment on gens with a notion of frequency (phase increment);
  *               to make room for this, asymmetric-fm ratio and sine-summation b moved to mus-offset.
  * 22-Feb:     mus_big_fft and mus_spectrum_t.
  * 21-Feb:     mus_fft_window_name.
@@ -885,8 +885,8 @@ MUS_EXPORT mus_any *mus_bank_generator(mus_any *g, int i);
  * 31-Mar:     finally implemented set-location for envs.
  * 14-Feb:     buffer-full?.
  * 1-Feb:      removed mus_phasepartials2waveshape.
- * 3-Jan-00:   format and type args added to make_sample2file, 
- *             mus_file_close. 
+ * 3-Jan-00:   format and type args added to make_sample2file,
+ *             mus_file_close.
  *             removed make_file_input and make_file_output.
  * --------
  * 29-Dec:     various bugfixes especially in envelope handlers.

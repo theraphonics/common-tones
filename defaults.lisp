@@ -1,6 +1,9 @@
-;;; this file contains some of the global default values that control CLM
-;;; in many cases the *clm-<>* form is *<>* during a given run; that is,
-;;;    *clm-channels* is the default, *channels* is the current setting
+/*!< this file contains some of the global default values that control CLM
+
+/*!< in many cases the *clm-<>* form is *<>* during a given run; that is,
+
+/*!< *clm-channels* is the default, *channels* is the current setting
+
 
 (in-package :common-tones)
 

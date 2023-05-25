@@ -1,7 +1,7 @@
 #ifndef XEN_H
 #define XEN_H
 
-/* macros for extension language support 
+/* macros for extension language support
  *
  * Ruby:      covers 1.8.0 to present
  * Forth:     covers 1.0 to present
@@ -33,7 +33,7 @@
  *  11-Oct:    removed XEN_EXACT_P.
  *  23-Sep:    removed *_OR_ELSE, XEN_ARG_*, and OFF_T* macros; added XEN_ARGIFY* to the Forth section.
  *  7-Jul-13:  removed int64 stuff (it was not used anywhere). Made various Ruby changes (NUM2ULL etc).
- *  -------- 
+ *  --------
  *  5-Nov:     minor s7-related changes.
  *  9-July:    XEN_VECTOR_ELEMENTS and XEN_VECTOR_COPY.
  *  4-June:    XEN_PROVIDE
@@ -169,7 +169,7 @@
 
 /* ------------------------------ RUBY ------------------------------ */
 
-/* other possibilities: 
+/* other possibilities:
  *    XEN_DEFINE_METHOD, XEN_DEFINE_ALIAS, rb_ary_unsift = XEN_LIST_PREPEND?,
  *    various property macros -- in Scheme as well, rb_const_defined, rb_yield, XEN_INCLUDE_MODULE,
  *    rb_id2name (XEN_SYMBOL...), rb_raise.
@@ -177,14 +177,14 @@
 
 #if HAVE_RUBY
 
-#ifdef _GNU_SOURCE 
-  #undef _GNU_SOURCE 
-#endif 
-#include <ruby.h> 
-#if defined(__GNUC__) && (!(defined(__cplusplus))) 
-  #ifndef _GNU_SOURCE 
-    #define _GNU_SOURCE 
-  #endif 
+#ifdef _GNU_SOURCE
+  #undef _GNU_SOURCE
+#endif
+#include <ruby.h>
+#if defined(__GNUC__) && (!(defined(__cplusplus)))
+  #ifndef _GNU_SOURCE
+    #define _GNU_SOURCE
+  #endif
 #endif
 
 #define XEN_OK 1
@@ -241,15 +241,15 @@
 #define XEN_LIST_LENGTH(Arg)            xen_rb_list_length(Arg)
 #define XEN_EQ_P(a, b)                  ((a) == (b))
 #define XEN_LIST_1(a)                   rb_ary_new3(1, a)
-#define XEN_LIST_2(a, b)                rb_ary_new3(2, a, b) 
-#define XEN_LIST_3(a, b, c)             rb_ary_new3(3, a, b, c) 
-#define XEN_LIST_4(a, b, c, d)          rb_ary_new3(4, a, b, c, d) 
-#define XEN_LIST_5(a, b, c, d, e)       rb_ary_new3(5, a, b, c, d, e) 
+#define XEN_LIST_2(a, b)                rb_ary_new3(2, a, b)
+#define XEN_LIST_3(a, b, c)             rb_ary_new3(3, a, b, c)
+#define XEN_LIST_4(a, b, c, d)          rb_ary_new3(4, a, b, c, d)
+#define XEN_LIST_5(a, b, c, d, e)       rb_ary_new3(5, a, b, c, d, e)
 #define XEN_LIST_6(a, b, c, d, e, f)    rb_ary_new3(6, a, b, c, d, e, f)
 #define XEN_LIST_7(a, b, c, d, e, f, g) rb_ary_new3(7, a, b, c, d, e, f, g)
 #define XEN_LIST_8(a, b, c, d, e, f, g, h) rb_ary_new3(8, a, b, c, d, e, f, g, h)
 #define XEN_LIST_9(a, b, c, d, e, f, g, h, i) rb_ary_new3(9, a, b, c, d, e, f, g, h, i)
-#define XEN_COPY_ARG(Lst)               xen_rb_copy_list(Lst) 
+#define XEN_COPY_ARG(Lst)               xen_rb_copy_list(Lst)
 #define XEN_LIST_REF(Lst, Num)          xen_rb_list_ref(Lst, Num)
 #define XEN_LIST_SET(Lst, Num, Val)     xen_rb_list_set(Lst, Num, Val)
 #define XEN_APPEND(X, Y)                rb_ary_concat(X, Y)
@@ -282,7 +282,7 @@
   #define C_TO_XEN_LONG_LONG(a)           LL2NUM(a)
   #define XEN_TO_C_LONG_LONG(a)           NUM2LL(a)
 
-  #define XEN_ULONG_LONG_P(Arg)           XEN_INTEGER_P(Arg) 
+  #define XEN_ULONG_LONG_P(Arg)           XEN_INTEGER_P(Arg)
   #define XEN_TO_C_ULONG_LONG(Arg)        NUM2ULL(Arg) /* NUM2ULONG(Arg) */
   #define C_TO_XEN_ULONG_LONG(Arg)        ULL2NUM(Arg) /* INT2NUM(Arg) */
 #else
@@ -297,7 +297,7 @@
   #define C_TO_XEN_LONG_LONG(a)           OFFT2NUM(a)
   #define XEN_TO_C_LONG_LONG(a)           NUM2OFFT(a)
 
-  #define XEN_ULONG_LONG_P(Arg)           XEN_INTEGER_P(Arg) 
+  #define XEN_ULONG_LONG_P(Arg)           XEN_INTEGER_P(Arg)
   #define XEN_TO_C_ULONG_LONG(Arg)        NUM2OFFT(Arg)
   #define C_TO_XEN_ULONG_LONG(Arg)        OFFT2NUM(Arg)
 #endif
@@ -306,14 +306,14 @@
 #define XEN_STRING_P(Arg)               ((TYPE(Arg) == T_STRING) && (!SYMBOL_P(Arg)))
 #define C_TO_XEN_STRING(a)              xen_rb_str_new2((char *)a)
 #define C_TO_XEN_STRINGN(a, len)        rb_str_new((char *)a, len)
-#ifndef RSTRING_PTR 
-  #define XEN_TO_C_STRING(Str)          RSTRING(Str)->ptr 
-#else 
-  #define XEN_TO_C_STRING(Str)          RSTRING_PTR(Str) 
-#endif 
+#ifndef RSTRING_PTR
+  #define XEN_TO_C_STRING(Str)          RSTRING(Str)->ptr
+#else
+  #define XEN_TO_C_STRING(Str)          RSTRING_PTR(Str)
+#endif
 
 #define XEN_CHAR_P(Arg)                 XEN_STRING_P(Arg)
-#define XEN_TO_C_CHAR(Arg)              XEN_TO_C_STRING(Arg)[0] 
+#define XEN_TO_C_CHAR(Arg)              XEN_TO_C_STRING(Arg)[0]
 #define C_TO_XEN_CHAR(Arg)              rb_str_new((char *)(&(Arg)), 1)
 
 #define XEN_NAME_AS_C_STRING_TO_VALUE(a) xen_rb_gv_get(a)
@@ -329,7 +329,7 @@
 #define XEN_CLEAR_HOOK(a)               xen_rb_hook_reset_hook(a)
 #define XEN_HOOKED(a)                   (!xen_rb_hook_empty_p(a))
 #define XEN_DEFINE_HOOK(Name, Descr, Arity, Help) xen_rb_create_hook((char *)(Name), Arity, (char *)Help)
-#define XEN_DEFINE_SIMPLE_HOOK(Descr, Arity) xen_rb_create_simple_hook(Arity); 
+#define XEN_DEFINE_SIMPLE_HOOK(Descr, Arity) xen_rb_create_simple_hook(Arity);
 #define XEN_ADD_HOOK(Hook, Func, Name, Doc) xen_rb_add_hook(Hook, (XEN (*)(ANYARGS))Func, Name, Doc)
 
 /* ---- vectors ---- */
@@ -464,9 +464,9 @@
 #define XEN_ERROR_TYPE(Name)            xen_rb_intern(Name)
 
 
-#if USE_SND 
+#if USE_SND
 
-#define XEN_ERROR(Type, Info)           snd_rb_raise(Type, Info) 
+#define XEN_ERROR(Type, Info)           snd_rb_raise(Type, Info)
 
 #define XEN_OUT_OF_RANGE_ERROR(Caller, ArgN, Arg, Descr) \
   snd_rb_raise(XEN_ERROR_TYPE("out-of-range"), \
@@ -474,7 +474,7 @@
                           C_TO_XEN_STRING(xen_scheme_procedure_to_ruby(Caller)), \
                           C_TO_XEN_INT(ArgN), \
                           Arg, \
-                          C_TO_XEN_STRING(Descr))) 
+                          C_TO_XEN_STRING(Descr)))
 
 #define XEN_WRONG_TYPE_ARG_ERROR(Caller, ArgN, Arg, Descr) \
   snd_rb_raise(XEN_ERROR_TYPE("wrong-type-arg"), \
@@ -482,25 +482,25 @@
                           C_TO_XEN_STRING(xen_scheme_procedure_to_ruby(Caller)), \
                           C_TO_XEN_INT(ArgN), \
                             Arg, \
-                          C_TO_XEN_STRING(Descr))) 
+                          C_TO_XEN_STRING(Descr)))
 
-#else 
+#else
 
-#define XEN_ERROR(Type, Info)           xen_rb_raise(Type, Info) 
+#define XEN_ERROR(Type, Info)           xen_rb_raise(Type, Info)
 
 #define XEN_OUT_OF_RANGE_ERROR(Caller, ArgN, Arg, Descr) \
   rb_raise(rb_eRangeError, "%s: argument %d, %s, is out of range (%s)\n", \
-       Caller, (int)ArgN, XEN_AS_STRING(Arg), Descr) 
+       Caller, (int)ArgN, XEN_AS_STRING(Arg), Descr)
 
 #define XEN_WRONG_TYPE_ARG_ERROR(Caller, ArgN, Arg, Descr) \
   rb_raise(rb_eTypeError, "%s: argument %d, %s, should be %s\n", \
-       Caller, (int)ArgN, XEN_AS_STRING(Arg), Descr) 
+       Caller, (int)ArgN, XEN_AS_STRING(Arg), Descr)
 
-#endif 
+#endif
 
 #define XEN_ASSERT_TYPE(Assertion, Arg, Position, Caller, Correct_Type) \
   if (!(Assertion)) \
-    XEN_WRONG_TYPE_ARG_ERROR(Caller, Position, Arg, Correct_Type) 
+    XEN_WRONG_TYPE_ARG_ERROR(Caller, Position, Arg, Correct_Type)
 
 #define XEN_THROW(Type, Info)           xen_rb_raise(Type, Info)
 
@@ -647,7 +647,7 @@ char *xen_scheme_procedure_to_ruby(const char *name);
 char *xen_scheme_global_variable_to_ruby(const char *name);
 bool xen_rb_defined_p(const char *name);
 XEN xen_rb_define_class(const char *name);
-int xen_rb_list_length(XEN obj); 
+int xen_rb_list_length(XEN obj);
 XEN xen_rb_list_ref(XEN obj, int index);
 XEN xen_rb_list_set(XEN obj, int index, XEN value);
 void xen_rb_raise(XEN type, XEN info);
@@ -670,7 +670,7 @@ XEN xen_rb_hook_reset_hook(XEN hook);
 XEN xen_rb_hook_to_a(XEN hook);
 void Init_Hook(void);
 XEN xen_rb_create_hook(char *name, int arity, char *help);
-XEN xen_rb_create_simple_hook(int arity); 
+XEN xen_rb_create_simple_hook(int arity);
 XEN xen_rb_add_hook(XEN hook, VALUE (*func)(ANYARGS), const char *name, const char *doc);
 typedef XEN (*XEN_CATCH_BODY_TYPE) (void *data);
 
@@ -745,9 +745,9 @@ XEN xen_assoc(XEN key, XEN alist);
 #define C_TO_XEN_ULONG(a)               fth_make_unsigned((unsigned long)(a))
 #define XEN_TO_C_ULONG(a)               fth_unsigned_ref(a)
 
-#define XEN_ULONG_LONG_P(Arg)           XEN_ULONG_P(Arg) 
-#define XEN_TO_C_ULONG_LONG(Arg)        fth_ulong_long_ref(Arg) 
-#define C_TO_XEN_ULONG_LONG(Arg)        fth_make_ulong_long((unsigned long long)Arg) 
+#define XEN_ULONG_LONG_P(Arg)           XEN_ULONG_P(Arg)
+#define XEN_TO_C_ULONG_LONG(Arg)        fth_ulong_long_ref(Arg)
+#define C_TO_XEN_ULONG_LONG(Arg)        fth_make_ulong_long((unsigned long long)Arg)
 
 #define C_TO_XEN_LONG_LONG(a)           fth_make_long_long(a)
 #define XEN_TO_C_LONG_LONG(a)           fth_long_long_ref(a)
@@ -757,7 +757,7 @@ XEN xen_assoc(XEN key, XEN alist);
 #define XEN_TO_C_DOUBLE(a)              fth_float_ref(a)
 
 #if HAVE_COMPLEX_NUMBERS
-# define XEN_COMPLEX_P(Arg)             FTH_NUMBER_P(Arg) 
+# define XEN_COMPLEX_P(Arg)             FTH_NUMBER_P(Arg)
 # define C_TO_XEN_COMPLEX(a)            fth_make_complex(a)
 # define XEN_TO_C_COMPLEX(a)            fth_complex_ref(a)
 # define XEN_HAVE_COMPLEX_NUMBERS 1
@@ -786,14 +786,14 @@ XEN xen_assoc(XEN key, XEN alist);
 #define C_TO_XEN_STRINGN(str, len)      fth_make_string_len(str, len)
 #define XEN_TO_C_STRING(Str)            fth_string_ref(Str)
 
-#if HAVE_FTH_PORT_PUTS 
-/* port = XEN_FALSE means default output handler (snd-print). */ 
-#define XEN_PUTS(Str, Port)             fth_port_puts(Port, Str) 
-#define XEN_DISPLAY(Val, Port)          fth_port_display(Port, Val) 
-#define XEN_FLUSH_PORT(Port)            fth_port_flush(Port) 
-#define XEN_CLOSE_PORT(Port)            fth_port_close(Port) 
-#define XEN_PORT_TO_STRING(Port)        fth_port_to_string(Port) 
-#endif 
+#if HAVE_FTH_PORT_PUTS
+/* port = XEN_FALSE means default output handler (snd-print). */
+#define XEN_PUTS(Str, Port)             fth_port_puts(Port, Str)
+#define XEN_DISPLAY(Val, Port)          fth_port_display(Port, Val)
+#define XEN_FLUSH_PORT(Port)            fth_port_flush(Port)
+#define XEN_CLOSE_PORT(Port)            fth_port_close(Port)
+#define XEN_PORT_TO_STRING(Port)        fth_port_to_string(Port)
+#endif
 
 #define XEN_TO_STRING(Obj)              fth_object_to_string(Obj)
 
@@ -805,7 +805,7 @@ XEN xen_assoc(XEN key, XEN alist);
 #define XEN_MAKE_KEYWORD(arg)           fth_keyword(arg)
 #define XEN_KEYWORD_EQ_P(K1, K2)        XEN_EQ_P(K1, K2)
 
-#define XEN_EVAL_C_STRING(arg)          fth_eval(arg) 
+#define XEN_EVAL_C_STRING(arg)          fth_eval(arg)
 #define XEN_LOAD_FILE(a)                fth_load_file(a)
 #define XEN_LOAD_PATH                   XEN_NAME_AS_C_STRING_TO_VALUE("*load-path*")
 #define XEN_ADD_TO_LOAD_PATH(Path)      fth_add_load_path(Path)
@@ -861,7 +861,7 @@ XEN xen_assoc(XEN key, XEN alist);
 #define XEN_DEFINE_SIMPLE_HOOK(descr, arity) fth_make_simple_hook(arity)
 #define XEN_CLEAR_HOOK(Arg)             fth_hook_clear(Arg)
 #define XEN_HOOK_PROCEDURES(Obj)        fth_hook_procedure_list(Obj)
-#define XEN_ADD_HOOK(Hook, Func, Name, Doc)  fth_add_hook(Hook, (FTH)fth_define_procedure(Name, Func, fth_hook_arity(Hook), 0, false, Doc)) 
+#define XEN_ADD_HOOK(Hook, Func, Name, Doc)  fth_add_hook(Hook, (FTH)fth_define_procedure(Name, Func, fth_hook_arity(Hook), 0, false, Doc))
 
 #define XEN_PROCEDURE_P(Arg)            FTH_PROC_P(Arg)
 #define XEN_PROCEDURE_NAME(Func)        C_TO_XEN_STRING(fth_proc_name(Func))
@@ -903,7 +903,7 @@ XEN xen_assoc(XEN key, XEN alist);
 #endif
 
 #define XEN_DEFINE_PROCEDURE(Name, Func, ReqArg, OptArg, RstArg, Doc) \
-  fth_define_procedure(Name, XEN_PROCEDURE_CAST Func, ReqArg, OptArg, RstArg, Doc) 
+  fth_define_procedure(Name, XEN_PROCEDURE_CAST Func, ReqArg, OptArg, RstArg, Doc)
 
 #define XEN_DEFINE_PROCEDURE_WITH_SETTER(Get_Name, Get_Func, Get_Help, Set_Name, Set_Func, Get_Req, Get_Opt, Set_Req, Set_Opt) \
   do { \
@@ -941,7 +941,7 @@ XEN xen_assoc(XEN key, XEN alist);
   static void Wrapped_Free(XEN obj) \
   { \
     Original_Free((Type *)XEN_OBJECT_REF(obj)); \
-  } 
+  }
 
 /* === Error === */
 #define XEN_ASSERT_TYPE(Assertion, Arg, Position, Caller, Correct_Type) \
@@ -1070,9 +1070,9 @@ extern size_t xen_s7_number_location, xen_s7_denominator_location;
 #define XEN_TO_C_ULONG(Arg)                        (uint64_t)s7_integer(Arg)
 #define C_TO_XEN_ULONG(Arg)                        s7_make_integer(s7, (s7_int)((intptr_t)Arg))
 
-#define XEN_ULONG_LONG_P(Arg)                      s7_is_c_pointer(Arg) 
-#define XEN_TO_C_ULONG_LONG(Arg)                   (uint64_t)s7_c_pointer(Arg) 
-#define C_TO_XEN_ULONG_LONG(Arg)                   s7_make_c_pointer(s7, (void *)Arg) 
+#define XEN_ULONG_LONG_P(Arg)                      s7_is_c_pointer(Arg)
+#define XEN_TO_C_ULONG_LONG(Arg)                   (uint64_t)s7_c_pointer(Arg)
+#define C_TO_XEN_ULONG_LONG(Arg)                   s7_make_c_pointer(s7, (void *)Arg)
 
 #define C_TO_XEN_LONG_LONG(Arg)                    s7_make_integer(s7, Arg)
 #define XEN_TO_C_LONG_LONG(Arg)                    s7_integer(Arg)
@@ -1110,7 +1110,7 @@ extern size_t xen_s7_number_location, xen_s7_denominator_location;
 #define XEN_SYMBOL_P(Arg)                          s7_is_symbol(Arg)
 #define C_STRING_TO_XEN_SYMBOL(Arg)                s7_make_symbol(s7, Arg)
 #define XEN_DOCUMENTATION_SYMBOL                   C_STRING_TO_XEN_SYMBOL("documentation")
-#define XEN_SET_DOCUMENTATION(Var, Doc) 
+#define XEN_SET_DOCUMENTATION(Var, Doc)
 
 #define XEN_VECTOR_P(Arg)                          s7_is_vector(Arg)
 #define XEN_VECTOR_LENGTH(Arg)                     s7_vector_length(Arg)
@@ -1317,9 +1317,9 @@ XEN xen_assoc(s7_scheme *sc, XEN key, XEN alist);
 #define C_TO_XEN_ULONG(a) 0
 #define C_TO_XEN_LONG_LONG(a) a
 #define XEN_TO_C_LONG_LONG(a) a
-#define XEN_ULONG_LONG_P(Arg) 0 
-#define XEN_TO_C_ULONG_LONG(Arg) 0 
-#define C_TO_XEN_ULONG_LONG(Arg) 0 
+#define XEN_ULONG_LONG_P(Arg) 0
+#define XEN_TO_C_ULONG_LONG(Arg) 0
+#define C_TO_XEN_ULONG_LONG(Arg) 0
 #define XEN_WRAPPED_C_POINTER_P(Arg) 0
 #define XEN_EVAL_C_STRING(Arg) 0
 #define XEN_SYMBOL_TO_C_STRING(a) "(not a symbol)"
@@ -1380,7 +1380,7 @@ XEN xen_assoc(s7_scheme *sc, XEN key, XEN alist);
 #define XEN_VARIABLE_REF(a) 0
 #define XEN_MARK_OBJECT_TYPE         XEN
 #define XEN_MAKE_OBJECT_TYPE(Typ, Siz) 0
-#define XEN_MAKE_OBJECT_PRINT_PROCEDURE(Type, Wrapped_Print, Original_Print) 
+#define XEN_MAKE_OBJECT_PRINT_PROCEDURE(Type, Wrapped_Print, Original_Print)
 #define XEN_MAKE_OBJECT_FREE_PROCEDURE(Type, Wrapped_Free, Original_Free)
 #define XEN_MAKE_AND_RETURN_OBJECT(Tag, Val, ig1, ig2) return(0)
 #define XEN_MAKE_OBJECT(Tag, Val, ig1, ig2) 0
@@ -1394,7 +1394,7 @@ XEN xen_assoc(s7_scheme *sc, XEN key, XEN alist);
 #define XEN_DEFINE_SIMPLE_HOOK(Descr, Arity) 0
 #define XEN_CLEAR_HOOK(Arg)
 #define XEN_HOOK_PROCEDURES(a) 0
-#define XEN_ADD_HOOK(Hook, Func, Name, Doc) 
+#define XEN_ADD_HOOK(Hook, Func, Name, Doc)
 #define XEN_VECTOR_P(Arg) 0
 #define XEN_VECTOR_LENGTH(Arg) 0
 #define XEN_VECTOR_REF(Vect, Num) 0
@@ -1498,12 +1498,12 @@ void xen_no_ext_lang_check_args(const char *name, int args, int req_args, int op
   #define XEN_WRAP_C_POINTER(a)           s7_make_c_pointer(s7, (void *)(a))
   #define XEN_UNWRAP_C_POINTER(a)         s7_c_pointer(a)
 #else
-  #if (SIZEOF_VOID_P == 4) 
-    #define XEN_WRAP_C_POINTER(a)         ((XEN)(C_TO_XEN_ULONG((unsigned long)a))) 
-    #define XEN_UNWRAP_C_POINTER(a)       XEN_TO_C_ULONG(a) 
-  #else 
-    #define XEN_WRAP_C_POINTER(a)         C_TO_XEN_ULONG_LONG((uint64_t)(a)) 
-    #define XEN_UNWRAP_C_POINTER(a)       XEN_TO_C_ULONG_LONG(a) 
+  #if (SIZEOF_VOID_P == 4)
+    #define XEN_WRAP_C_POINTER(a)         ((XEN)(C_TO_XEN_ULONG((unsigned long)a)))
+    #define XEN_UNWRAP_C_POINTER(a)       XEN_TO_C_ULONG(a)
+  #else
+    #define XEN_WRAP_C_POINTER(a)         C_TO_XEN_ULONG_LONG((uint64_t)(a))
+    #define XEN_UNWRAP_C_POINTER(a)       XEN_TO_C_ULONG_LONG(a)
   #endif
 #endif
 
@@ -1603,10 +1603,10 @@ void xen_no_ext_lang_check_args(const char *name, int args, int req_args, int op
 #define Xen_ullong_to_C_ullong(a)        XEN_TO_C_ULONG_LONG(a)
 #define Xen_wrap_C_pointer(a)            XEN_WRAP_C_POINTER(a)
 #define Xen_unwrap_C_pointer(a)          XEN_UNWRAP_C_POINTER(a)
-#define Xen_numerator(a)                 XEN_NUMERATOR(a)            
-#define Xen_denominator(a)               XEN_DENOMINATOR(a)  
+#define Xen_numerator(a)                 XEN_NUMERATOR(a)
+#define Xen_denominator(a)               XEN_DENOMINATOR(a)
 #define Xen_rationalize(a, b)            XEN_RATIONALIZE(a, b)
-#define Xen_make_ratio(a, b)             XEN_MAKE_RATIO(a, b)          
+#define Xen_make_ratio(a, b)             XEN_MAKE_RATIO(a, b)
 #define Xen_load(a)                      XEN_LOAD_FILE(a)
 #define Xen_documentation(a)             XEN_OBJECT_HELP(a)
 #define Xen_vector_rank(a)               XEN_VECTOR_RANK(a)

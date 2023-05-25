@@ -65,7 +65,7 @@
 #define mus_sample_to_int24(n) ((int)((n) * (1 << 23)))
 #define mus_sample_to_short(n) ((short)((n) * (1 << 15)))
 #define mus_sample_to_byte(n)  ((char)((n) * (1 << 7)))
-#if defined(__x86_64__) || defined(__i386__) 
+#if defined(__x86_64__) || defined(__i386__)
   #define bint24_to_sample(n)  ((mus_float_t)(big_endian_int(jchar) >> 8) / (mus_float_t)(1 << 23))
   #define int24_to_sample(n)   ((mus_float_t)(little_endian_int(jchar) >> 8) / (mus_float_t)(1 << 23))
 #else
@@ -745,7 +745,7 @@ void mus_file_save_data(int tfd, mus_long_t framples, mus_float_t **data)
 
 /* ---------------- open, creat, close ---------------- */
 
-int mus_file_open_read(const char *arg) 
+int mus_file_open_read(const char *arg)
 {
   int fd;
 #if (defined(_MSC_VER) || __CYGWIN__)
@@ -757,7 +757,7 @@ int mus_file_open_read(const char *arg)
 }
 
 
-bool mus_file_probe(const char *arg) 
+bool mus_file_probe(const char *arg)
 {
 #ifndef _MSC_VER
   if (!arg) return(false);
@@ -791,14 +791,14 @@ int mus_file_open_write(const char *arg)
 }
 
 
-int mus_file_create(const char *arg) 
-{ 
+int mus_file_create(const char *arg)
+{
 #if (defined(_MSC_VER ) || __CYGWIN__)
-  return(CREAT(arg, S_IREAD | S_IWRITE)); 
-#else 
-  return(CREAT(arg, 0666)); 
-#endif 
-} 
+  return(CREAT(arg, S_IREAD | S_IWRITE));
+#else
+  return(CREAT(arg, 0666));
+#endif
+}
 
 
 int mus_file_reopen_write(const char *arg)
@@ -847,19 +847,19 @@ int mus_file_close(int fd)
 mus_long_t mus_file_seek_frample(int tfd, mus_long_t frample)
 {
   io_fd *fd;
-  if (!io_fds) 
+  if (!io_fds)
     return(mus_error(MUS_FILE_DESCRIPTORS_NOT_INITIALIZED, "mus_file_seek_frample: no file descriptors!"));
 
   if (tfd >= io_fd_size)
     return(mus_error(MUS_FILE_DESCRIPTORS_NOT_INITIALIZED,
 		     "mus_file_seek_frample: file descriptors not realloc'd? (tfd: %d, io_fd_size: %d)", tfd, io_fd_size));
 
-  if ((tfd < 0) || 
+  if ((tfd < 0) ||
       (!io_fds[tfd]))
     return(mus_error(MUS_FILE_DESCRIPTORS_NOT_INITIALIZED, "mus_file_seek_frample: file descriptor = %d?", tfd));
 
   fd = io_fds[tfd];
-  if (fd->sample_type == MUS_UNKNOWN_SAMPLE) 
+  if (fd->sample_type == MUS_UNKNOWN_SAMPLE)
     return(mus_error(MUS_NOT_A_SOUND_FILE, "mus_file_seek_frample: invalid sample type for %s", fd->name));
 
   return(lseek(tfd, fd->data_location + (fd->chans * frample * fd->bytes_per_sample), SEEK_SET));
@@ -893,7 +893,7 @@ static uint8_t to_alaw(int pcm_val)
   if (pcm_val >= 0) mask = 0xD5; else {mask = 0x55; pcm_val = -pcm_val - 8;}
   seg = search(pcm_val, seg_end, 8);
   if (seg >= 8)	return(0x7F ^ mask);
-  else 
+  else
     {
       uint8_t aval;
       aval = seg << SEG_SHIFT;
@@ -904,28 +904,28 @@ static uint8_t to_alaw(int pcm_val)
 
 #define A_(a) mus_short_to_sample(a)
 static const mus_float_t mus_alaw[256] = {
-  A_(-5504), A_(-5248), A_(-6016), A_(-5760), A_(-4480), A_(-4224), A_(-4992), A_(-4736), A_(-7552), A_(-7296), 
-  A_(-8064), A_(-7808), A_(-6528), A_(-6272), A_(-7040), A_(-6784), A_(-2752), A_(-2624), A_(-3008), A_(-2880), 
-  A_(-2240), A_(-2112), A_(-2496), A_(-2368), A_(-3776), A_(-3648), A_(-4032), A_(-3904), A_(-3264), A_(-3136), 
-  A_(-3520), A_(-3392), A_(-22016), A_(-20992), A_(-24064), A_(-23040), A_(-17920), A_(-16896), A_(-19968), A_(-18944), 
-  A_(-30208), A_(-29184), A_(-32256), A_(-31232), A_(-26112), A_(-25088), A_(-28160), A_(-27136), A_(-11008), A_(-10496), 
-  A_(-12032), A_(-11520), A_(-8960), A_(-8448), A_(-9984), A_(-9472), A_(-15104), A_(-14592), A_(-16128), A_(-15616), 
-  A_(-13056), A_(-12544), A_(-14080), A_(-13568), A_(-344), A_(-328), A_(-376), A_(-360), A_(-280), A_(-264), A_(-312), 
-  A_(-296), A_(-472), A_(-456), A_(-504), A_(-488), A_(-408), A_(-392), A_(-440), A_(-424), A_(-88), A_(-72), A_(-120), 
-  A_(-104), A_(-24), A_(-8), A_(-56), A_(-40), A_(-216), A_(-200), A_(-248), A_(-232), A_(-152), A_(-136), A_(-184), 
-  A_(-168), A_(-1376), A_(-1312), A_(-1504), A_(-1440), A_(-1120), A_(-1056), A_(-1248), A_(-1184), A_(-1888), A_(-1824), 
-  A_(-2016), A_(-1952), A_(-1632), A_(-1568), A_(-1760), A_(-1696), A_(-688), A_(-656), A_(-752), A_(-720), A_(-560), 
-  A_(-528), A_(-624), A_(-592), A_(-944), A_(-912), A_(-1008), A_(-976), A_(-816), A_(-784), A_(-880), A_(-848), A_(5504), 
-  A_(5248), A_(6016), A_(5760), A_(4480), A_(4224), A_(4992), A_(4736), A_(7552), A_(7296), A_(8064), A_(7808), A_(6528), 
-  A_(6272), A_(7040), A_(6784), A_(2752), A_(2624), A_(3008), A_(2880), A_(2240), A_(2112), A_(2496), A_(2368), A_(3776), 
-  A_(3648), A_(4032), A_(3904), A_(3264), A_(3136), A_(3520), A_(3392), A_(22016), A_(20992), A_(24064), A_(23040), A_(17920), 
-  A_(16896), A_(19968), A_(18944), A_(30208), A_(29184), A_(32256), A_(31232), A_(26112), A_(25088), A_(28160), A_(27136), 
-  A_(11008), A_(10496), A_(12032), A_(11520), A_(8960), A_(8448), A_(9984), A_(9472), A_(15104), A_(14592), A_(16128), 
-  A_(15616), A_(13056), A_(12544), A_(14080), A_(13568), A_(344), A_(328), A_(376), A_(360), A_(280), A_(264), A_(312), 
-  A_(296), A_(472), A_(456), A_(504), A_(488), A_(408), A_(392), A_(440), A_(424), A_(88), A_(72), A_(120), A_(104), 
-  A_(24), A_(8), A_(56), A_(40), A_(216), A_(200), A_(248), A_(232), A_(152), A_(136), A_(184), A_(168), A_(1376), 
-  A_(1312), A_(1504), A_(1440), A_(1120), A_(1056), A_(1248), A_(1184), A_(1888), A_(1824), A_(2016), A_(1952), A_(1632), 
-  A_(1568), A_(1760), A_(1696), A_(688), A_(656), A_(752), A_(720), A_(560), A_(528), A_(624), A_(592), A_(944), A_(912), 
+  A_(-5504), A_(-5248), A_(-6016), A_(-5760), A_(-4480), A_(-4224), A_(-4992), A_(-4736), A_(-7552), A_(-7296),
+  A_(-8064), A_(-7808), A_(-6528), A_(-6272), A_(-7040), A_(-6784), A_(-2752), A_(-2624), A_(-3008), A_(-2880),
+  A_(-2240), A_(-2112), A_(-2496), A_(-2368), A_(-3776), A_(-3648), A_(-4032), A_(-3904), A_(-3264), A_(-3136),
+  A_(-3520), A_(-3392), A_(-22016), A_(-20992), A_(-24064), A_(-23040), A_(-17920), A_(-16896), A_(-19968), A_(-18944),
+  A_(-30208), A_(-29184), A_(-32256), A_(-31232), A_(-26112), A_(-25088), A_(-28160), A_(-27136), A_(-11008), A_(-10496),
+  A_(-12032), A_(-11520), A_(-8960), A_(-8448), A_(-9984), A_(-9472), A_(-15104), A_(-14592), A_(-16128), A_(-15616),
+  A_(-13056), A_(-12544), A_(-14080), A_(-13568), A_(-344), A_(-328), A_(-376), A_(-360), A_(-280), A_(-264), A_(-312),
+  A_(-296), A_(-472), A_(-456), A_(-504), A_(-488), A_(-408), A_(-392), A_(-440), A_(-424), A_(-88), A_(-72), A_(-120),
+  A_(-104), A_(-24), A_(-8), A_(-56), A_(-40), A_(-216), A_(-200), A_(-248), A_(-232), A_(-152), A_(-136), A_(-184),
+  A_(-168), A_(-1376), A_(-1312), A_(-1504), A_(-1440), A_(-1120), A_(-1056), A_(-1248), A_(-1184), A_(-1888), A_(-1824),
+  A_(-2016), A_(-1952), A_(-1632), A_(-1568), A_(-1760), A_(-1696), A_(-688), A_(-656), A_(-752), A_(-720), A_(-560),
+  A_(-528), A_(-624), A_(-592), A_(-944), A_(-912), A_(-1008), A_(-976), A_(-816), A_(-784), A_(-880), A_(-848), A_(5504),
+  A_(5248), A_(6016), A_(5760), A_(4480), A_(4224), A_(4992), A_(4736), A_(7552), A_(7296), A_(8064), A_(7808), A_(6528),
+  A_(6272), A_(7040), A_(6784), A_(2752), A_(2624), A_(3008), A_(2880), A_(2240), A_(2112), A_(2496), A_(2368), A_(3776),
+  A_(3648), A_(4032), A_(3904), A_(3264), A_(3136), A_(3520), A_(3392), A_(22016), A_(20992), A_(24064), A_(23040), A_(17920),
+  A_(16896), A_(19968), A_(18944), A_(30208), A_(29184), A_(32256), A_(31232), A_(26112), A_(25088), A_(28160), A_(27136),
+  A_(11008), A_(10496), A_(12032), A_(11520), A_(8960), A_(8448), A_(9984), A_(9472), A_(15104), A_(14592), A_(16128),
+  A_(15616), A_(13056), A_(12544), A_(14080), A_(13568), A_(344), A_(328), A_(376), A_(360), A_(280), A_(264), A_(312),
+  A_(296), A_(472), A_(456), A_(504), A_(488), A_(408), A_(392), A_(440), A_(424), A_(88), A_(72), A_(120), A_(104),
+  A_(24), A_(8), A_(56), A_(40), A_(216), A_(200), A_(248), A_(232), A_(152), A_(136), A_(184), A_(168), A_(1376),
+  A_(1312), A_(1504), A_(1440), A_(1120), A_(1056), A_(1248), A_(1184), A_(1888), A_(1824), A_(2016), A_(1952), A_(1632),
+  A_(1568), A_(1760), A_(1696), A_(688), A_(656), A_(752), A_(720), A_(560), A_(528), A_(624), A_(592), A_(944), A_(912),
   A_(1008), A_(976), A_(816), A_(784), A_(880), A_(848)
 };
 
@@ -940,7 +940,7 @@ static uint8_t to_mulaw(int pcm_val)
   if (pcm_val < 0) {pcm_val = BIAS - pcm_val; mask = 0x7F;} else {pcm_val += BIAS; mask = 0xFF;}
   seg = search(pcm_val, seg_end, 8);
   if (seg >= 8) return(0x7F ^ mask);
-  else 
+  else
     {
       uint8_t uval;
       uval = (seg << 4) | ((pcm_val >> (seg + 3)) & 0xF);
@@ -950,76 +950,76 @@ static uint8_t to_mulaw(int pcm_val)
 
 #define MU_(a) mus_short_to_sample(a)
 static const mus_float_t mus_mulaw[256] = {
-  MU_(-32124), MU_(-31100), MU_(-30076), MU_(-29052), MU_(-28028), MU_(-27004), MU_(-25980), MU_(-24956), MU_(-23932), MU_(-22908), 
-  MU_(-21884), MU_(-20860), MU_(-19836), MU_(-18812), MU_(-17788), MU_(-16764), MU_(-15996), MU_(-15484), MU_(-14972), MU_(-14460), 
-  MU_(-13948), MU_(-13436), MU_(-12924), MU_(-12412), MU_(-11900), MU_(-11388), MU_(-10876), MU_(-10364), MU_(-9852), MU_(-9340), 
-  MU_(-8828), MU_(-8316), MU_(-7932), MU_(-7676), MU_(-7420), MU_(-7164), MU_(-6908), MU_(-6652), MU_(-6396), MU_(-6140), MU_(-5884), 
-  MU_(-5628), MU_(-5372), MU_(-5116), MU_(-4860), MU_(-4604), MU_(-4348), MU_(-4092), MU_(-3900), MU_(-3772), MU_(-3644), MU_(-3516), 
-  MU_(-3388), MU_(-3260), MU_(-3132), MU_(-3004), MU_(-2876), MU_(-2748), MU_(-2620), MU_(-2492), MU_(-2364), MU_(-2236), MU_(-2108), 
-  MU_(-1980), MU_(-1884), MU_(-1820), MU_(-1756), MU_(-1692), MU_(-1628), MU_(-1564), MU_(-1500), MU_(-1436), MU_(-1372), MU_(-1308), 
-  MU_(-1244), MU_(-1180), MU_(-1116), MU_(-1052), MU_(-988), MU_(-924), MU_(-876), MU_(-844), MU_(-812), MU_(-780), MU_(-748), 
-  MU_(-716), MU_(-684), MU_(-652), MU_(-620), MU_(-588), MU_(-556), MU_(-524), MU_(-492), MU_(-460), MU_(-428), MU_(-396), 
-  MU_(-372), MU_(-356), MU_(-340), MU_(-324), MU_(-308), MU_(-292), MU_(-276), MU_(-260), MU_(-244), MU_(-228), MU_(-212), 
-  MU_(-196), MU_(-180), MU_(-164), MU_(-148), MU_(-132), MU_(-120), MU_(-112), MU_(-104), MU_(-96), MU_(-88), MU_(-80), MU_(-72), 
-  MU_(-64), MU_(-56), MU_(-48), MU_(-40), MU_(-32), MU_(-24), MU_(-16), MU_(-8), MU_(0), MU_(32124), MU_(31100), MU_(30076), 
-  MU_(29052), MU_(28028), MU_(27004), MU_(25980), MU_(24956), MU_(23932), MU_(22908), MU_(21884), MU_(20860), MU_(19836), 
-  MU_(18812), MU_(17788), MU_(16764), MU_(15996), MU_(15484), MU_(14972), MU_(14460), MU_(13948), MU_(13436), MU_(12924), 
-  MU_(12412), MU_(11900), MU_(11388), MU_(10876), MU_(10364), MU_(9852), MU_(9340), MU_(8828), MU_(8316), MU_(7932), MU_(7676), 
-  MU_(7420), MU_(7164), MU_(6908), MU_(6652), MU_(6396), MU_(6140), MU_(5884), MU_(5628), MU_(5372), MU_(5116), MU_(4860), 
-  MU_(4604), MU_(4348), MU_(4092), MU_(3900), MU_(3772), MU_(3644), MU_(3516), MU_(3388), MU_(3260), MU_(3132), MU_(3004), 
-  MU_(2876), MU_(2748), MU_(2620), MU_(2492), MU_(2364), MU_(2236), MU_(2108), MU_(1980), MU_(1884), MU_(1820), MU_(1756), 
-  MU_(1692), MU_(1628), MU_(1564), MU_(1500), MU_(1436), MU_(1372), MU_(1308), MU_(1244), MU_(1180), MU_(1116), MU_(1052), 
-  MU_(988), MU_(924), MU_(876), MU_(844), MU_(812), MU_(780), MU_(748), MU_(716), MU_(684), MU_(652), MU_(620), MU_(588), 
-  MU_(556), MU_(524), MU_(492), MU_(460), MU_(428), MU_(396), MU_(372), MU_(356), MU_(340), MU_(324), MU_(308), MU_(292), 
-  MU_(276), MU_(260), MU_(244), MU_(228), MU_(212), MU_(196), MU_(180), MU_(164), MU_(148), MU_(132), MU_(120), MU_(112), 
+  MU_(-32124), MU_(-31100), MU_(-30076), MU_(-29052), MU_(-28028), MU_(-27004), MU_(-25980), MU_(-24956), MU_(-23932), MU_(-22908),
+  MU_(-21884), MU_(-20860), MU_(-19836), MU_(-18812), MU_(-17788), MU_(-16764), MU_(-15996), MU_(-15484), MU_(-14972), MU_(-14460),
+  MU_(-13948), MU_(-13436), MU_(-12924), MU_(-12412), MU_(-11900), MU_(-11388), MU_(-10876), MU_(-10364), MU_(-9852), MU_(-9340),
+  MU_(-8828), MU_(-8316), MU_(-7932), MU_(-7676), MU_(-7420), MU_(-7164), MU_(-6908), MU_(-6652), MU_(-6396), MU_(-6140), MU_(-5884),
+  MU_(-5628), MU_(-5372), MU_(-5116), MU_(-4860), MU_(-4604), MU_(-4348), MU_(-4092), MU_(-3900), MU_(-3772), MU_(-3644), MU_(-3516),
+  MU_(-3388), MU_(-3260), MU_(-3132), MU_(-3004), MU_(-2876), MU_(-2748), MU_(-2620), MU_(-2492), MU_(-2364), MU_(-2236), MU_(-2108),
+  MU_(-1980), MU_(-1884), MU_(-1820), MU_(-1756), MU_(-1692), MU_(-1628), MU_(-1564), MU_(-1500), MU_(-1436), MU_(-1372), MU_(-1308),
+  MU_(-1244), MU_(-1180), MU_(-1116), MU_(-1052), MU_(-988), MU_(-924), MU_(-876), MU_(-844), MU_(-812), MU_(-780), MU_(-748),
+  MU_(-716), MU_(-684), MU_(-652), MU_(-620), MU_(-588), MU_(-556), MU_(-524), MU_(-492), MU_(-460), MU_(-428), MU_(-396),
+  MU_(-372), MU_(-356), MU_(-340), MU_(-324), MU_(-308), MU_(-292), MU_(-276), MU_(-260), MU_(-244), MU_(-228), MU_(-212),
+  MU_(-196), MU_(-180), MU_(-164), MU_(-148), MU_(-132), MU_(-120), MU_(-112), MU_(-104), MU_(-96), MU_(-88), MU_(-80), MU_(-72),
+  MU_(-64), MU_(-56), MU_(-48), MU_(-40), MU_(-32), MU_(-24), MU_(-16), MU_(-8), MU_(0), MU_(32124), MU_(31100), MU_(30076),
+  MU_(29052), MU_(28028), MU_(27004), MU_(25980), MU_(24956), MU_(23932), MU_(22908), MU_(21884), MU_(20860), MU_(19836),
+  MU_(18812), MU_(17788), MU_(16764), MU_(15996), MU_(15484), MU_(14972), MU_(14460), MU_(13948), MU_(13436), MU_(12924),
+  MU_(12412), MU_(11900), MU_(11388), MU_(10876), MU_(10364), MU_(9852), MU_(9340), MU_(8828), MU_(8316), MU_(7932), MU_(7676),
+  MU_(7420), MU_(7164), MU_(6908), MU_(6652), MU_(6396), MU_(6140), MU_(5884), MU_(5628), MU_(5372), MU_(5116), MU_(4860),
+  MU_(4604), MU_(4348), MU_(4092), MU_(3900), MU_(3772), MU_(3644), MU_(3516), MU_(3388), MU_(3260), MU_(3132), MU_(3004),
+  MU_(2876), MU_(2748), MU_(2620), MU_(2492), MU_(2364), MU_(2236), MU_(2108), MU_(1980), MU_(1884), MU_(1820), MU_(1756),
+  MU_(1692), MU_(1628), MU_(1564), MU_(1500), MU_(1436), MU_(1372), MU_(1308), MU_(1244), MU_(1180), MU_(1116), MU_(1052),
+  MU_(988), MU_(924), MU_(876), MU_(844), MU_(812), MU_(780), MU_(748), MU_(716), MU_(684), MU_(652), MU_(620), MU_(588),
+  MU_(556), MU_(524), MU_(492), MU_(460), MU_(428), MU_(396), MU_(372), MU_(356), MU_(340), MU_(324), MU_(308), MU_(292),
+  MU_(276), MU_(260), MU_(244), MU_(228), MU_(212), MU_(196), MU_(180), MU_(164), MU_(148), MU_(132), MU_(120), MU_(112),
   MU_(104), MU_(96), MU_(88), MU_(80), MU_(72), MU_(64), MU_(56), MU_(48), MU_(40), MU_(32), MU_(24), MU_(16), MU_(8), MU_(0)
 };
 
 
 #define B_(a) mus_byte_to_sample(a)
 static const mus_float_t mus_byte[256] = {
-  B_(0), B_(1), B_(2), B_(3), B_(4), B_(5), B_(6), B_(7), B_(8), B_(9), B_(10), B_(11), B_(12), B_(13), B_(14), B_(15), B_(16), 
-  B_(17), B_(18), B_(19), B_(20), B_(21), B_(22), B_(23), B_(24), B_(25), B_(26), B_(27), B_(28), B_(29), B_(30), B_(31), B_(32), 
-  B_(33), B_(34), B_(35), B_(36), B_(37), B_(38), B_(39), B_(40), B_(41), B_(42), B_(43), B_(44), B_(45), B_(46), B_(47), B_(48), 
-  B_(49), B_(50), B_(51), B_(52), B_(53), B_(54), B_(55), B_(56), B_(57), B_(58), B_(59), B_(60), B_(61), B_(62), B_(63), B_(64), 
-  B_(65), B_(66), B_(67), B_(68), B_(69), B_(70), B_(71), B_(72), B_(73), B_(74), B_(75), B_(76), B_(77), B_(78), B_(79), B_(80), 
-  B_(81), B_(82), B_(83), B_(84), B_(85), B_(86), B_(87), B_(88), B_(89), B_(90), B_(91), B_(92), B_(93), B_(94), B_(95), B_(96), 
-  B_(97), B_(98), B_(99), B_(100), B_(101), B_(102), B_(103), B_(104), B_(105), B_(106), B_(107), B_(108), B_(109), B_(110), B_(111), 
-  B_(112), B_(113), B_(114), B_(115), B_(116), B_(117), B_(118), B_(119), B_(120), B_(121), B_(122), B_(123), B_(124), B_(125), 
-  B_(126), B_(127), B_(-128), B_(-127), B_(-126), B_(-125), B_(-124), B_(-123), B_(-122), B_(-121), B_(-120), B_(-119), B_(-118), 
-  B_(-117), B_(-116), B_(-115), B_(-114), B_(-113), B_(-112), B_(-111), B_(-110), B_(-109), B_(-108), B_(-107), B_(-106), B_(-105), 
-  B_(-104), B_(-103), B_(-102), B_(-101), B_(-100), B_(-99), B_(-98), B_(-97), B_(-96), B_(-95), B_(-94), B_(-93), B_(-92), B_(-91), 
-  B_(-90), B_(-89), B_(-88), B_(-87), B_(-86), B_(-85), B_(-84), B_(-83), B_(-82), B_(-81), B_(-80), B_(-79), B_(-78), B_(-77), 
-  B_(-76), B_(-75), B_(-74), B_(-73), B_(-72), B_(-71), B_(-70), B_(-69), B_(-68), B_(-67), B_(-66), B_(-65), B_(-64), B_(-63), 
-  B_(-62), B_(-61), B_(-60), B_(-59), B_(-58), B_(-57), B_(-56), B_(-55), B_(-54), B_(-53), B_(-52), B_(-51), B_(-50), B_(-49), 
-  B_(-48), B_(-47), B_(-46), B_(-45), B_(-44), B_(-43), B_(-42), B_(-41), B_(-40), B_(-39), B_(-38), B_(-37), B_(-36), B_(-35), 
-  B_(-34), B_(-33), B_(-32), B_(-31), B_(-30), B_(-29), B_(-28), B_(-27), B_(-26), B_(-25), B_(-24), B_(-23), B_(-22), B_(-21), 
-  B_(-20), B_(-19), B_(-18), B_(-17), B_(-16), B_(-15), B_(-14), B_(-13), B_(-12), B_(-11), B_(-10), B_(-9), B_(-8), B_(-7), 
+  B_(0), B_(1), B_(2), B_(3), B_(4), B_(5), B_(6), B_(7), B_(8), B_(9), B_(10), B_(11), B_(12), B_(13), B_(14), B_(15), B_(16),
+  B_(17), B_(18), B_(19), B_(20), B_(21), B_(22), B_(23), B_(24), B_(25), B_(26), B_(27), B_(28), B_(29), B_(30), B_(31), B_(32),
+  B_(33), B_(34), B_(35), B_(36), B_(37), B_(38), B_(39), B_(40), B_(41), B_(42), B_(43), B_(44), B_(45), B_(46), B_(47), B_(48),
+  B_(49), B_(50), B_(51), B_(52), B_(53), B_(54), B_(55), B_(56), B_(57), B_(58), B_(59), B_(60), B_(61), B_(62), B_(63), B_(64),
+  B_(65), B_(66), B_(67), B_(68), B_(69), B_(70), B_(71), B_(72), B_(73), B_(74), B_(75), B_(76), B_(77), B_(78), B_(79), B_(80),
+  B_(81), B_(82), B_(83), B_(84), B_(85), B_(86), B_(87), B_(88), B_(89), B_(90), B_(91), B_(92), B_(93), B_(94), B_(95), B_(96),
+  B_(97), B_(98), B_(99), B_(100), B_(101), B_(102), B_(103), B_(104), B_(105), B_(106), B_(107), B_(108), B_(109), B_(110), B_(111),
+  B_(112), B_(113), B_(114), B_(115), B_(116), B_(117), B_(118), B_(119), B_(120), B_(121), B_(122), B_(123), B_(124), B_(125),
+  B_(126), B_(127), B_(-128), B_(-127), B_(-126), B_(-125), B_(-124), B_(-123), B_(-122), B_(-121), B_(-120), B_(-119), B_(-118),
+  B_(-117), B_(-116), B_(-115), B_(-114), B_(-113), B_(-112), B_(-111), B_(-110), B_(-109), B_(-108), B_(-107), B_(-106), B_(-105),
+  B_(-104), B_(-103), B_(-102), B_(-101), B_(-100), B_(-99), B_(-98), B_(-97), B_(-96), B_(-95), B_(-94), B_(-93), B_(-92), B_(-91),
+  B_(-90), B_(-89), B_(-88), B_(-87), B_(-86), B_(-85), B_(-84), B_(-83), B_(-82), B_(-81), B_(-80), B_(-79), B_(-78), B_(-77),
+  B_(-76), B_(-75), B_(-74), B_(-73), B_(-72), B_(-71), B_(-70), B_(-69), B_(-68), B_(-67), B_(-66), B_(-65), B_(-64), B_(-63),
+  B_(-62), B_(-61), B_(-60), B_(-59), B_(-58), B_(-57), B_(-56), B_(-55), B_(-54), B_(-53), B_(-52), B_(-51), B_(-50), B_(-49),
+  B_(-48), B_(-47), B_(-46), B_(-45), B_(-44), B_(-43), B_(-42), B_(-41), B_(-40), B_(-39), B_(-38), B_(-37), B_(-36), B_(-35),
+  B_(-34), B_(-33), B_(-32), B_(-31), B_(-30), B_(-29), B_(-28), B_(-27), B_(-26), B_(-25), B_(-24), B_(-23), B_(-22), B_(-21),
+  B_(-20), B_(-19), B_(-18), B_(-17), B_(-16), B_(-15), B_(-14), B_(-13), B_(-12), B_(-11), B_(-10), B_(-9), B_(-8), B_(-7),
   B_(-6), B_(-5), B_(-4), B_(-3), B_(-2), B_(-1)
 };
 
 
 #define UB_(a) mus_byte_to_sample(a)
 static const mus_float_t mus_ubyte[256] = {
-  UB_(-128), UB_(-127), UB_(-126), UB_(-125), UB_(-124), UB_(-123), UB_(-122), UB_(-121), UB_(-120), UB_(-119), UB_(-118), UB_(-117), 
-  UB_(-116), UB_(-115), UB_(-114), UB_(-113), UB_(-112), UB_(-111), UB_(-110), UB_(-109), UB_(-108), UB_(-107), UB_(-106), UB_(-105), 
-  UB_(-104), UB_(-103), UB_(-102), UB_(-101), UB_(-100), UB_(-99), UB_(-98), UB_(-97), UB_(-96), UB_(-95), UB_(-94), UB_(-93), UB_(-92), 
-  UB_(-91), UB_(-90), UB_(-89), UB_(-88), UB_(-87), UB_(-86), UB_(-85), UB_(-84), UB_(-83), UB_(-82), UB_(-81), UB_(-80), UB_(-79), 
-  UB_(-78), UB_(-77), UB_(-76), UB_(-75), UB_(-74), UB_(-73), UB_(-72), UB_(-71), UB_(-70), UB_(-69), UB_(-68), UB_(-67), UB_(-66), 
-  UB_(-65), UB_(-64), UB_(-63), UB_(-62), UB_(-61), UB_(-60), UB_(-59), UB_(-58), UB_(-57), UB_(-56), UB_(-55), UB_(-54), UB_(-53), 
-  UB_(-52), UB_(-51), UB_(-50), UB_(-49), UB_(-48), UB_(-47), UB_(-46), UB_(-45), UB_(-44), UB_(-43), UB_(-42), UB_(-41), UB_(-40), 
-  UB_(-39), UB_(-38), UB_(-37), UB_(-36), UB_(-35), UB_(-34), UB_(-33), UB_(-32), UB_(-31), UB_(-30), UB_(-29), UB_(-28), UB_(-27), 
-  UB_(-26), UB_(-25), UB_(-24), UB_(-23), UB_(-22), UB_(-21), UB_(-20), UB_(-19), UB_(-18), UB_(-17), UB_(-16), UB_(-15), UB_(-14), 
-  UB_(-13), UB_(-12), UB_(-11), UB_(-10), UB_(-9), UB_(-8), UB_(-7), UB_(-6), UB_(-5), UB_(-4), UB_(-3), UB_(-2), UB_(-1), UB_(0), 
-  UB_(1), UB_(2), UB_(3), UB_(4), UB_(5), UB_(6), UB_(7), UB_(8), UB_(9), UB_(10), UB_(11), UB_(12), UB_(13), UB_(14), UB_(15), 
-  UB_(16), UB_(17), UB_(18), UB_(19), UB_(20), UB_(21), UB_(22), UB_(23), UB_(24), UB_(25), UB_(26), UB_(27), UB_(28), UB_(29), 
-  UB_(30), UB_(31), UB_(32), UB_(33), UB_(34), UB_(35), UB_(36), UB_(37), UB_(38), UB_(39), UB_(40), UB_(41), UB_(42), UB_(43), 
-  UB_(44), UB_(45), UB_(46), UB_(47), UB_(48), UB_(49), UB_(50), UB_(51), UB_(52), UB_(53), UB_(54), UB_(55), UB_(56), UB_(57), 
-  UB_(58), UB_(59), UB_(60), UB_(61), UB_(62), UB_(63), UB_(64), UB_(65), UB_(66), UB_(67), UB_(68), UB_(69), UB_(70), UB_(71), 
-  UB_(72), UB_(73), UB_(74), UB_(75), UB_(76), UB_(77), UB_(78), UB_(79), UB_(80), UB_(81), UB_(82), UB_(83), UB_(84), UB_(85), 
-  UB_(86), UB_(87), UB_(88), UB_(89), UB_(90), UB_(91), UB_(92), UB_(93), UB_(94), UB_(95), UB_(96), UB_(97), UB_(98), UB_(99), 
-  UB_(100), UB_(101), UB_(102), UB_(103), UB_(104), UB_(105), UB_(106), UB_(107), UB_(108), UB_(109), UB_(110), UB_(111), UB_(112), 
-  UB_(113), UB_(114), UB_(115), UB_(116), UB_(117), UB_(118), UB_(119), UB_(120), UB_(121), UB_(122), UB_(123), UB_(124), UB_(125), 
+  UB_(-128), UB_(-127), UB_(-126), UB_(-125), UB_(-124), UB_(-123), UB_(-122), UB_(-121), UB_(-120), UB_(-119), UB_(-118), UB_(-117),
+  UB_(-116), UB_(-115), UB_(-114), UB_(-113), UB_(-112), UB_(-111), UB_(-110), UB_(-109), UB_(-108), UB_(-107), UB_(-106), UB_(-105),
+  UB_(-104), UB_(-103), UB_(-102), UB_(-101), UB_(-100), UB_(-99), UB_(-98), UB_(-97), UB_(-96), UB_(-95), UB_(-94), UB_(-93), UB_(-92),
+  UB_(-91), UB_(-90), UB_(-89), UB_(-88), UB_(-87), UB_(-86), UB_(-85), UB_(-84), UB_(-83), UB_(-82), UB_(-81), UB_(-80), UB_(-79),
+  UB_(-78), UB_(-77), UB_(-76), UB_(-75), UB_(-74), UB_(-73), UB_(-72), UB_(-71), UB_(-70), UB_(-69), UB_(-68), UB_(-67), UB_(-66),
+  UB_(-65), UB_(-64), UB_(-63), UB_(-62), UB_(-61), UB_(-60), UB_(-59), UB_(-58), UB_(-57), UB_(-56), UB_(-55), UB_(-54), UB_(-53),
+  UB_(-52), UB_(-51), UB_(-50), UB_(-49), UB_(-48), UB_(-47), UB_(-46), UB_(-45), UB_(-44), UB_(-43), UB_(-42), UB_(-41), UB_(-40),
+  UB_(-39), UB_(-38), UB_(-37), UB_(-36), UB_(-35), UB_(-34), UB_(-33), UB_(-32), UB_(-31), UB_(-30), UB_(-29), UB_(-28), UB_(-27),
+  UB_(-26), UB_(-25), UB_(-24), UB_(-23), UB_(-22), UB_(-21), UB_(-20), UB_(-19), UB_(-18), UB_(-17), UB_(-16), UB_(-15), UB_(-14),
+  UB_(-13), UB_(-12), UB_(-11), UB_(-10), UB_(-9), UB_(-8), UB_(-7), UB_(-6), UB_(-5), UB_(-4), UB_(-3), UB_(-2), UB_(-1), UB_(0),
+  UB_(1), UB_(2), UB_(3), UB_(4), UB_(5), UB_(6), UB_(7), UB_(8), UB_(9), UB_(10), UB_(11), UB_(12), UB_(13), UB_(14), UB_(15),
+  UB_(16), UB_(17), UB_(18), UB_(19), UB_(20), UB_(21), UB_(22), UB_(23), UB_(24), UB_(25), UB_(26), UB_(27), UB_(28), UB_(29),
+  UB_(30), UB_(31), UB_(32), UB_(33), UB_(34), UB_(35), UB_(36), UB_(37), UB_(38), UB_(39), UB_(40), UB_(41), UB_(42), UB_(43),
+  UB_(44), UB_(45), UB_(46), UB_(47), UB_(48), UB_(49), UB_(50), UB_(51), UB_(52), UB_(53), UB_(54), UB_(55), UB_(56), UB_(57),
+  UB_(58), UB_(59), UB_(60), UB_(61), UB_(62), UB_(63), UB_(64), UB_(65), UB_(66), UB_(67), UB_(68), UB_(69), UB_(70), UB_(71),
+  UB_(72), UB_(73), UB_(74), UB_(75), UB_(76), UB_(77), UB_(78), UB_(79), UB_(80), UB_(81), UB_(82), UB_(83), UB_(84), UB_(85),
+  UB_(86), UB_(87), UB_(88), UB_(89), UB_(90), UB_(91), UB_(92), UB_(93), UB_(94), UB_(95), UB_(96), UB_(97), UB_(98), UB_(99),
+  UB_(100), UB_(101), UB_(102), UB_(103), UB_(104), UB_(105), UB_(106), UB_(107), UB_(108), UB_(109), UB_(110), UB_(111), UB_(112),
+  UB_(113), UB_(114), UB_(115), UB_(116), UB_(117), UB_(118), UB_(119), UB_(120), UB_(121), UB_(122), UB_(123), UB_(124), UB_(125),
   UB_(126), UB_(127)
 };
 
@@ -1052,7 +1052,7 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 {
   /* beg no longer means buffer-relative start point (that is assumed to be 0): changed 18-Dec-13
    * beg is now the starting frample number in the file data (first frample = 0)
-   * so old form 
+   * so old form
    *   mus_read_any_1(f, 0, ...)
    * is now
    *   mus_read_any_1(f, frample, ...)
@@ -1075,12 +1075,12 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 	return(mus_error(MUS_FILE_DESCRIPTORS_NOT_INITIALIZED, "mus_read: no file descriptors!"));
 
       fd = io_fds[tfd];
-      if (fd->sample_type == MUS_UNKNOWN_SAMPLE) 
+      if (fd->sample_type == MUS_UNKNOWN_SAMPLE)
 	return(mus_error(MUS_FILE_CLOSED, "mus_read: invalid sample type for %s", fd->name));
 
       samp_type = fd->sample_type;
       siz = fd->bytes_per_sample;
-      if ((samp_type == MUS_OUT_SAMPLE_TYPE) && 
+      if ((samp_type == MUS_OUT_SAMPLE_TYPE) &&
 	  (chans == 1))
 	/* (beg == 0)) */
 	{
@@ -1138,8 +1138,8 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 	  return(lim);
 	}
 
-      if (!ur_charbuf) 
-	ur_charbuf = (char *)malloc(BUFLIM * sizeof(char)); 
+      if (!ur_charbuf)
+	ur_charbuf = (char *)malloc(BUFLIM * sizeof(char));
       charbuf = ur_charbuf;
     }
   else
@@ -1170,20 +1170,20 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
     {
       mus_long_t oldloc, loclim;
       mus_float_t *bufnow, *bufend, *bufend4;
-	      
+
       bytes = leftover;
-      if (bytes > buflim) 
+      if (bytes > buflim)
 	{
-	  leftover = (bytes - buflim); 
+	  leftover = (bytes - buflim);
 	  bytes = buflim;
-	} 
+	}
       else leftover = 0;
       if (!inbuf)
 	{
 	  ssize_t total;
 
-	  total = read(tfd, charbuf, bytes); 
-	  if (total <= 0) 
+	  total = read(tfd, charbuf, bytes);
+	  if (total <= 0)
 	    {
 	      /* zero out trailing section (some callers don't check the returned value) -- this added 9-May-99 */
 
@@ -1222,7 +1222,7 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 	      jchar = (uint8_t *)charbuf;
 	      switch (samp_type)
 		{
-		case MUS_BSHORT:      
+		case MUS_BSHORT:
 #if MUS_LITTLE_ENDIAN
 		  while (bufnow <= bufend4)
 		    {
@@ -1237,100 +1237,100 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 		    }
 		  for (; bufnow <= bufend; jchar += 2)                          /* unsigned short here as charbuf loc is slower */
 		    (*bufnow++) = swapped_shorts[(*((unsigned short *)jchar))]; /* bswap16 is much slower here because of the subsequent short->double conversion */
-#else       
-		  for (; bufnow <= bufend; jchar += 2) 
-		    (*bufnow++) = mus_short_to_sample(big_endian_short(jchar)); 
+#else
+		  for (; bufnow <= bufend; jchar += 2)
+		    (*bufnow++) = mus_short_to_sample(big_endian_short(jchar));
 #endif
 		  break;
-		  
-		case MUS_LSHORT: 
+
+		case MUS_LSHORT:
 #if (!MUS_LITTLE_ENDIAN)
-		  for (; bufnow <= bufend; jchar += 2) 
+		  for (; bufnow <= bufend; jchar += 2)
 		    (*bufnow++) = swapped_shorts[(*((unsigned short *)jchar))];
 #else
 		  while (bufnow <= bufend4)
 		    {
-		      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar)); 
+		      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar));
 		      jchar += 2;
-		      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar)); 
+		      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar));
 		      jchar += 2;
-		      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar)); 
+		      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar));
 		      jchar += 2;
-		      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar)); 
+		      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar));
 		      jchar += 2;
 		    }
-		  for (; bufnow <= bufend; jchar += 2) 
-		    (*bufnow++) = mus_short_to_sample(little_endian_short(jchar)); 
+		  for (; bufnow <= bufend; jchar += 2)
+		    (*bufnow++) = mus_short_to_sample(little_endian_short(jchar));
 #endif
 		  break;
-		  
-		case MUS_BINT:    
+
+		case MUS_BINT:
 		  while (bufnow <= bufend4)
 		    {
-		      (*bufnow++) = mus_int_to_sample(big_endian_int(jchar)); 
+		      (*bufnow++) = mus_int_to_sample(big_endian_int(jchar));
 		      jchar += 4;
-		      (*bufnow++) = mus_int_to_sample(big_endian_int(jchar)); 
+		      (*bufnow++) = mus_int_to_sample(big_endian_int(jchar));
 		      jchar += 4;
-		      (*bufnow++) = mus_int_to_sample(big_endian_int(jchar)); 
+		      (*bufnow++) = mus_int_to_sample(big_endian_int(jchar));
 		      jchar += 4;
-		      (*bufnow++) = mus_int_to_sample(big_endian_int(jchar)); 
+		      (*bufnow++) = mus_int_to_sample(big_endian_int(jchar));
 		      jchar += 4;
 		    }
-		  for (; bufnow <= bufend; jchar += 4) 
-		    (*bufnow++) = mus_int_to_sample(big_endian_int(jchar)); 
+		  for (; bufnow <= bufend; jchar += 4)
+		    (*bufnow++) = mus_int_to_sample(big_endian_int(jchar));
 		  break;
-		  
-		case MUS_LINT: 
+
+		case MUS_LINT:
 		  while (bufnow <= bufend4)
 		    {
-		      (*bufnow++) = mus_int_to_sample(little_endian_int(jchar)); 
+		      (*bufnow++) = mus_int_to_sample(little_endian_int(jchar));
 		      jchar += 4;
-		      (*bufnow++) = mus_int_to_sample(little_endian_int(jchar)); 
+		      (*bufnow++) = mus_int_to_sample(little_endian_int(jchar));
 		      jchar += 4;
-		      (*bufnow++) = mus_int_to_sample(little_endian_int(jchar)); 
+		      (*bufnow++) = mus_int_to_sample(little_endian_int(jchar));
 		      jchar += 4;
-		      (*bufnow++) = mus_int_to_sample(little_endian_int(jchar)); 
+		      (*bufnow++) = mus_int_to_sample(little_endian_int(jchar));
 		      jchar += 4;
 		    }
-		  for (; bufnow <= bufend; jchar += 4) 
-		    (*bufnow++) = mus_int_to_sample(little_endian_int(jchar)); 
+		  for (; bufnow <= bufend; jchar += 4)
+		    (*bufnow++) = mus_int_to_sample(little_endian_int(jchar));
 		  break;
-		  
-		case MUS_BINTN:              
-		  for (; bufnow <= bufend; jchar += 4) 
+
+		case MUS_BINTN:
+		  for (; bufnow <= bufend; jchar += 4)
 		    (*bufnow++) = mus_int_to_sample((big_endian_int(jchar) >> 8));
 		  break;
-		  
-		case MUS_LINTN: 
-		  for (; bufnow <= bufend; jchar += 4) 
+
+		case MUS_LINTN:
+		  for (; bufnow <= bufend; jchar += 4)
 		    (*bufnow++) = mus_int_to_sample((little_endian_int(jchar) >> 8));
 		  break;
-		  
-		case MUS_MULAW:  	              
+
+		case MUS_MULAW:
 		  while (bufnow <= bufend4)
 		    {
-		      (*bufnow++) = mus_mulaw[*jchar++]; 
-		      (*bufnow++) = mus_mulaw[*jchar++]; 
-		      (*bufnow++) = mus_mulaw[*jchar++]; 
-		      (*bufnow++) = mus_mulaw[*jchar++]; 
+		      (*bufnow++) = mus_mulaw[*jchar++];
+		      (*bufnow++) = mus_mulaw[*jchar++];
+		      (*bufnow++) = mus_mulaw[*jchar++];
+		      (*bufnow++) = mus_mulaw[*jchar++];
 		    }
-		  for (; bufnow <= bufend; jchar++) 
-		    (*bufnow++) = mus_mulaw[*jchar]; 
+		  for (; bufnow <= bufend; jchar++)
+		    (*bufnow++) = mus_mulaw[*jchar];
 		  break;
-		  
-		case MUS_ALAW:       
+
+		case MUS_ALAW:
 		  while (bufnow <= bufend4)
 		    {
-		      (*bufnow++) = mus_alaw[*jchar++]; 
-		      (*bufnow++) = mus_alaw[*jchar++]; 
-		      (*bufnow++) = mus_alaw[*jchar++]; 
-		      (*bufnow++) = mus_alaw[*jchar++]; 
+		      (*bufnow++) = mus_alaw[*jchar++];
+		      (*bufnow++) = mus_alaw[*jchar++];
+		      (*bufnow++) = mus_alaw[*jchar++];
+		      (*bufnow++) = mus_alaw[*jchar++];
 		    }
-		  for (; bufnow <= bufend; jchar++) 
-		    (*bufnow++) = mus_alaw[*jchar]; 
+		  for (; bufnow <= bufend; jchar++)
+		    (*bufnow++) = mus_alaw[*jchar];
 		  break;
-		  
-		case MUS_BYTE:                
+
+		case MUS_BYTE:
 		  while (bufnow <= bufend4)
 		    {
 		      (*bufnow++) = mus_byte[(uint8_t)(*jchar++)];
@@ -1341,8 +1341,8 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 		  for (; bufnow <= bufend; jchar++)
 		    (*bufnow++) = mus_byte[(uint8_t)(*jchar)];
 		  break;
-		  
-		case MUS_UBYTE:     	      
+
+		case MUS_UBYTE:
 		  while (bufnow <= bufend4)
 		    {
 		      (*bufnow++) = mus_ubyte[(uint8_t)(*jchar++)];
@@ -1350,10 +1350,10 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 		      (*bufnow++) = mus_ubyte[(uint8_t)(*jchar++)];
 		      (*bufnow++) = mus_ubyte[(uint8_t)(*jchar++)];
 		    }
-		  for (; bufnow <= bufend; jchar++) 
+		  for (; bufnow <= bufend; jchar++)
 		    (*bufnow++) = mus_ubyte[(uint8_t)(*jchar)];
 		  break;
-		  
+
 		case MUS_BFLOAT:
 		  while (bufnow <= bufend4)
 		    {
@@ -1366,16 +1366,16 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 		      (*bufnow++) = (mus_float_t)(big_endian_float(jchar));
 		      jchar += 4;
 		    }
-		  for (; bufnow <= bufend; jchar += 4) 
+		  for (; bufnow <= bufend; jchar += 4)
 		    (*bufnow++) = (mus_float_t)(big_endian_float(jchar));
 		  break;
-		  
+
 		case MUS_BFLOAT_UNSCALED:
-		  for (; bufnow <= bufend; jchar += 4) 
+		  for (; bufnow <= bufend; jchar += 4)
 		    (*bufnow++) = (mus_float_t)(MUS_SAMPLE_UNSCALED(big_endian_float(jchar)));
 		  break;
-		  
-		case MUS_BDOUBLE:   
+
+		case MUS_BDOUBLE:
 		  while (bufnow <= bufend4)
 		    {
 		      (*bufnow++) = (mus_float_t)(big_endian_double(jchar));
@@ -1390,12 +1390,12 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 		  for (; bufnow <= bufend; jchar += 8)
 		    (*bufnow++) = (mus_float_t)(big_endian_double(jchar));
 		  break;
-		  
-		case MUS_BDOUBLE_UNSCALED:   
+
+		case MUS_BDOUBLE_UNSCALED:
 		  for (; bufnow <= bufend; jchar += 8)
 		    (*bufnow++) = (mus_float_t)(MUS_SAMPLE_UNSCALED(big_endian_double(jchar)));
 		  break;
-		  
+
 		case MUS_LFLOAT:
 		  while (bufnow <= bufend4)
 		    {
@@ -1408,26 +1408,26 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 		      (*bufnow++) = (mus_float_t)(little_endian_float(jchar));
 		      jchar += 4;
 		    }
-		  for (; bufnow <= bufend; jchar += 4) 
+		  for (; bufnow <= bufend; jchar += 4)
 		    (*bufnow++) = (mus_float_t)(little_endian_float(jchar));
 		  break;
-		  
-		case MUS_LFLOAT_UNSCALED:    
-		  for (; bufnow <= bufend; jchar += 4) 
+
+		case MUS_LFLOAT_UNSCALED:
+		  for (; bufnow <= bufend; jchar += 4)
 		    (*bufnow++) = (mus_float_t)(MUS_SAMPLE_UNSCALED(little_endian_float(jchar)));
 		  break;
-		  
-		case MUS_LDOUBLE:   
-		  for (; bufnow <= bufend; jchar += 8) 
+
+		case MUS_LDOUBLE:
+		  for (; bufnow <= bufend; jchar += 8)
 		    (*bufnow++) = (mus_float_t)(little_endian_double(jchar));
 		  break;
-		  
-		case MUS_LDOUBLE_UNSCALED:   
-		  for (; bufnow <= bufend; jchar += 8) 
+
+		case MUS_LDOUBLE_UNSCALED:
+		  for (; bufnow <= bufend; jchar += 8)
 		    (*bufnow++) = (mus_float_t)(MUS_SAMPLE_UNSCALED(little_endian_double(jchar)));
 		  break;
-		  
-		case MUS_UBSHORT:   
+
+		case MUS_UBSHORT:
 		  while (bufnow <= bufend4)
 		    {
 		      (*bufnow++) = mus_short_to_sample((int)(big_endian_unsigned_short(jchar)) - USHORT_ZERO);
@@ -1439,11 +1439,11 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 		      (*bufnow++) = mus_short_to_sample((int)(big_endian_unsigned_short(jchar)) - USHORT_ZERO);
 		      jchar += 2;
 		    }
-		  for (; bufnow <= bufend; jchar += 2) 
+		  for (; bufnow <= bufend; jchar += 2)
 		    (*bufnow++) = mus_short_to_sample((int)(big_endian_unsigned_short(jchar)) - USHORT_ZERO);
 		  break;
-		  
-		case MUS_ULSHORT:   
+
+		case MUS_ULSHORT:
 		  while (bufnow <= bufend4)
 		    {
 		      (*bufnow++) = mus_short_to_sample((int)(little_endian_unsigned_short(jchar)) - USHORT_ZERO);
@@ -1455,10 +1455,10 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 		      (*bufnow++) = mus_short_to_sample((int)(little_endian_unsigned_short(jchar)) - USHORT_ZERO);
 		      jchar += 2;
 		    }
-		  for (; bufnow <= bufend; jchar += 2) 
+		  for (; bufnow <= bufend; jchar += 2)
 		    (*bufnow++) = mus_short_to_sample((int)(little_endian_unsigned_short(jchar)) - USHORT_ZERO);
 		  break;
-		  
+
 		case MUS_B24INT:
 		  while (bufnow <= bufend4)
 		    {
@@ -1471,11 +1471,11 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 		      (*bufnow++) = bint24_to_sample(jchar);
 		      jchar += 3;
 		    }
-		  for (; bufnow <= bufend; jchar += 3) 
+		  for (; bufnow <= bufend; jchar += 3)
 		    (*bufnow++) = bint24_to_sample(jchar);
 		  break;
-		  
-		case MUS_L24INT: 
+
+		case MUS_L24INT:
 		  {
 		    int val;
 		    val = (jchar[2] << 16) + (jchar[1] << 8) + jchar[0];
@@ -1494,7 +1494,7 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 		      (*bufnow++) = int24_to_sample(jchar);
 		      jchar += 3;
 		    }
-		  for (; bufnow <= bufend; jchar += 3) 
+		  for (; bufnow <= bufend; jchar += 3)
 		    (*bufnow++) = int24_to_sample(jchar);
 		  break;
 
@@ -1517,14 +1517,14 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 		      bufnow = (mus_float_t *)(buffer + loc);
 		      bufend = (mus_float_t *)(buffer + loclim - 1);
 		      bufend4 = (mus_float_t *)(bufend - 4);
-		      
+
 		      jchar = (uint8_t *)charbuf;
 		      jchar += (k * siz);
 		      switch (samp_type)
 			{
-			case MUS_BSHORT:      
+			case MUS_BSHORT:
 #if MUS_LITTLE_ENDIAN
-			  while (bufnow <= bufend4) 
+			  while (bufnow <= bufend4)
 			    {
 			      (*bufnow++) = swapped_shorts[(*((unsigned short *)jchar))];
 			      jchar += siz_chans;
@@ -1535,95 +1535,95 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 			      (*bufnow++) = swapped_shorts[(*((unsigned short *)jchar))];
 			      jchar += siz_chans;
 			    }
-			  for (; bufnow <= bufend; jchar += siz_chans) 
-			    (*bufnow++) = swapped_shorts[(*((unsigned short *)jchar))];
-#else       
-			  for (; bufnow <= bufend; jchar += siz_chans) 
-			    (*bufnow++) = mus_short_to_sample(big_endian_short(jchar)); 
-#endif
-			  break;
-			  
-			case MUS_LSHORT: 
-#if (!MUS_LITTLE_ENDIAN)
-			  for (; bufnow <= bufend; jchar += siz_chans) 
+			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = swapped_shorts[(*((unsigned short *)jchar))];
 #else
-			  while (bufnow <= bufend4) 
-			    {
-			      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar)); 
-			      jchar += siz_chans;
-			      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar)); 
-			      jchar += siz_chans;
-			      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar)); 
-			      jchar += siz_chans;
-			      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar)); 
-			      jchar += siz_chans;
-			    }
-			  for (; bufnow <= bufend; jchar += siz_chans) 
-			    (*bufnow++) = mus_short_to_sample(little_endian_short(jchar)); 
+			  for (; bufnow <= bufend; jchar += siz_chans)
+			    (*bufnow++) = mus_short_to_sample(big_endian_short(jchar));
 #endif
 			  break;
-			  
-			case MUS_BINT:              
-			  for (; bufnow <= bufend; jchar += siz_chans) 
-			    (*bufnow++) = mus_int_to_sample(big_endian_int(jchar)); 
+
+			case MUS_LSHORT:
+#if (!MUS_LITTLE_ENDIAN)
+			  for (; bufnow <= bufend; jchar += siz_chans)
+			    (*bufnow++) = swapped_shorts[(*((unsigned short *)jchar))];
+#else
+			  while (bufnow <= bufend4)
+			    {
+			      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar));
+			      jchar += siz_chans;
+			      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar));
+			      jchar += siz_chans;
+			      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar));
+			      jchar += siz_chans;
+			      (*bufnow++) = mus_short_to_sample(little_endian_short(jchar));
+			      jchar += siz_chans;
+			    }
+			  for (; bufnow <= bufend; jchar += siz_chans)
+			    (*bufnow++) = mus_short_to_sample(little_endian_short(jchar));
+#endif
 			  break;
-			  
-			case MUS_LINT: 
-			  for (; bufnow <= bufend; jchar += siz_chans) 
-			    (*bufnow++) = mus_int_to_sample(little_endian_int(jchar)); 
+
+			case MUS_BINT:
+			  for (; bufnow <= bufend; jchar += siz_chans)
+			    (*bufnow++) = mus_int_to_sample(big_endian_int(jchar));
 			  break;
-			  
-			case MUS_BINTN:              
-			  for (; bufnow <= bufend; jchar += siz_chans) 
+
+			case MUS_LINT:
+			  for (; bufnow <= bufend; jchar += siz_chans)
+			    (*bufnow++) = mus_int_to_sample(little_endian_int(jchar));
+			  break;
+
+			case MUS_BINTN:
+			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = mus_int_to_sample((big_endian_int(jchar) >> 8));
 			  break;
-			  
-			case MUS_LINTN: 
-			  for (; bufnow <= bufend; jchar += siz_chans) 
+
+			case MUS_LINTN:
+			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = mus_int_to_sample((little_endian_int(jchar) >> 8));
 			  break;
-			  
-			case MUS_MULAW:  	              
-			  for (; bufnow <= bufend; jchar += siz_chans) 
-			    (*bufnow++) = mus_mulaw[*jchar]; 
+
+			case MUS_MULAW:
+			  for (; bufnow <= bufend; jchar += siz_chans)
+			    (*bufnow++) = mus_mulaw[*jchar];
 			  break;
-			  
-			case MUS_ALAW:                  
-			  for (; bufnow <= bufend; jchar += siz_chans) 
-			    (*bufnow++) = mus_alaw[*jchar]; 
+
+			case MUS_ALAW:
+			  for (; bufnow <= bufend; jchar += siz_chans)
+			    (*bufnow++) = mus_alaw[*jchar];
 			  break;
-			  
-			case MUS_BYTE:                
+
+			case MUS_BYTE:
 			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = mus_byte[(uint8_t)(*jchar)];
 			  break;
-			  
-			case MUS_UBYTE:     	      
-			  for (; bufnow <= bufend; jchar += siz_chans) 
+
+			case MUS_UBYTE:
+			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = mus_ubyte[(uint8_t)(*jchar)];
 			  break;
-			  
+
 			case MUS_BFLOAT:
-			  for (; bufnow <= bufend; jchar += siz_chans) 
+			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = (mus_float_t)(big_endian_float(jchar));
 			  break;
-			  
+
 			case MUS_BFLOAT_UNSCALED:
-			  for (; bufnow <= bufend; jchar += siz_chans) 
+			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = (mus_float_t)(MUS_SAMPLE_UNSCALED(big_endian_float(jchar)));
 			  break;
-			  
-			case MUS_BDOUBLE:   
+
+			case MUS_BDOUBLE:
 			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = (mus_float_t)(big_endian_double(jchar));
 			  break;
-			  
-			case MUS_BDOUBLE_UNSCALED:   
+
+			case MUS_BDOUBLE_UNSCALED:
 			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = (mus_float_t)(MUS_SAMPLE_UNSCALED(big_endian_double(jchar)));
 			  break;
-			  
+
 			case MUS_LFLOAT:
 			  while (bufnow <= bufend4)
 			    {
@@ -1636,16 +1636,16 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 			      (*bufnow++) = (mus_float_t)(little_endian_float(jchar));
 			      jchar += siz_chans;
 			    }
-			  for (; bufnow <= bufend; jchar += siz_chans) 
+			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = (mus_float_t)(little_endian_float(jchar));
 			  break;
-			  
-			case MUS_LFLOAT_UNSCALED:    
-			  for (; bufnow <= bufend; jchar += siz_chans) 
+
+			case MUS_LFLOAT_UNSCALED:
+			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = (mus_float_t)(MUS_SAMPLE_UNSCALED(little_endian_float(jchar)));
 			  break;
-			  
-			case MUS_LDOUBLE:   
+
+			case MUS_LDOUBLE:
 			  while (bufnow <= bufend4)
 			    {
 			      (*bufnow++) = (mus_float_t)(little_endian_double(jchar));
@@ -1657,31 +1657,31 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 			      (*bufnow++) = (mus_float_t)(little_endian_double(jchar));
 			      jchar += siz_chans;
 			    }
-			  for (; bufnow <= bufend; jchar += siz_chans) 
+			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = (mus_float_t)(little_endian_double(jchar));
 			  break;
-			  
-			case MUS_LDOUBLE_UNSCALED:   
-			  for (; bufnow <= bufend; jchar += siz_chans) 
+
+			case MUS_LDOUBLE_UNSCALED:
+			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = (mus_float_t)(MUS_SAMPLE_UNSCALED(little_endian_double(jchar)));
 			  break;
-			  
-			case MUS_UBSHORT:   
-			  for (; bufnow <= bufend; jchar += siz_chans) 
+
+			case MUS_UBSHORT:
+			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = mus_short_to_sample((int)(big_endian_unsigned_short(jchar)) - USHORT_ZERO);
 			  break;
-			  
-			case MUS_ULSHORT:   
-			  for (; bufnow <= bufend; jchar += siz_chans) 
+
+			case MUS_ULSHORT:
+			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = mus_short_to_sample((int)(little_endian_unsigned_short(jchar)) - USHORT_ZERO);
 			  break;
-			  
+
 			case MUS_B24INT:
-			  for (; bufnow <= bufend; jchar += siz_chans) 
+			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = bint24_to_sample(jchar);
 			  break;
-			  
-			case MUS_L24INT:   
+
+			case MUS_L24INT:
 			  {
 			    /*align for little_endian_int as above */
 			    int val;
@@ -1690,7 +1690,7 @@ static mus_long_t mus_read_any_1(int tfd, mus_long_t beg, int chans, mus_long_t 
 			    (*bufnow++) = mus_int24_to_sample(val);
 			    jchar += siz_chans - 1;
 			  }
-			  for (; bufnow <= bufend; jchar += siz_chans) 
+			  for (; bufnow <= bufend; jchar += siz_chans)
 			    (*bufnow++) = int24_to_sample(jchar);
 			  break;
 
@@ -1721,7 +1721,7 @@ mus_long_t mus_file_read_file(int tfd, mus_long_t beg, int chans, mus_long_t nin
 
 mus_long_t mus_file_read_buffer(int charbuf_sample_type, mus_long_t beg, int chans, mus_long_t nints, mus_float_t **bufs, char *charbuf)
 {
-  return(mus_read_any_1(charbuf_sample_type, beg, chans, nints, bufs, NULL, charbuf)); 
+  return(mus_read_any_1(charbuf_sample_type, beg, chans, nints, bufs, NULL, charbuf));
 }
 
 
@@ -1738,7 +1738,7 @@ mus_long_t mus_file_read(int tfd, mus_long_t beg, mus_long_t num, int chans, mus
   mus_long_t rtn;
   rtn = mus_read_any_1(tfd, beg, chans, num, bufs, NULL, NULL);
   if (rtn == MUS_ERROR) return(MUS_ERROR);
-  if (rtn < num) 
+  if (rtn < num)
     {
       mus_long_t k;
       /* this zeroing can be fooled if the file is chunked and has trailing, non-data chunks */
@@ -1785,13 +1785,13 @@ static int checked_write(int tfd, char *buf, mus_long_t chars)
 {
   int64_t bytes;
   bytes = (int64_t)write(tfd, buf, chars);
-  if (bytes != chars) 
+  if (bytes != chars)
     {
       io_fd *fd;
       if ((!io_fds) || (tfd >= io_fd_size) || (tfd < 0) || (!io_fds[tfd]))
 	return(mus_error(MUS_FILE_DESCRIPTORS_NOT_INITIALIZED, "mus_write: no file descriptors!"));
       fd = io_fds[tfd];
-      if (fd->sample_type == MUS_UNKNOWN_SAMPLE) 
+      if (fd->sample_type == MUS_UNKNOWN_SAMPLE)
 	return(mus_error(MUS_FILE_CLOSED,
 			 "attempt to write closed file %s",
 			 fd->name));
@@ -1842,23 +1842,23 @@ static int mus_write_1(int tfd, mus_long_t beg, mus_long_t end, int chans, mus_f
   if (!inbuf)
     {
       io_fd *fd;
-      if ((!io_fds) || 
-	  (tfd >= io_fd_size) || 
-	  (tfd < 0) || 
+      if ((!io_fds) ||
+	  (tfd >= io_fd_size) ||
+	  (tfd < 0) ||
 	  (!io_fds[tfd]))
 	return(mus_error(MUS_FILE_DESCRIPTORS_NOT_INITIALIZED, "mus_write: no file descriptors!"));
 
       fd = io_fds[tfd];
-      if (fd->sample_type == MUS_UNKNOWN_SAMPLE) 
+      if (fd->sample_type == MUS_UNKNOWN_SAMPLE)
 	return(mus_error(MUS_FILE_CLOSED, "mus_write: invalid sample type for %s", fd->name));
 
       siz = fd->bytes_per_sample;
       sample_type = fd->sample_type;
       clipping = fd->clipping;
 
-      if ((sample_type == MUS_OUT_SAMPLE_TYPE) && 
-	  (chans == 1) && 
-	  (!clipping) && 
+      if ((sample_type == MUS_OUT_SAMPLE_TYPE) &&
+	  (chans == 1) &&
+	  (!clipping) &&
 	  (beg == 0))
 	{
 	  bytes = (end + 1) * siz;
@@ -1876,7 +1876,7 @@ static int mus_write_1(int tfd, mus_long_t beg, mus_long_t end, int chans, mus_f
   siz_chans = siz * chans;
   leftover = lim * siz_chans;
   k = (BUFLIM) % siz_chans;
-  if (k != 0) 
+  if (k != 0)
     buflim = (BUFLIM) - k;
   else buflim = BUFLIM;
   loc = beg;
@@ -1888,11 +1888,11 @@ static int mus_write_1(int tfd, mus_long_t beg, mus_long_t end, int chans, mus_f
     {
       int oldloc;
       bytes = leftover;
-      if (bytes > buflim) 
+      if (bytes > buflim)
 	{
-	  leftover = (bytes - buflim); 
+	  leftover = (bytes - buflim);
 	  bytes = buflim;
-	} 
+	}
       else leftover = 0;
       lim = (int)(bytes / siz_chans); /* see note above */
       oldloc = loc;
@@ -1914,7 +1914,7 @@ static int mus_write_1(int tfd, mus_long_t beg, mus_long_t end, int chans, mus_f
 	      clipend = oldloc + lim;
 	      bufnow = (mus_float_t *)(buffer + oldloc);
 	      bufend = (mus_float_t *)(buffer + clipend - 1);
-	      bufend4 = (mus_float_t *)(bufend - 4); 
+	      bufend4 = (mus_float_t *)(bufend - 4);
 
 	      if (clip_checker) clip_checker();
 	      if (mus_clip_handler)
@@ -1953,8 +1953,8 @@ static int mus_write_1(int tfd, mus_long_t beg, mus_long_t end, int chans, mus_f
 		}
 	    }
 
-	  if ((sample_type == MUS_OUT_SAMPLE_TYPE) && 
-	      (chans == 1) && 
+	  if ((sample_type == MUS_OUT_SAMPLE_TYPE) &&
+	      (chans == 1) &&
 	      (beg == 0) &&
 	      (!inbuf)) /* "tfd" can be sample type */
 	    {
@@ -1966,9 +1966,9 @@ static int mus_write_1(int tfd, mus_long_t beg, mus_long_t end, int chans, mus_f
 	  if (!charbuf)
 	    {
 	      if (!ur_charbuf)
-		ur_charbuf = (char *)malloc(BUFLIM * sizeof(char)); 
+		ur_charbuf = (char *)malloc(BUFLIM * sizeof(char));
 	      /*
-		ur_charbuf = (char *)calloc(BUFLIM, sizeof(char)); 
+		ur_charbuf = (char *)calloc(BUFLIM, sizeof(char));
 	      else memset((void *)ur_charbuf, 0, BUFLIM);
 	      */
 	      charbuf = ur_charbuf;
@@ -1979,10 +1979,10 @@ static int mus_write_1(int tfd, mus_long_t beg, mus_long_t end, int chans, mus_f
 	  bufend4 = (mus_float_t *)(bufend - 4);
 
 	  jchar = (uint8_t *)charbuf; /* if to_buffer we should add the loop offset here, or never loop */
-	  jchar += (k * siz); 
+	  jchar += (k * siz);
 	  switch (sample_type)
 	    {
-	    case MUS_BSHORT: 
+	    case MUS_BSHORT:
 	      while (bufnow <= bufend4)
 		{
 		  set_big_endian_short(jchar, mus_sample_to_short(*bufnow++));
@@ -1994,61 +1994,61 @@ static int mus_write_1(int tfd, mus_long_t beg, mus_long_t end, int chans, mus_f
 		  set_big_endian_short(jchar, mus_sample_to_short(*bufnow++));
 		  jchar += siz_chans;
 		}
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_big_endian_short(jchar, mus_sample_to_short(*bufnow++));
 	      break;
 
-	    case MUS_LSHORT:   
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_LSHORT:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_little_endian_short(jchar, mus_sample_to_short(*bufnow++));
 	      break;
 
-	    case MUS_BINT:   
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_BINT:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_big_endian_int(jchar, mus_sample_to_int(*bufnow++));
 	      break;
 
-	    case MUS_LINT:   
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_LINT:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_little_endian_int(jchar, mus_sample_to_int(*bufnow++));
 	      break;
 
-	    case MUS_BINTN:   
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_BINTN:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_big_endian_int(jchar, mus_sample_to_int(*bufnow++) << 8);
 	      break;
 
-	    case MUS_LINTN:   
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_LINTN:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_little_endian_int(jchar, mus_sample_to_int(*bufnow++) << 8);
 	      break;
 
-	    case MUS_MULAW:     
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_MULAW:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		(*jchar) = to_mulaw(mus_sample_to_short(*bufnow++));
 	      break;
 
-	    case MUS_ALAW:      
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_ALAW:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		(*jchar) = to_alaw(mus_sample_to_short(*bufnow++));
 	      break;
 
-	    case MUS_BYTE:    
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_BYTE:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		(*((signed char *)jchar)) = mus_sample_to_byte(*bufnow++);
 	      break;
 
-	    case MUS_UBYTE:  
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_UBYTE:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		(*jchar) = mus_sample_to_byte(*bufnow++) + UBYTE_ZERO;
 	      break;
 
-	    case MUS_BFLOAT:    
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_BFLOAT:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_big_endian_float(jchar, *bufnow++);
 	      break;
 
-	    case MUS_LFLOAT:    
+	    case MUS_LFLOAT:
 	      while (bufnow <= bufend4)
 		{
 		  set_little_endian_float(jchar, *bufnow++);
@@ -2060,16 +2060,16 @@ static int mus_write_1(int tfd, mus_long_t beg, mus_long_t end, int chans, mus_f
 		  set_little_endian_float(jchar, *bufnow++);
 		  jchar += siz_chans;
 		}
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_little_endian_float(jchar, *bufnow++);
 	      break;
 
 	    case MUS_BDOUBLE:
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_big_endian_double(jchar, *bufnow++);
 	      break;
 
-	    case MUS_LDOUBLE:   
+	    case MUS_LDOUBLE:
 	      while (bufnow <= bufend4)
 		{
 		  set_little_endian_double(jchar, *bufnow++);
@@ -2081,57 +2081,41 @@ static int mus_write_1(int tfd, mus_long_t beg, mus_long_t end, int chans, mus_f
 		  set_little_endian_double(jchar, *bufnow++);
 		  jchar += siz_chans;
 		}
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_little_endian_double(jchar, *bufnow++);
 	      break;
 
-	    case MUS_BFLOAT_UNSCALED:    
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_BFLOAT_UNSCALED:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_big_endian_float(jchar, 32768.0 * (*bufnow++));
 	      break;
 
-	    case MUS_LFLOAT_UNSCALED:    
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_LFLOAT_UNSCALED:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_little_endian_float(jchar, 32768.0 * (*bufnow++));
 	      break;
 
 	    case MUS_BDOUBLE_UNSCALED:
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_big_endian_double(jchar, 32768.0 * (*bufnow++));
 	      break;
 
-	    case MUS_LDOUBLE_UNSCALED:   
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_LDOUBLE_UNSCALED:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_little_endian_double(jchar, 32768.0 * (*bufnow++));
 	      break;
 
-	    case MUS_UBSHORT: 
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_UBSHORT:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_big_endian_unsigned_short(jchar, (unsigned short)(mus_sample_to_short(*bufnow++) + USHORT_ZERO));
 	      break;
 
-	    case MUS_ULSHORT: 
-	      for (; bufnow <= bufend; jchar += siz_chans) 
+	    case MUS_ULSHORT:
+	      for (; bufnow <= bufend; jchar += siz_chans)
 		set_little_endian_unsigned_short(jchar, (unsigned short)(mus_sample_to_short(*bufnow++) + USHORT_ZERO));
 	      break;
 
-	    case MUS_B24INT: 
-	      {
-		int c3;
-		mus_long_t bk;
-		bk = (k * 3);
-		c3 = chans * 3;
-		for (; bufnow <= bufend; bk += c3) 
-		  {
-		    val = mus_sample_to_int24(*bufnow++);
-		    charbuf[bk] = (val >> 16); 
-		    charbuf[bk + 1] = (val >> 8); 
-		    charbuf[bk + 2] = (val & 0xFF); 
-		  }
-	      }
-	      break;
-
-	    case MUS_L24INT:   
+	    case MUS_B24INT:
 	      {
 		int c3;
 		mus_long_t bk;
@@ -2140,9 +2124,25 @@ static int mus_write_1(int tfd, mus_long_t beg, mus_long_t end, int chans, mus_f
 		for (; bufnow <= bufend; bk += c3)
 		  {
 		    val = mus_sample_to_int24(*bufnow++);
-		    charbuf[bk + 2] = (val >> 16); 
-		    charbuf[bk + 1] = (val >> 8); 
-		    charbuf[bk] = (val & 0xFF); 
+		    charbuf[bk] = (val >> 16);
+		    charbuf[bk + 1] = (val >> 8);
+		    charbuf[bk + 2] = (val & 0xFF);
+		  }
+	      }
+	      break;
+
+	    case MUS_L24INT:
+	      {
+		int c3;
+		mus_long_t bk;
+		bk = (k * 3);
+		c3 = chans * 3;
+		for (; bufnow <= bufend; bk += c3)
+		  {
+		    val = mus_sample_to_int24(*bufnow++);
+		    charbuf[bk + 2] = (val >> 16);
+		    charbuf[bk + 1] = (val >> 8);
+		    charbuf[bk] = (val & 0xFF);
 		  }
 	      }
 	      break;
@@ -2154,7 +2154,7 @@ static int mus_write_1(int tfd, mus_long_t beg, mus_long_t end, int chans, mus_f
       if (!inbuf)
 	{
 	  err = checked_write(tfd, charbuf, bytes);
-	  if (err == MUS_ERROR) 
+	  if (err == MUS_ERROR)
 	    return(MUS_ERROR);
 	}
     }
@@ -2181,7 +2181,7 @@ int mus_file_write_buffer(int charbuf_sample_type, mus_long_t beg, mus_long_t en
 
 
 /* for CLM */
-void mus_reset_io_c(void) 
+void mus_reset_io_c(void)
 {
   io_fd_size = 0;
   io_fds = NULL;
@@ -2214,7 +2214,7 @@ char *mus_getcwd(void)
 #if defined(PATH_MAX)
       path_max = PATH_MAX;
 #endif
-      if (path_max < 1024) 
+      if (path_max < 1024)
 	path_max = 1024;
     }
   for (i = path_max;; i *= 2)
@@ -2251,8 +2251,8 @@ char *mus_expand_filename(const char *filename)
 
   /* realpath does not speed this up */
 
-  if ((filename) && (*filename)) 
-    len = strlen(filename); 
+  if ((filename) && (*filename))
+    len = strlen(filename);
   else return(NULL);
 
   if ((len == 1) && (filename[0] == '.'))
@@ -2266,7 +2266,7 @@ char *mus_expand_filename(const char *filename)
       /* fprintf(stderr, "%d: %s -> %s\n", __LINE__, filename, file_name_buf); */
       return(file_name_buf);
     }
-     
+
   tok = (char *)strchr(filename, (int)'/');
   if (!tok)
     {
@@ -2316,13 +2316,13 @@ char *mus_expand_filename(const char *filename)
   /* get rid of "//" */
   for (i = 0, j = 0; i < len - 1; i++)
     {
-      if ((tok[i] == '/') && 
-	  (tok[i + 1] == '/')) 
+      if ((tok[i] == '/') &&
+	  (tok[i + 1] == '/'))
 	j = i + 1;
     }
   if (j > 0)
     {
-      for (i = 0; j < len; i++, j++) 
+      for (i = 0; j < len; i++, j++)
 	tok[i] = tok[j];
       tok[i] ='\0';
     }
@@ -2347,7 +2347,7 @@ char *mus_expand_filename(const char *filename)
 	    strcat(file_name_buf, tok);
 	}
     }
-  else 
+  else
     {
       file_name_buf = (char *)malloc((len + 8) * sizeof(char));
       strcpy(file_name_buf, tok);
@@ -2438,35 +2438,35 @@ char *mus_format(const char *format, ...)
 }
 
 
-mus_float_t mus_fclamp(mus_float_t lo, mus_float_t val, mus_float_t hi) 
+mus_float_t mus_fclamp(mus_float_t lo, mus_float_t val, mus_float_t hi)
 {
-  if (val > hi) 
-    return(hi); 
-  else 
-    if (val < lo) 
-      return(lo); 
+  if (val > hi)
+    return(hi);
+  else
+    if (val < lo)
+      return(lo);
     else return(val);
 }
 
 
-int mus_iclamp(int lo, int val, int hi) 
+int mus_iclamp(int lo, int val, int hi)
 {
-  if (val > hi) 
-    return(hi); 
-  else 
-    if (val < lo) 
-      return(lo); 
+  if (val > hi)
+    return(hi);
+  else
+    if (val < lo)
+      return(lo);
     else return(val);
 }
 
 
-mus_long_t mus_oclamp(mus_long_t lo, mus_long_t val, mus_long_t hi) 
+mus_long_t mus_oclamp(mus_long_t lo, mus_long_t val, mus_long_t hi)
 {
-  if (val > hi) 
-    return(hi); 
-  else 
-    if (val < lo) 
-      return(lo); 
+  if (val > hi)
+    return(hi);
+  else
+    if (val < lo)
+      return(lo);
     else return(val);
 }
 
@@ -2682,7 +2682,7 @@ static void min_max_ints(uint8_t *data, int bytes, int chan, int chans, mus_floa
     {
       if (sbuf[i] < cur_min) cur_min = sbuf[i]; else if (sbuf[i] > cur_max) cur_max = sbuf[i];
     }
-  
+
   (*min_samp) = (mus_float_t)cur_min / (mus_float_t)(1 << 23);
   (*max_samp) = (mus_float_t)cur_max / (mus_float_t)(1 << 23);
 
@@ -2819,7 +2819,7 @@ static void min_max_switch_floats(uint8_t *data, int bytes, int chan, int chans,
   cur_min = little_endian_float((uint8_t *)(data + (chan * FLOAT_BYTES)));
 #endif
   cur_max = cur_min;
-  samp = (uint8_t *)(data + (chan * FLOAT_BYTES)); 
+  samp = (uint8_t *)(data + (chan * FLOAT_BYTES));
   while (samp <= eod2)
     {
       float val;
@@ -2925,7 +2925,7 @@ static void min_max_switch_doubles(uint8_t *data, int bytes, int chan, int chans
   cur_min = little_endian_double((uint8_t *)(data + (chan * DOUBLE_BYTES)));
 #endif
   cur_max = cur_min;
-  samp = (uint8_t *)(data + (chan * DOUBLE_BYTES)); 
+  samp = (uint8_t *)(data + (chan * DOUBLE_BYTES));
   while (samp <= eod2)
     {
       double val;
@@ -3378,5 +3378,3 @@ char *mus_strcat(char *errmsg, const char *str, int *size)
   strcat(errmsg, str);
   return(errmsg);
 }
-
-

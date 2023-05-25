@@ -1,8 +1,11 @@
 (in-package :common-tones/plugins)
 
-;;;  ------------------------------------------------------------------------
-;;; fft-mag-and-phase: fft rectangular to polar coordinates at run time
-;;; by Anders Vinjar
+/*!< ------------------------------------------------------------------------
+
+/*!< fft-mag-and-phase: fft rectangular to polar coordinates at run time
+
+/*!< by Anders Vinjar
+
 
 (defmacro fft-mag-and-phase (fdr fdi)
   `(let ((len (length ,fdr)))

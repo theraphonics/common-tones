@@ -1,7 +1,9 @@
 (in-package :common-tones/plugins)
 
-;;;  ------------------------------------------------------------------------
-;;; load all instruments in a given directory (Marco Trevisani)
+/*!< ------------------------------------------------------------------------
+
+/*!< load all instruments in a given directory (Marco Trevisani)
+
 
 (defun load-ins  (&key (path "/user/marco/aura/pronti/") (extension "o"))
   (let ((dir (directory path)))

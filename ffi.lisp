@@ -1,8 +1,11 @@
 (in-package :common-tones)
 
-;;; foreign function interfaces using portable cffi library.
-;;;   sndlib linkages are in sndlib2clm.lisp, packaged here into the old names
-;;;   the rest of this file links to cmus.c and clm.c
+/*!< foreign function interfaces using portable cffi library.
+
+/*!< sndlib linkages are in sndlib2clm.lisp, packaged here into the old names
+
+/*!< the rest of this file links to cmus.c and clm.c
+
 
 (defun clm-close-output () (clm-close-output-1) (setf *output* nil))
 (defun clm-close-reverb () (clm-close-reverb-1) (setf *reverb* nil))
@@ -36,8 +39,10 @@
     maxamps))
 
 
-;;; I had originally planned to "deprecate" these in clm 4, but the filename expansion is handy,
-;;;   and I'd just have to add them back under some other name, so I'll leave them in.
+/*!< I had originally planned to "deprecate" these in clm 4, but the filename expansion is handy,
+
+/*!< and I'd just have to add them back under some other name, so I'll leave them in.
+
 
 (defun fullstrname (n)
   #+(or windoze openmcl) (if (or (pathnamep n)

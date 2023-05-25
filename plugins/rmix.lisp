@@ -1,8 +1,11 @@
 (in-package :common-tones/plugins)
 
-;;;  ------------------------------------------------------------------------
-;;; mix with reverb
-;;;
+/*!< ------------------------------------------------------------------------
+
+/*!< mix with reverb
+
+/*!<
+
 #|
  (with-sound (:reverb jc-reverb)
    (sound-let ((temp () (fm-violin 0 .1 660 .1)))

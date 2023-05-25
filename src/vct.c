@@ -1,4 +1,4 @@
-/* vct support 
+/* vct support
  *
  * a vct is an object containing a mus_float_t array and its size
  *
@@ -185,12 +185,12 @@ void mus_abs_floats(mus_float_t *dst, mus_long_t len)
 
 static int vct_print_length = VCT_PRINT_LENGTH;
 
-void mus_vct_set_print_length(int len) 
+void mus_vct_set_print_length(int len)
 {
   vct_print_length = len;
 }
 
-int mus_vct_print_length(void) 
+int mus_vct_print_length(void)
 {
   return(vct_print_length);
 }
@@ -221,8 +221,8 @@ static void vct_free(vct *v)
 {
   if (v)
     {
-      if ((!(v->dont_free)) && 
-	  (v->data)) 
+      if ((!(v->dont_free)) &&
+	  (v->data))
 	free(v->data);
       v->data = NULL;
       free(v);
@@ -322,7 +322,7 @@ bool mus_vct_is_equal(vct *v1, vct *v2)
 {
   if (v1 == v2) return(true);
   return((mus_vct_length(v1) == mus_vct_length(v2)) &&
-	 (mus_arrays_are_equal(mus_vct_data(v1), mus_vct_data(v2), 
+	 (mus_arrays_are_equal(mus_vct_data(v1), mus_vct_data(v2),
 			       mus_float_equal_fudge_factor(),
 			       mus_vct_length(v1))));
 }
@@ -330,7 +330,7 @@ bool mus_vct_is_equal(vct *v1, vct *v2)
 
 #if (!HAVE_SCHEME)
 
-static Xen g_is_vct(Xen obj) 
+static Xen g_is_vct(Xen obj)
 {
   #define H_is_vct "(" S_is_vct " obj): is obj a " S_vct
   return(C_bool_to_Xen_boolean(mus_is_vct(obj)));
@@ -368,7 +368,7 @@ vct *mus_vct_wrap(mus_long_t len, mus_float_t *data)
 }
 
 
-vct *mus_vct_free(vct *v) 
+vct *mus_vct_free(vct *v)
 {
   vct_free(v);
   return(NULL);
@@ -380,7 +380,7 @@ Xen xen_make_vct(mus_long_t len, mus_float_t *data)
   vct *new_vct;
 
   if (len < 0) return(Xen_false);
-  if ((len > 0) && 
+  if ((len > 0) &&
       (!data))
     Xen_error(Xen_make_error_type("out-of-memory"),
 	      Xen_list_2(C_string_to_Xen_string(S_make_vct ": can't allocate size ~A"),
@@ -433,7 +433,7 @@ initial-element: \n  " vct_make_example
   Xen_check_type(Xen_is_number(filler) || !Xen_is_bound(filler), filler, 2, S_make_vct, "a number");
 
   size = Xen_llong_to_C_llong(len);
-  if (size < 0) 
+  if (size < 0)
     Xen_out_of_range_error(S_make_vct, 1, len, "new vct size < 0?");
 
   if ((size > mus_max_malloc()) ||
@@ -528,14 +528,14 @@ v[new--] = v[old--] if backwards is " PROC_FALSE "."
   ni = Xen_llong_to_C_llong(newi);
   nj = Xen_llong_to_C_llong(oldi);
 
-  if ((Xen_is_boolean(backwards)) && 
+  if ((Xen_is_boolean(backwards)) &&
       (!Xen_is_false(backwards)))
     {
-      if (ni >= mus_vct_length(v)) 
+      if (ni >= mus_vct_length(v))
 	Xen_out_of_range_error(S_vct_move, 2, newi, "new-index too high");
       if (nj >= mus_vct_length(v))
 	Xen_out_of_range_error(S_vct_move, 3, oldi, "old-index too high");
-      for (i = ni, j = nj; (j >= 0) && (i >= 0); i--, j--) 
+      for (i = ni, j = nj; (j >= 0) && (i >= 0); i--, j--)
 	d[i] = d[j];
     }
   else
@@ -546,7 +546,7 @@ v[new--] = v[old--] if backwards is " PROC_FALSE "."
       if (nj < 0)
 	Xen_out_of_range_error(S_vct_move, 3, oldi, "old-index < 0?");
       len = mus_vct_length(v);
-      for (i = ni, j = nj; (j < len) && (i < len); i++, j++) 
+      for (i = ni, j = nj; (j < len) && (i < len); i++, j++)
 	d[i] = d[j];
     }
   return(obj);
@@ -591,10 +591,10 @@ static Xen g_vct_set(Xen obj, Xen pos, Xen val)
   loc = Xen_llong_to_C_llong(pos);
 
   if (loc < 0)
-    Xen_out_of_range_error(S_vct_set, 2, pos, "index < 0?"); 
+    Xen_out_of_range_error(S_vct_set, 2, pos, "index < 0?");
   if (loc >= mus_vct_length(v))
     Xen_out_of_range_error(S_vct_set, 2, pos, "index >= vct-length?");
-  
+
   d = mus_vct_data(v);
   d[loc] = x;
   return(val);
@@ -654,7 +654,7 @@ static void vct_add(mus_float_t *d1, mus_float_t *d2, mus_long_t lim)
       d1[i] += d2[i]; i++;
       d1[i] += d2[i]; i++;
     }
-  for (; i < lim; i++) 
+  for (; i < lim; i++)
     d1[i] += d2[i];
 }
 #endif
@@ -683,7 +683,7 @@ static Xen g_vct_add(Xen obj1, Xen obj2, Xen offs)
     {
       mus_long_t j;
       j = Xen_llong_to_C_llong(offs);
-      if (j < 0) 
+      if (j < 0)
 	Xen_out_of_range_error(S_vct_add, 3, offs, "offset < 0?");
       if (j > len1)
 	Xen_out_of_range_error(S_vct_add, 3, offs, "offset > length of vct?");
@@ -725,7 +725,7 @@ static Xen g_vct_subtract(Xen obj1, Xen obj2)
       d1[i] -= d2[i]; i++;
       d1[i] -= d2[i]; i++;
     }
-  for (; i < lim; i++) 
+  for (; i < lim; i++)
     d1[i] -= d2[i];
 
   return(obj1);
@@ -778,14 +778,14 @@ static Xen g_vct_equal(Xen uv1, Xen uv2, Xen udiff)
       z = fabs(d1[i] - d2[i]);
       if (x1 > x2)
 	z /= x1;
-      else 
+      else
 	{
 	  if (x2 > 0.0)
 	    z /= x2;
 	}
       if (z > diff)
 	return(Xen_false);
-      if (z > max_diff) 
+      if (z > max_diff)
 	max_diff = z;
     }
 
@@ -814,7 +814,7 @@ static void vct_scale(mus_float_t *d, mus_float_t scl, mus_long_t len)
 	      d[i++] *= scl;
 	      d[i++] *= scl;
 	    }
-	  for (; i < len; i++) 
+	  for (; i < len; i++)
 	    d[i] *= scl;
 	}
     }
@@ -859,7 +859,7 @@ static Xen g_vct_offset(Xen obj1, Xen obj2)
   if (scl != 0.0)
     {
       mus_long_t i;
-      for (i = 0; i < len; i++) 
+      for (i = 0; i < len; i++)
 	d[i] += scl;
     }
   return(obj1);
@@ -941,7 +941,7 @@ static Xen g_vct_fill(Xen obj1, Xen obj2)
   scl = Xen_real_to_C_double(obj2);
   if (scl == 0.0)
     mus_clear_floats(d, len);
-  else 
+  else
     {
       mus_long_t lim8;
       lim8 = len - 8;
@@ -957,7 +957,7 @@ static Xen g_vct_fill(Xen obj1, Xen obj2)
 	  d[i++] = scl;
 	  d[i++] = scl;
 	}
-      for (; i < len; i++) 
+      for (; i < len; i++)
 	d[i] = scl;
     }
   return(obj1);
@@ -1012,7 +1012,7 @@ static Xen g_vct_peak_and_location(Xen obj)
     {
       mus_float_t absv;
       absv = fabs(d[i]);
-      if (absv > val) 
+      if (absv > val)
 	{
 	  val = absv;
 	  loc = i;
@@ -1053,7 +1053,7 @@ static Xen g_vct_subseq(Xen vobj, Xen start, Xen end, Xen newv)
     }
   else new_len = old_len - istart;
 
-  if (new_len <= 0) 
+  if (new_len <= 0)
     return(Xen_false);
 
   if (mus_is_vct(newv))
@@ -1061,7 +1061,7 @@ static Xen g_vct_subseq(Xen vobj, Xen start, Xen end, Xen newv)
   else res = xen_make_vct(new_len, (mus_float_t *)calloc(new_len, sizeof(mus_float_t)));
   vnew = Xen_to_vct(res);
 
-  if (new_len > mus_vct_length(vnew)) 
+  if (new_len > mus_vct_length(vnew))
     new_len = mus_vct_length(vnew);
   dnew = mus_vct_data(vnew);
   dold = mus_vct_data(vold);
@@ -1089,7 +1089,7 @@ Xen xen_list_to_vct(Xen lst)
 
   v = Xen_to_vct(scv);
   d = mus_vct_data(v);
-  for (i = 0, lst1 = Xen_copy_arg(lst); i < len; i++, lst1 = Xen_cdr(lst1)) 
+  for (i = 0, lst1 = Xen_copy_arg(lst); i < len; i++, lst1 = Xen_cdr(lst1))
     {
       if (Xen_is_number(Xen_car(lst1)))
 	d[i] = (mus_float_t)Xen_real_to_C_double(Xen_car(lst1));
@@ -1103,15 +1103,15 @@ Xen xen_list_to_vct(Xen lst)
 Xen mus_array_to_list(mus_float_t *arr, mus_long_t i, mus_long_t len)
 {
   if (i < (len - 1))
-    return(Xen_cons(C_double_to_Xen_real(arr[i]), 
+    return(Xen_cons(C_double_to_Xen_real(arr[i]),
 		    mus_array_to_list(arr, i + 1, len)));
-  else return(Xen_cons(C_double_to_Xen_real(arr[i]), 
+  else return(Xen_cons(C_double_to_Xen_real(arr[i]),
 		       Xen_empty_list));
 }
 
 
 #if (!HAVE_SCHEME)
-static Xen g_vct(Xen args) 
+static Xen g_vct(Xen args)
 {
   #define H_vct "(" S_vct " args...): returns a new " S_vct " with args as contents; same as " S_list_to_vct ": (" S_vct " 1 2 3)"
   return(xen_list_to_vct(args));
@@ -1143,13 +1143,13 @@ static Xen g_vector_to_vct(Xen vect)
   Xen_check_type(Xen_is_vector(vect), vect, 1, S_vector_to_vct, "a vector");
 
   len = (mus_long_t)Xen_vector_length(vect);
-  if (len > 0) 
+  if (len > 0)
     scv = xen_make_vct(len, (mus_float_t *)calloc(len, sizeof(mus_float_t)));
   else scv = xen_make_vct(0, NULL);
 
   v = Xen_to_vct(scv);
   d = mus_vct_data(v);
-  for (i = 0; i < len; i++) 
+  for (i = 0; i < len; i++)
     d[i] = (mus_float_t)Xen_real_to_C_double(Xen_vector_ref(vect, i));
 
   return(scv);
@@ -1170,7 +1170,7 @@ static Xen g_vct_to_vector(Xen vobj)
   new_vect = Xen_make_vector(len, C_double_to_Xen_real(0.0));
 
 #if HAVE_RUBY && HAVE_RB_GC_DISABLE
-  rb_gc_disable(); 
+  rb_gc_disable();
   /* uh oh -- gc is triggered by C_double_to_Xen_real causing segfault, even if we
    *   protect (via Xen_protect_from_gc) new_vect -- I guess the double currently
    *   being created is causing the trouble?
@@ -1178,7 +1178,7 @@ static Xen g_vct_to_vector(Xen vobj)
 #endif
 
   d = mus_vct_data(v);
-  for (i = 0; i < len; i++) 
+  for (i = 0; i < len; i++)
     Xen_vector_set(new_vect, i, C_double_to_Xen_real(d[i]));
 
 #if HAVE_RUBY && HAVE_RB_GC_DISABLE
@@ -1351,7 +1351,7 @@ static Xen g_vct_compare(Xen vr1, Xen vr2)
 
       len = mus_vct_length(v1);
       if (len > mus_vct_length(v2)) len = mus_vct_length(v2);
-      for (i = 0; i < len; i++) 
+      for (i = 0; i < len; i++)
 	if (d1[i] < d2[i])
 	  return(C_int_to_Xen_integer(-1));
 	else
@@ -1372,7 +1372,7 @@ static Xen g_rb_make_vct(int argc, Xen *argv, Xen self)
   rb_scan_args(argc, argv, "11", &len, &filler);
   Xen_check_type(Xen_is_llong(len), len, 1, "Vct.new", "an integer");
   size = Xen_llong_to_C_llong(len);
-  if (size <= 0) 
+  if (size <= 0)
     Xen_out_of_range_error("Vct.new", 1, len, "len <= 0?");
   if (Xen_is_number(filler))
     return(g_vct_fill(xen_make_vct(size, (mus_float_t *)calloc(size, sizeof(mus_float_t))), filler));
@@ -1390,12 +1390,12 @@ static Xen g_rb_make_vct(int argc, Xen *argv, Xen self)
 
 static Xen g_vct_map(Xen obj)
 {
-  if (rb_block_given_p()) 
+  if (rb_block_given_p())
     {
       mus_long_t i;
       vct *v;
       mus_float_t *d;
-      
+
       v = Xen_to_vct(obj);
       d = mus_vct_data(v);
       mus_float_t *buffer = (mus_float_t *)calloc(mus_vct_length(v), sizeof(mus_float_t));
@@ -1410,7 +1410,7 @@ static Xen g_vct_map(Xen obj)
 
 static Xen g_vct_map_store(Xen obj)
 {
-  if (rb_block_given_p()) 
+  if (rb_block_given_p())
     {
       mus_long_t i;
       vct *v;
@@ -1645,7 +1645,7 @@ void mus_vct_init(void)
   fth_set_object_apply(vct_tag, Xen_procedure_cast g_vct_ref, 1, 0, 0);
   FTH_PRIM(FTH_FICL_DICT(), (char *)">vct",   ficl_values_to_vct, h_values_to_vct);
   FTH_PRIM(FTH_FICL_DICT(), (char *)"vct(",   ficl_begin_vct,     h_begin_vct);
-  Xen_eval_C_string("start-prefixes : vct( vct( ; end-prefixes"); 
+  Xen_eval_C_string("start-prefixes : vct( vct( ; end-prefixes");
 #endif
 
 #if HAVE_RUBY

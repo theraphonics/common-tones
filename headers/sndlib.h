@@ -53,7 +53,7 @@ typedef int64_t mus_long_t;
   #endif
 #endif
 
-typedef enum {MUS_UNKNOWN_HEADER, MUS_NEXT, MUS_AIFC, MUS_RIFF, MUS_RF64, MUS_BICSF, MUS_NIST, MUS_INRS, MUS_ESPS, MUS_SVX, MUS_VOC, 
+typedef enum {MUS_UNKNOWN_HEADER, MUS_NEXT, MUS_AIFC, MUS_RIFF, MUS_RF64, MUS_BICSF, MUS_NIST, MUS_INRS, MUS_ESPS, MUS_SVX, MUS_VOC,
 	      MUS_SNDT, MUS_RAW, MUS_SMP, MUS_AVR, MUS_IRCAM, MUS_SD1, MUS_SPPACK, MUS_MUS10, MUS_HCOM, MUS_PSION, MUS_MAUD,
 	      MUS_IEEE, MUS_MATLAB, MUS_ADC, MUS_MIDI, MUS_SOUNDFONT, MUS_GRAVIS, MUS_COMDISCO, MUS_GOLDWAVE, MUS_SRFS,
 	      MUS_MIDI_SAMPLE_DUMP, MUS_DIAMONDWARE, MUS_ADF, MUS_SBSTUDIOII, MUS_DELUSION,
@@ -112,7 +112,7 @@ typedef enum {MUS_UNKNOWN_SAMPLE, MUS_BSHORT, MUS_MULAW, MUS_BYTE, MUS_BFLOAT, M
 
 enum {MUS_NO_ERROR, MUS_NO_FREQUENCY, MUS_NO_PHASE, MUS_NO_GEN, MUS_NO_LENGTH,
       MUS_NO_DESCRIBE, MUS_NO_DATA, MUS_NO_SCALER,
-      MUS_MEMORY_ALLOCATION_FAILED, 
+      MUS_MEMORY_ALLOCATION_FAILED,
       MUS_CANT_OPEN_FILE, MUS_NO_SAMPLE_INPUT, MUS_NO_SAMPLE_OUTPUT,
       MUS_NO_SUCH_CHANNEL, MUS_NO_FILE_NAME_PROVIDED, MUS_NO_LOCATION, MUS_NO_CHANNEL,
       MUS_NO_SUCH_FFT_WINDOW, MUS_UNSUPPORTED_SAMPLE_TYPE, MUS_HEADER_READ_FAILED,
@@ -121,16 +121,16 @@ enum {MUS_NO_ERROR, MUS_NO_FREQUENCY, MUS_NO_PHASE, MUS_NO_GEN, MUS_NO_LENGTH,
       MUS_HEADER_WRITE_FAILED, MUS_CANT_OPEN_TEMP_FILE, MUS_INTERRUPTED, MUS_BAD_ENVELOPE,
 
       MUS_AUDIO_CHANNELS_NOT_AVAILABLE, MUS_AUDIO_SRATE_NOT_AVAILABLE, MUS_AUDIO_SAMPLE_TYPE_NOT_AVAILABLE,
-      MUS_AUDIO_NO_INPUT_AVAILABLE, MUS_AUDIO_CONFIGURATION_NOT_AVAILABLE, 
+      MUS_AUDIO_NO_INPUT_AVAILABLE, MUS_AUDIO_CONFIGURATION_NOT_AVAILABLE,
       MUS_AUDIO_WRITE_ERROR, MUS_AUDIO_SIZE_NOT_AVAILABLE, MUS_AUDIO_DEVICE_NOT_AVAILABLE,
-      MUS_AUDIO_CANT_CLOSE, MUS_AUDIO_CANT_OPEN, MUS_AUDIO_READ_ERROR, 
+      MUS_AUDIO_CANT_CLOSE, MUS_AUDIO_CANT_OPEN, MUS_AUDIO_READ_ERROR,
       MUS_AUDIO_CANT_WRITE, MUS_AUDIO_CANT_READ, MUS_AUDIO_NO_READ_PERMISSION,
 
-      MUS_CANT_CLOSE_FILE, MUS_ARG_OUT_OF_RANGE, 
-      MUS_NO_CHANNELS, MUS_NO_HOP, MUS_NO_WIDTH, MUS_NO_FILE_NAME, MUS_NO_RAMP, MUS_NO_RUN, 
+      MUS_CANT_CLOSE_FILE, MUS_ARG_OUT_OF_RANGE,
+      MUS_NO_CHANNELS, MUS_NO_HOP, MUS_NO_WIDTH, MUS_NO_FILE_NAME, MUS_NO_RAMP, MUS_NO_RUN,
       MUS_NO_INCREMENT, MUS_NO_OFFSET,
       MUS_NO_XCOEFF, MUS_NO_YCOEFF, MUS_NO_XCOEFFS, MUS_NO_YCOEFFS, MUS_NO_RESET, MUS_BAD_SIZE, MUS_CANT_CONVERT,
-      MUS_READ_ERROR, 
+      MUS_READ_ERROR,
       MUS_NO_FEEDFORWARD, MUS_NO_FEEDBACK, MUS_NO_INTERP_TYPE, MUS_NO_POSITION, MUS_NO_ORDER, MUS_NO_COPY,
       MUS_CANT_TRANSLATE,
       MUS_NUM_ERRORS};
@@ -359,9 +359,9 @@ MUS_EXPORT int mus_header_original_sample_type(void);
 MUS_EXPORT mus_long_t mus_samples_to_bytes(mus_sample_t samp_type, mus_long_t size);
 MUS_EXPORT mus_long_t mus_bytes_to_samples(mus_sample_t samp_type, mus_long_t size);
 MUS_EXPORT int mus_header_read(const char *name);
-MUS_EXPORT int mus_header_write(const char *name, mus_header_t type, int srate, int chans, mus_long_t loc, mus_long_t size_in_samples, 
+MUS_EXPORT int mus_header_write(const char *name, mus_header_t type, int srate, int chans, mus_long_t loc, mus_long_t size_in_samples,
 				mus_sample_t samp_type, const char *comment, int len);
-MUS_EXPORT int mus_write_header(const char *name, mus_header_t type, int in_srate, int in_chans, mus_long_t size_in_samples, 
+MUS_EXPORT int mus_write_header(const char *name, mus_header_t type, int in_srate, int in_chans, mus_long_t size_in_samples,
 				mus_sample_t samp_type, const char *comment);
 MUS_EXPORT mus_long_t mus_header_aux_comment_start(int n);
 MUS_EXPORT mus_long_t mus_header_aux_comment_end(int n);

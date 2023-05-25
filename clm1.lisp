@@ -7,26 +7,30 @@
           clm-swap-ints clm-swap-doubles
           ))
 
-;;; ---------------- lseek ----------------
+/*!< ---------------- lseek ----------------
+
 
 (cffi:defcfun ("lseek" c-seek) :void
   (fd :int)
   (loc :int)
   (type :int))
 
-;;; ---------------- c-seek-bytes ----------------
+/*!< ---------------- c-seek-bytes ----------------
+
 
 (defun clm-seek-bytes (fd n)
   "Seek the file descriptor FD by N bytes from the start of the file."
   `(cffi:foreign-funcall "lseek" :void ,@fd ,@n 0))
 
-;;; ---------------- c-seek-floats ----------------
+/*!< ---------------- c-seek-floats ----------------
+
 
 (defun clm-seek-floats (fd n)
   "Seek the file descriptor FD by N floats from the start of the file."
   `(cffi:foreign-funcall "lseek" :void ,@fd (* ,@n 8) 0)) ; SEEK_SET=0, 8=sizeof(double)
 
-;;; ---------------- clm-read-floats ----------------
+/*!< ---------------- clm-read-floats ----------------
+
 
 (cffi:defcfun ("read" c-read-floats-1) :int
   (fd :int)
@@ -43,7 +47,8 @@
   (let ((result (c-read-floats fd arr n)))
     (values result arr)))
 
-;;; ---------------- clm-read-ints ----------------
+/*!< ---------------- clm-read-ints ----------------
+
 
 (cffi:defcfun ("read" c-read-ints-1) :int
   (fd :int)
@@ -60,7 +65,8 @@
   (let ((result (c-read-ints fd arr n)))
     (values result arr)))
 
-;;; ---------------- clm-write-floats ----------------
+/*!< ---------------- clm-write-floats ----------------
+
 
 (cffi:defcfun ("write" c-write-floats-1) :int
   (fd :int) (buf :pointer) (bytes :int))
@@ -75,7 +81,8 @@
   (let ((result (c-write-floats fd arr n)))
     (values result arr)))
 
-;;; ---------------- clm-write-ints ----------------
+/*!< ---------------- clm-write-ints ----------------
+
 
 (defmacro <clm-write-ints> (result fd arr n)
   (format *c-file* "  ~A = write(~A, (char *)(~A), ~A * sizeof(int)) / sizeof(int);~%"
@@ -94,7 +101,8 @@
 
 (defun clm-write-ints (fd arr n) (/ (c-write-ints fd arr (* n (cffi:foreign-type-size :int))) (cffi:foreign-type-size :int)))
 
-;;; ---------------- c-open-input-file ----------------
+/*!< ---------------- c-open-input-file ----------------
+
 
 (cffi:defcfun ("open" c-open-input-file-1) :int
   (pathname :string)
@@ -103,7 +111,8 @@
 (defun c-open-input-file (pathname)
   (c-open-input-file-1 pathname 0))
 
-;;; ---------------- c-open-output-file ----------------
+/*!< ---------------- c-open-output-file ----------------
+
 
 (cffi:defcfun ("open" c-open-output-file-1) :int
   (pathname :string)
@@ -113,7 +122,8 @@
 (defun c-open-output-file (pathname)
   (c-open-output-file-1 pathname (logior 1 64) 438))
 
-;;; ---------------- c-create-file ----------------
+/*!< ---------------- c-create-file ----------------
+
 
 (cffi:defcfun ("open" c-create-file-1) :int
   (pathname :string)
@@ -123,12 +133,14 @@
 (defun c-create-file (pathname)
   (c-create-file-1 pathname (logior 2 64) 438))
 
-;;; ---------------- c-close ----------------
+/*!< ---------------- c-close ----------------
+
 
 (cffi:defcfun ("close" c-close) :int
   (fd :int))
 
-;;; ---------------- clm-swap-ints ----------------
+/*!< ---------------- clm-swap-ints ----------------
+
 
 (defun clm-swap-ints (data n)
   (declare (type (simple-array (unsigned-byte 32) (*)) data))
@@ -138,7 +150,8 @@
       (setf (aref data i) (ldb (byte 32 0) (dpb (ldb (byte 8 0) (aref data i)) (byte 8 24) 0)))
       (incf i))))
 
-;;; ---------------- clm-swap-doubles ----------------
+/*!< ---------------- clm-swap-doubles ----------------
+
 
 (defun clm-swap-doubles (data n)
   (declare (type (simple-array (unsigned-byte 8) (*)) data))

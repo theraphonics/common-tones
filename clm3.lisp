@@ -1,19 +1,23 @@
-;;; clm3.lisp
-;;;
-;;; backwards compatibility stuff for clm4
+/*!< clm3.lisp
+
+/*!<
+
+/*!< backwards compatibility stuff for clm4
+
 
 (in-package :common-tones)
 (export '(
 	  #+linux mus-audio-set-oss-buffers
-	  sound-format-name 
+	  sound-format-name
 	  sound-type-name
-	  mus-set-raw-header-defaults 
-	  describe-audio 
-	  sl-dac 
+	  mus-set-raw-header-defaults
+	  describe-audio
+	  sl-dac
 	  mus-formant-radius
 	  ))
 
-;;; these are from clm1 or clm2
+/*!< these are from clm1 or clm2
+
 
 (defun sound-format-name (a) (mus-data-format-name a))
 (defun sound-type-name (a) (clm-initialize-links) (mus-header-type-name a))
@@ -36,4 +40,3 @@
 (defun mus-formant-radius (gen) (mus-scaler gen))
 (defun set-mus-formant-radius (gen val) (setf (mus-scaler gen) val))
 (defsetf mus-formant-radius set-mus-formant-radius)
-

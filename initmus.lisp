@@ -1,4 +1,5 @@
-;;; main defpackage is in clm-package.lisp. Export statement is in export.lisp.
+/*!< main defpackage is in clm-package.lisp. Export statement is in export.lisp.
+
 
 (in-package :common-tones)
 
@@ -13,7 +14,8 @@
 					;this is set in all.lisp via the envirionment variable "CC"
 
 
-;;; this is reflected in cmus.h
+/*!< this is reflected in cmus.h
+
 (load "constants.lisp")
 (load "generics.lisp")
 
@@ -82,7 +84,8 @@
     #-(or excl cmu sbcl openmcl clisp lispworks) (warn "can't run ~A in a shell" prog)
     ))
 
-;;; take care of some minor differences in file names and so on
+/*!< take care of some minor differences in file names and so on
+
 
 (defvar *clm-lisp-name* "lisp")
 
@@ -107,9 +110,12 @@
 
 (defvar *so-ext* nil)
 
-;;; we also need restart-case in all lisps.
-;;;  In later ACL's it is built-in.
-;;;  In CMU-CL it is broken.
+/*!< we also need restart-case in all lisps.
+
+/*!< In later ACL's it is built-in.
+
+/*!< In CMU-CL it is broken.
+
 
 ;#+cmu (defmacro restart-case (expr &rest rest) (declare (ignore rest)) expr)
 
@@ -130,10 +136,14 @@
 		  (print (format nil "~A is not a valid value in this context" new-val))))))))
     continue-default-value))
 
-;;; The documentation lists the make-<gen> function arguments as &optional-key -- the
-;;; meaning is that keyword names can be omitted, and the successive arguments are filled
-;;; in order until a keyword is encountered, after which only keyword-arg pairs can occur.
-;;; These can also have optional values (without the &optional in the declaration).
+/*!< The documentation lists the make-<gen> function arguments as &optional-key -- the
+
+/*!< meaning is that keyword names can be omitted, and the successive arguments are filled
+
+/*!< in order until a keyword is encountered, after which only keyword-arg pairs can occur.
+
+/*!< These can also have optional values (without the &optional in the declaration).
+
 
 (defmacro def-optkey-fun (name (&rest args) &body body)
   (let ((keyed-name (intern (concatenate 'string (symbol-name name) "_-_1")))

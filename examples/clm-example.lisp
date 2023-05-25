@@ -1,10 +1,17 @@
-;;; an example of using clm in "algorithmic composition"
-;;;
-;;; this is a translation of the Pla example in Douglas Keislar's article
-;;; "Six Microtonal Composers" in Perspectives of New Music
-;;;
-;;; :ld clm-example.lisp creates tst.clm.  
-;;; :ld tst.clm then produces our little tune.
+/*!< an example of using clm in "algorithmic composition"
+
+/*!<
+
+/*!< this is a translation of the Pla example in Douglas Keislar's article
+
+/*!< "Six Microtonal Composers" in Perspectives of New Music
+
+/*!<
+
+/*!< :ld clm-example.lisp creates tst.clm.
+
+/*!< :ld tst.clm then produces our little tune.
+
 
 (mus-set-rand-seed 5676)
 (defun my-random (size) (clm-random size)) ;provide repeatable random number sequences
@@ -13,7 +20,7 @@
 (setf time 60)
 (setf mode (make-array 13 :element-type 'fixnum :initial-contents '(0 0 2 4 11 11 5 6 7 0 0 0 0)))
 
-(setf rats (make-array 13 
+(setf rats (make-array 13
 		       :initial-contents (map 'list #'float
 					      '(1.0 256/243 9/8 32/27 81/64 4/3 1024/729 3/2 128/81 27/16 16/9 243/128 2.0))))
 
@@ -23,7 +30,7 @@
 	 (base (aref rats pit)))
     (* base (expt 2 oct))))
 
-(setf bell '(0 0 
+(setf bell '(0 0
 	       10 .25
 	       90 1.0
 	       100 1.0))
@@ -43,7 +50,7 @@
   (setf (aref begs i) (floor (+ 1 (* 3 (rbell (my-random 1.0))))))
   (setf (aref amps i) (floor (+ 1 (* 8 (rbell (my-random 1.0)))))))
 
-(with-open-file 
+(with-open-file
     (notelist "tst.clm"
      :if-exists :supersede :if-does-not-exist :create :direction :output)
   (print (format notelist ";from agn.cl~%
@@ -109,7 +116,7 @@
                                      (if (= winnum 8) 'windy8
                                        'windy9))))))))))
         (setf ranamt (* .00001 (expt (- (log freq 2.0) 4) 4)))
-        (format notelist "  (fm-violin ~,2F ~,2F ~,3F ~,2F :fm-index ~,2F :reverb-amount ~,2F :noise-amount ~,2F :amp-env ~A)~%" 
+        (format notelist "  (fm-violin ~,2F ~,2F ~,3F ~,2F :fm-index ~,2F :reverb-amount ~,2F :noise-amount ~,2F :amp-env ~A)~%"
                 beg dur freq ampl ind revamt ranamt winenv)
         (incf cellctr)
         (when (> cellctr (+ cellsiz cellbeg))
@@ -121,13 +128,13 @@
             (if (and (> cellsiz 12) (> (my-random 1.0) .999))
                 (setf whichway -1)
               (if (< cellsiz 4)
-                  (setf whichway 1)))) 
+                  (setf whichway 1))))
           (incf cellbeg 3)
           (setf cellctr cellbeg)))))
   (format notelist ")~%"))
 
 
-#| 
+#|
 Here's an example of using CM and CLM written by Nicky Hind:
 
     (let ((my-pitches (pitches c4 d e f g))
@@ -135,7 +142,7 @@ Here's an example of using CM and CLM written by Nicky Hind:
           (my-rhythms (items 1 2 3 in random))
           (number-of-notes 10)
           (start-time 0))
-      (with-sound () 
+      (with-sound ()
          (loop for i from 1 to number-of-notes do
             (fm-violin start-time          ; start-time
                   (item my-durations) ; duration

@@ -1,7 +1,8 @@
 (in-package :common-tones/generators)
 
 
-;;; filtered-comb filter (a delay line with a scaler on the filtered feedback term)
+/*!< filtered-comb filter (a delay line with a scaler on the filtered feedback term)
+
 
 (defclass filtered-comb (delay)
   ((filter :initform nil :initarg :filter :accessor dly-filter)))
@@ -47,8 +48,10 @@
 
 
 
-;;; Notch filter (a delay line with a feedforward term) -- also known as inverse comb
-;;; see Julius Smith's "Music Applications of Digital Waveguides" for a brief discussion
+/*!< Notch filter (a delay line with a feedforward term) -- also known as inverse comb
+
+/*!< see Julius Smith's "Music Applications of Digital Waveguides" for a brief discussion
+
 
 (defclass notch (delay) ())
 

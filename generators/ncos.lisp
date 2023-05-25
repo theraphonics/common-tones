@@ -1,4 +1,5 @@
-;;; ncos
+/*!< ncos
+
 
 (defclass ncos ()
   ((n :initform nil :initarg :n :accessor ncosp-n)

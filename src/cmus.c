@@ -3,7 +3,7 @@
 #include "../headers/cmus.h"
 #define MUS_SAMPLE_TO_SHORT(n) ((short)((n) * (1 << 15)))
 
-sigfnc *clm_signal(int signo, sigfnc *fnc) 
+sigfnc *clm_signal(int signo, sigfnc *fnc)
 {
   return(signal(signo, fnc));
 }
@@ -14,7 +14,7 @@ static void mus_error2clm(int type, char *str)
   /* there's apparently no way to get printout from C in ACL on windows --aclprintf, fprintf,
    *   and lisp_call_address back to lisp fails.  The folks at Franz had no suggestions.
    */
-  fprintf(stdout, "%s", str); 
+  fprintf(stdout, "%s", str);
   fflush(stdout);
 }
 
@@ -41,7 +41,7 @@ int clm_scale_file(char *outfile, char *infile, double scaler, int out_format, i
 
   chans = mus_sound_chans(infile);
   obufs = (mus_float_t **)calloc(chans, sizeof(mus_float_t *));
-  for (i = 0; i < chans; i++) 
+  for (i = 0; i < chans; i++)
     obufs[i] = (mus_float_t *)calloc(MIX_BUFFER_SIZE, sizeof(mus_float_t));
 
   ifd = mus_sound_open_input(infile);
@@ -76,7 +76,7 @@ int clm_scale_file(char *outfile, char *infile, double scaler, int out_format, i
 	      j = 0;
 	      mus_file_read(ifd, k, MIX_BUFFER_SIZE, chans, obufs);
 	    }
-	  for (i = 0; i < chans; i++) 
+	  for (i = 0; i < chans; i++)
 	    obufs[i][j] = (mus_float_t)(obufs[i][j] * scaler);
 	}
     }
@@ -95,7 +95,7 @@ int clm_scale_file(char *outfile, char *infile, double scaler, int out_format, i
 }
 
 
-/* sndplay as function call, added 14-Jul-00, 
+/* sndplay as function call, added 14-Jul-00,
  *                           fixed up mus_file_read trailing chunk business 26-Jan-01 (but it was broken again later?)
  *                           added device arg 8-Feb-01
  */
@@ -123,7 +123,7 @@ int sl_dac(char *name, int output_device)
       framples = mus_sound_framples(name);
       outbytes = BUFFER_SIZE * chans * 2;
       bufs = (mus_float_t **)calloc(chans, sizeof(mus_float_t *));
-      for (i = 0; i < chans; i++) 
+      for (i = 0; i < chans; i++)
 	bufs[i] = (mus_float_t *)calloc(BUFFER_SIZE, sizeof(mus_float_t));
       obuf = (short *)calloc(BUFFER_SIZE * chans, sizeof(short));
       /* assume for lafs that our DAC wants 16-bit integers */
@@ -132,33 +132,33 @@ int sl_dac(char *name, int output_device)
 	  if ((i + BUFFER_SIZE) <= framples)
 	    curframples = BUFFER_SIZE;
 	  else curframples = framples - i;
-	  mus_file_read(fd, i, curframples, chans, bufs); 
+	  mus_file_read(fd, i, curframples, chans, bufs);
 	  if (chans == 1)
 	    {
-	      for (k = 0; k < curframples; k++) 
+	      for (k = 0; k < curframples; k++)
 		obuf[k] = MUS_SAMPLE_TO_SHORT(bufs[0][k]);
 	    }
 	  else
 	    {
 	      if (chans == 2)
 		{
-		  for (k = 0, n = 0; k < curframples; k++, n += 2) 
+		  for (k = 0, n = 0; k < curframples; k++, n += 2)
 		    {
-		      obuf[n] = MUS_SAMPLE_TO_SHORT(bufs[0][k]); 
+		      obuf[n] = MUS_SAMPLE_TO_SHORT(bufs[0][k]);
 		      obuf[n + 1] = MUS_SAMPLE_TO_SHORT(bufs[1][k]);
 		    }
 		}
 	      else
 		{
 		  for (k = 0, j = 0; k < curframples; k++, j += chans)
-		    for (n = 0; n < chans; n++) 
+		    for (n = 0; n < chans; n++)
 		      obuf[j + n] = MUS_SAMPLE_TO_SHORT(bufs[n][k]);
 		}
 	    }
 	  if (afd == -1)
 	    {
 	      afd = mus_audio_open_output(output_device, srate, chans, MUS_AUDIO_COMPATIBLE_SAMPLE_TYPE, outbytes);
-	      if (afd == -1) 
+	      if (afd == -1)
 		{
 		  for (i = 0; i < chans; i++) free(bufs[i]);
 		  free(bufs);
@@ -194,25 +194,25 @@ int cl_clm_set_file_buffer_size(int size)
   return((int)mus_set_file_buffer_size((mus_long_t)size));
 }
 
-int clm_sound_samples(const char *arg) 
+int clm_sound_samples(const char *arg)
 {
   return((int)mus_sound_samples(arg));
 }
 
 
-int clm_sound_framples(const char *arg) 
+int clm_sound_framples(const char *arg)
 {
   return((int)mus_sound_framples(arg));
 }
 
 
-int clm_sound_data_location(const char *arg) 
+int clm_sound_data_location(const char *arg)
 {
   return((int)mus_sound_data_location(arg));
 }
 
 
-int clm_sound_length(const char *arg) 
+int clm_sound_length(const char *arg)
 {
   return((int)mus_sound_length(arg));
 }
@@ -230,55 +230,55 @@ char *clm_sound_comment(const char *arg)
 
 /* sndlib2clm.lisp */
 
-int clm_sound_comment_start(const char *arg) 
+int clm_sound_comment_start(const char *arg)
 {
   return((int)mus_sound_comment_start(arg));
 }
 
 
-int clm_sound_comment_end(const char *arg) 
+int clm_sound_comment_end(const char *arg)
 {
   return((int)mus_sound_comment_end(arg));
 }
 
 
-int clm_header_samples(void) 
+int clm_header_samples(void)
 {
   return((int)mus_header_samples());
 }
 
 
-int clm_header_data_location(void) 
+int clm_header_data_location(void)
 {
   return((int)mus_header_data_location());
 }
 
 
-int clm_header_comment_start(void) 
+int clm_header_comment_start(void)
 {
   return((int)mus_header_comment_start());
 }
 
 
-int clm_header_comment_end(void) 
+int clm_header_comment_end(void)
 {
   return((int)mus_header_comment_end());
 }
 
 
-int clm_header_true_length(void) 
+int clm_header_true_length(void)
 {
   return((int)mus_header_true_length());
 }
 
 
-int clm_samples_to_bytes(int format, int size) 
+int clm_samples_to_bytes(int format, int size)
 {
   return(mus_samples_to_bytes((mus_sample_t)format, (mus_long_t)size));
 }
 
 
-int clm_bytes_to_samples(int format, int size) 
+int clm_bytes_to_samples(int format, int size)
 {
   return(mus_bytes_to_samples((mus_sample_t)format, (mus_long_t)size));
 }
@@ -290,13 +290,13 @@ int clm_header_write(const char *name, int type, int srate, int chans, int loc, 
 }
 
 
-int clm_header_aux_comment_start(int n) 
+int clm_header_aux_comment_start(int n)
 {
   return((int)mus_header_aux_comment_start(n));
 }
 
 
-int clm_header_aux_comment_end(int n) 
+int clm_header_aux_comment_end(int n)
 {
   return((int)mus_header_aux_comment_end(n));
 }
@@ -394,9 +394,9 @@ int clm_sound_maxamp(const char *ifile, int chans, double *vals, int *times)
   ts = (mus_long_t *)calloc(chans, sizeof(mus_long_t));
   xs = (mus_float_t *)calloc(chans, sizeof(mus_float_t));
   res = mus_sound_maxamps(ifile, chans, xs, ts);
-  for (i = 0; i < chans; i++) 
+  for (i = 0; i < chans; i++)
     {
-      times[i] = (int)ts[i]; 
+      times[i] = (int)ts[i];
       vals[i] = (double)xs[i];
     }
   free(ts);
@@ -454,10 +454,10 @@ void swap_int_array(int *arr, int size)
   for (i = 0; i < lim; i += 4)
     {
       temp = p[i + 0];
-      p[i + 0] = p[i + 3]; 
+      p[i + 0] = p[i + 3];
       p[i + 3] = temp;
       temp = p[i + 1];
-      p[i + 1] = p[i + 2]; 
+      p[i + 1] = p[i + 2];
       p[i + 2] = temp;
     }
 }
@@ -475,13 +475,13 @@ void swap_double_array(double *arr, int size)
   for (i = 0; i < lim; i += 8)
     {
       temp = p[i + 0];
-      p[i + 0] = p[i + 7]; 
+      p[i + 0] = p[i + 7];
       p[i + 7] = temp;
       temp = p[i + 1];
-      p[i + 1] = p[i + 6]; 
+      p[i + 1] = p[i + 6];
       p[i + 6] = temp;
       temp = p[i + 2];
-      p[i + 2] = p[i + 5]; 
+      p[i + 2] = p[i + 5];
       p[i + 5] = temp;
       temp = p[i + 3];
       p[i + 3] = p[i + 4];
@@ -499,14 +499,14 @@ int clm_mus_file_probe(const char *name)
   return(0);
 }
 
-int clm_mus_clipping(void) 
+int clm_mus_clipping(void)
 {
   if (mus_clipping())
-    return(1); 
+    return(1);
   return(0);
 }
 
-int clm_mus_set_clipping(int new_value) 
+int clm_mus_set_clipping(int new_value)
 {
   mus_set_clipping((bool)new_value);
   return(new_value);
@@ -603,7 +603,7 @@ bool clm_make_reverb(const char *filename, int chans, int out_format, int out_ty
 
 bool clm_continue_output(const char *filename)
 {
-  if (clm_output_stream) 
+  if (clm_output_stream)
     fprintf(stderr, "request to reopen *output*, but it's already open?");
   clm_output_stream = mus_continue_frample_to_file(filename);
   return(true);
@@ -612,7 +612,7 @@ bool clm_continue_output(const char *filename)
 
 bool clm_continue_reverb(const char *filename)
 {
-  if (clm_reverb_stream) 
+  if (clm_reverb_stream)
     fprintf(stderr, "request to reopen *reverb*, but it's already open?");
   clm_reverb_stream = mus_continue_frample_to_file(filename);
   return(true);
@@ -643,7 +643,7 @@ void clm_set_reverb_safety(int safety)
 
 bool clm_close_output(void)
 {
-  if (!clm_output_stream) return(false); 
+  if (!clm_output_stream) return(false);
   mus_close_file(clm_output_stream); /* is this needed? */
   mus_free(clm_output_stream);
   clm_output_stream = NULL;
@@ -653,7 +653,7 @@ bool clm_close_output(void)
 
 bool clm_close_reverb(void)
 {
-  if (!clm_reverb_stream) return(false); 
+  if (!clm_reverb_stream) return(false);
   mus_close_file(clm_reverb_stream); /* is this needed? */
   mus_free(clm_reverb_stream);
   clm_reverb_stream = NULL;
@@ -680,7 +680,7 @@ static mus_long_t clm_location(mus_any *ptr)
     {
       if (!mus_is_src(ptr))
 	return(mus_location(ptr));
-      closure = (mus_any *)mus_environ(ptr); 
+      closure = (mus_any *)mus_environ(ptr);
       if ((closure) &&
 	  (mus_is_readin(closure)))
 	return(mus_location(closure));

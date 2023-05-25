@@ -14,7 +14,7 @@
   (let* ((low 16.351597)
 	 (raw (string note))
 	 (key '((c bs) (df cs) (d) (ds ef)
-		(e ff) (f es) (gf fs) (g) 
+		(e ff) (f es) (gf fs) (g)
 		(gs af) (a) (as bf) (b cf)))
 	 (pos (position-if #'digit-char-p raw))
 	 (int (or (position (intern (subseq raw 0 pos))
@@ -54,7 +54,7 @@
     (ecase sex
       (:male (setq s 1))
       (:female (setq s 2)))
-    
+
     (fm-voice gtime dur (/ (note->hz note) 2) 0.5 v s
 	      ampf ampf ampf ampf ampf ampf ampf
 	      1 0 0 0.0 1 0.00 0 ampf 0.00)))
@@ -74,46 +74,49 @@
 
   (vox w4 :ef3 :ee :male 0.0)
   (pwait w8)
-  
+
   (vox w8 :g3 :ow :female 0.0)
   (vox w8 :e4 :ow :female 0.0)
   (pwait w8)
-  
-  
-;;;
+
+
+/*!<
+
   (vox w4 :f3 :ay :female 0.0)
   (pwait w8)
-  
+
   (vox w8 :c4 :ow :female 0.0)
   (vox w8 :fs4 :ow :female 0.0)
   (pwait w8)
-  
+
   (vox w4 :a3 :uh :male 0.0)
   (pwait w8)
-  
+
   (vox w8 :cs4 :ow :female 0.0)
   (vox w8 :gs4 :ow :female 0.0)
   (pwait w8)
-  
-;;;
-  
+
+/*!<
+
+
   (vox w4 :d3 :ee :male 0.0)
   (pwait w8)
-  
+
   (vox w8 :a3 :ow :female 0.0)
   (vox w8 :fs4 :ow :female 0.0)
   (pwait w8)
-  
+
   (vox w4 :g3 :ee :male 0.0)
   (pwait w8)
-  
+
   (vox w8 :b3 :ow :female 0.0)
   (vox w8 :f4 :ow :female 0.0)
   (pwait w8)
-  
-;;;
+
+/*!<
+
   (cow)
-  
+
   (vox w8 :g4 :ee :female 0.0)
   (vox w8 :e5 :ee :female 0.0)
   (pwait w8)
@@ -126,71 +129,75 @@
   (vox w8 :ef4 :ee :female 0.0)
   (vox w8 :cs5 :ee :female 0.0)
   (pwait w8)
-  
-  
-;;;;;;;;;
-  
+
+
+/*!< ;;;;;;
+
+
   (vox w8  :c6  :ow  :female 0.5) ;;
   (vox w4 :c3 :ah :male 0.0)
   (pwait w8)
-  
-  
+
+
   (vox w8  :c6  :ay  :female 0.5) ;;
   (vox w8 :g3 :ow :female 0.0)
   (vox w8 :e4 :ow :female 0.0)
   (pwait w8)
-  
+
   (vox w8  :c6  :ah  :female 0.5) ;;
   (vox w4 :ef3 :ee :male 0.0)
   (pwait w8)
-  
+
   (vox w8  :g5  :uh  :female 0.5) ;;
   (vox w8 :g3 :ow :female 0.0)
   (vox w8 :e4 :ow :female 0.0)
   (pwait w8)
-  
-  
-;;;
-  
+
+
+/*!<
+
+
   (vox w8  :a5  :ah  :female 0.5) ;;
   (vox w4 :f3 :ay :female 0.0)
   (pwait w8)
-  
+
   (vox w8  :a5  :ay  :female 0.5) ;;
   (vox w8 :c4 :ow :female 0.0)
   (vox w8 :fs4 :oh :female 0.0)
   (pwait w8)
-  
+
   (vox w4  :g5  :ah  :female 0.5) ;;
   (vox w4 :a3 :uh :male 0.0)
   (pwait w8)
-  
+
   (vox w8 :cs5 :ow :female 0.0)
   (vox w8 :gs5 :ow :female 0.0)
   (pwait w8)
-  
-;;;
+
+/*!<
+
   (vox w8  :e6  :ee  :female 0.5) ;;
   (vox w4 :d3 :ee :male 0.0)
   (pwait w8)
-  
+
   (vox w8  :e6  :ay  :female 0.5) ;;
   (vox w8 :a3 :ow :female 0.0)
   (vox w8 :fs4 :ow :female 0.0)
   (pwait w8)
-  
+
   (vox w8  :d6  :ee  :female 0.5) ;;
   (vox w4 :g3 :ee :male 0.0)
   (pwait w8)
-  
+
   (vox w8  :d6  :ay  :female 0.5) ;;
   (vox w8 :b3 :ow :female 0.0)
   (vox w8 :f4 :ow :female 0.0)
   (pwait w8)
-  
-;;;
+
+/*!<
+
   (vox w4  :c6  :oh  :female 0.5) ;;
-  
+
   (vox w8 :g4 :ee :female 0.0)
   (vox w8 :e5 :ee :female 0.0)
   (pwait w8)
@@ -205,73 +212,75 @@
   (vox w8 :ef4 :ee :female 0.0)
   (vox w8 :cs5 :ee :female 0.0)
   (pwait w8)
-  
-;;;;;;;;;
-  
+
+/*!< ;;;;;;
+
+
   (vox w8  :c6  :ah  :female 0.5) ;;
   (vox w4 :c3 :ah :male 0.0)
   (pwait w8)
-  
-  
+
+
   (vox w8  :c6  :ee  :female 0.5) ;;
   (vox w8 :g3 :ow :female 0.0)
   (vox w8 :e4 :ow :female 0.0)
   (pwait w8)
-  
+
   (vox w8  :c6  :ah  :female 0.5) ;;
   (vox w4 :ef3 :ee :male 0.0)
   (pwait w8)
-  
+
   (vox w8  :g5  :ee  :female 0.5) ;;
   (vox w8 :g3 :ow :female 0.0)
   (vox w8 :e4 :ow :female 0.0)
   (pwait w8)
-  
-  
-;;;
-  
+
+
+/*!<
+
+
   (vox w8  :a5  :ah  :female 0.5) ;;
   (vox w4 :f3 :ay :female 0.0)
   (pwait w8)
-  
+
   (vox w8  :a5  :ay  :female 0.5) ;;
   (vox w8 :c4 :ow :female 0.0)
   (vox w8 :fs4 :oh :female 0.0)
   (pwait w8)
-  
+
   (vox w4  :g5  :ow  :female 0.5) ;;
   (vox w4 :a3 :uh :male 0.0)
   (pwait w8)
-  
+
   (vox w8 :cs5 :ow :female 0.0)
   (vox w8 :gs5 :ow :female 0.0)
   (pwait w8)
-  
-;;;
+
+/*!<
+
   (vox w8  :e6  :ee  :female 0.5) ;;
   (vox w4 :d3 :ee :male 0.0)
   (pwait w8)
-  
+
   (vox w8  :e6  :ay  :female 0.5) ;;
   (vox w8 :a3 :ow :female 0.0)
   (vox w8 :fs4 :ow :female 0.0)
   (pwait w8)
-  
+
   (vox w8  :d6  :ee  :female 0.5) ;;
   (vox w4 :g3 :ee :male 0.0)
   (pwait w8)
-  
+
   (vox w8  :d6  :ay  :female 0.5) ;;
   (vox w8 :b3 :ow :female 0.0)
   (vox w8 :f4 :ow :female 0.0)
   (pwait w8)
-  
-;;;
+
+/*!<
+
   (vox w2  :c3  :ah  :male 1.0)
   (vox w2  :g3  :ah  :male 1.0)
   (vox w2  :c4  :ah  :male 1.0)
   (vox w2  :e5  :ah  :female 1.0)
   (vox w2  :c6  :oh  :female 0.5) ;;
   )
-
-

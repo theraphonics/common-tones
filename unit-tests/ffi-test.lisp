@@ -1,36 +1,69 @@
-;;; test clm ffi
-;;;
-;;; links are in ffi.lisp, sndlib2clm.lisp, and clm1.lisp
-;;;
-;;; the linked functions are:
-;;; sndlib2clm.lisp:
-;;;   mus-error->string mus-sound-samples mus-sound-framples mus-sound-datum-size mus-sound-data-location mus-sound-chans 
-;;;   mus-sound-srate mus-sound-header-type mus-sound-data-format mus-sound-original-format mus-sound-write-date mus-sound-comment-start 
-;;;   mus-sound-comment-end mus-sound-length mus-sound-type-specifier mus-sound-bits-per-sample mus-header-type-name mus-data-format-name 
-;;;   mus-sound-comment mus-sound-duration mus-sound-initialize mus-sound-forget
-;;;   mus-audio-initialize mus-file-probe mus-clipping
-;;;   mus-set-clipping mus-header-samples mus-header-data-location 
-;;;   mus-header-srate mus-header-type mus-header-format mus-header-comment-start mus-header-comment-end mus-header-type-specifier 
-;;;   mus-header-bits-per-sample mus-header-loop-mode mus-header-loop-start mus-header-loop-end mus-header-mark-position mus-header-base-note 
-;;;   mus-header-base-detune mus-header-set-raw-defaults mus-header-true-length mus-header-original-format mus-samples-to-bytes mus-bytes-to-samples 
-;;;   mus-header-read mus-header-write mus-header-aux-comment-start mus-header-aux-comment-end mus-header-initialize mus-header-writable 
-;;;   mus-header-sf2-entries mus-header-sf2-name mus-header-sf2-start mus-header-sf2-end mus-header-sf2-loop-start mus-header-sf2-loop-end 
-;;;   mus-header-original-format-name mus-bytes-per-sample mus-header-chans
-;;;
-;;; ffi.lisp wrappers
-;;;   sound-chans sound-duration sound-data-format sound-data-location sound-datum-size sound-header-type sound-length sound-samples
-;;;   sound-framples sound-srate sound-comment mus-sound-loop-info
-;;;
-;;; ffi.lisp via cmus.c:
-;;;   array->file basic-convolve clm-continue-output clm-continue-reverb clm-fft clm-make-output clm-make-reverb
-;;;   clm-mix clm-random clm-scale-file file->array initialize-cmus mus-file-buffer-size
-;;;   mus-set-file-buffer-size mus-set-rand-seed mus-set-srate mus-srate reset-audio reset-headers reset-io sound-maxamp init-sc
-;;;
-;;; clm1.lisp:
-;;;  clm-seek-bytes clm-seek-floats clm-read-floats clm-write-floats clm-read-ints clm-write-ints c-open-input-file
-;;;  c-open-output-file c-create-file c-close c-seek clm-swap-ints clm-swap-doubles
-;;;
-;;; functions used in with-sound are not re-tested here (clm-scale-file, clm-mix, etc)
+/*!< test clm ffi
+
+/*!<
+
+/*!< links are in ffi.lisp, sndlib2clm.lisp, and clm1.lisp
+
+/*!<
+
+/*!< the linked functions are:
+
+/*!< sndlib2clm.lisp:
+
+/*!< mus-error->string mus-sound-samples mus-sound-framples mus-sound-datum-size mus-sound-data-location mus-sound-chans
+
+/*!< mus-sound-srate mus-sound-header-type mus-sound-data-format mus-sound-original-format mus-sound-write-date mus-sound-comment-start
+
+/*!< mus-sound-comment-end mus-sound-length mus-sound-type-specifier mus-sound-bits-per-sample mus-header-type-name mus-data-format-name
+
+/*!< mus-sound-comment mus-sound-duration mus-sound-initialize mus-sound-forget
+
+/*!< mus-audio-initialize mus-file-probe mus-clipping
+
+/*!< mus-set-clipping mus-header-samples mus-header-data-location
+
+/*!< mus-header-srate mus-header-type mus-header-format mus-header-comment-start mus-header-comment-end mus-header-type-specifier
+
+/*!< mus-header-bits-per-sample mus-header-loop-mode mus-header-loop-start mus-header-loop-end mus-header-mark-position mus-header-base-note
+
+/*!< mus-header-base-detune mus-header-set-raw-defaults mus-header-true-length mus-header-original-format mus-samples-to-bytes mus-bytes-to-samples
+
+/*!< mus-header-read mus-header-write mus-header-aux-comment-start mus-header-aux-comment-end mus-header-initialize mus-header-writable
+
+/*!< mus-header-sf2-entries mus-header-sf2-name mus-header-sf2-start mus-header-sf2-end mus-header-sf2-loop-start mus-header-sf2-loop-end
+
+/*!< mus-header-original-format-name mus-bytes-per-sample mus-header-chans
+
+/*!<
+
+/*!< ffi.lisp wrappers
+
+/*!< sound-chans sound-duration sound-data-format sound-data-location sound-datum-size sound-header-type sound-length sound-samples
+
+/*!< sound-framples sound-srate sound-comment mus-sound-loop-info
+
+/*!<
+
+/*!< ffi.lisp via cmus.c:
+
+/*!< array->file basic-convolve clm-continue-output clm-continue-reverb clm-fft clm-make-output clm-make-reverb
+
+/*!< clm-mix clm-random clm-scale-file file->array initialize-cmus mus-file-buffer-size
+
+/*!< mus-set-file-buffer-size mus-set-rand-seed mus-set-srate mus-srate reset-audio reset-headers reset-io sound-maxamp init-sc
+
+/*!<
+
+/*!< clm1.lisp:
+
+/*!< clm-seek-bytes clm-seek-floats clm-read-floats clm-write-floats clm-read-ints clm-write-ints c-open-input-file
+
+/*!< c-open-output-file c-create-file c-close c-seek clm-swap-ints clm-swap-doubles
+
+/*!<
+
+/*!< functions used in with-sound are not re-tested here (clm-scale-file, clm-mix, etc)
+
 
 #-(or sun opencml mac-osx) (defvar oboe "/home/bil/cl/oboe.snd")
 #+sun                      (defvar oboe "/export/home/bil/cl/oboe.snd")
@@ -65,7 +98,7 @@
 (defun header-test (name acend acstart detune base bits ce cs dl df le ls lm mark orig oname
 		    samples srate bytes type spec1 spec2 typename writable chans frames dsize comment
 		    sdur sdate)
-		    
+
   (mus-header-initialize) ; should be a no-op
   (mus-header-read name)
   (let ((val (mus-header-aux-comment-end 0)))
@@ -138,7 +171,7 @@
   (let ((c (mus-header-chans)))
     (if (not (= c chans))
 	(format t "~%;~A mus-header-chans: ~A (~A)" name c chans)))
-  
+
   (mus-sound-initialize)
   (let ((b (mus-sound-bits-per-sample name)))
     (if (not (= b bits))
@@ -194,7 +227,7 @@
   (let ((date (mus-sound-write-date name)))
     (if (not (= date sdate))
 	(format t "~%;~A mus-sound-write-date: ~A (~A)" name date sdate)))
-  
+
   (let ((c (sound-chans name)))
     (if (not (= c chans))
 	(format t "~%;~A sound-chans: ~A (~A)" name c chans)))
@@ -285,7 +318,7 @@
       (format t "~%;mus-header-sf2-name (0): ~A (\"Snare 4\")" val0))
   (if (not (string= val10 "Rim"))
       (format t "~%;mus-header-sf2-name (10): ~A (\"Rim\")" val10)))
-  
+
 (initialize-cmus) ; no-op
 (let ((samples (mus-bytes-to-samples mus-lint 32)))
   (if (not (= samples 8))
@@ -305,7 +338,7 @@
     (if (not (eql def new-value))
 	(format t "~%;mus-set-clipping: ~A" def)))
   (mus-set-clipping new-value))
-	     
+
 (let ((sbytes (mus-samples-to-bytes mus-mulaw 32)))
   (if (not (= sbytes 32))
       (format t "~%;mus-samples-to-bytes: ~A" sbytes)))
@@ -365,18 +398,18 @@
 
 (let ((file (c-open-input-file "test.data"))
 	(arr (make-double-float-array 16 :initial-element (double 0.0))))
-  (clm-read-floats file arr 16) 
+  (clm-read-floats file arr 16)
   (loop for i from 0 to 15 do
     (if (> (abs (- (aref arr i) (* i .1))) .001)
 	(format t "~%;clm1 floats: arr[~D] = ~F (~F)~%" i (aref arr i) (* i .1))))
   (clm-seek-floats file 2)
-  (clm-read-floats file arr 10) 
+  (clm-read-floats file arr 10)
   (loop for i from 0 to 9 do
     (if (> (abs (- (aref arr i) (* (+ i 2) .1))) .001)
 	(format t "~%;seek clm1 floats: arr[~D] = ~F (~F)~%" i (aref arr i) (* (+ i 2) .1))))
   #-clisp (clm-swap-doubles arr 4)
   (c-close file))
-  
+
 (delete-file "test.data")
 
 (let ((file (c-open-output-file "test.data"))
@@ -388,12 +421,12 @@
 
 (let ((file (c-open-input-file "test.data"))
 	(arr (make-integer-array 16 :initial-element 0)))
-  (clm-read-ints file arr 16) 
+  (clm-read-ints file arr 16)
   (loop for i from 0 to 15 do
     (if	(not (= (aref arr i) i))
 	(format t "~%;clm1 ints: arr[~D] = ~D (should be ~D)~%" i (aref arr i) i)))
   (clm-seek-bytes file (* 4 2))
-  (clm-read-ints file arr 10) 
+  (clm-read-ints file arr 10)
   (loop for i from 0 to 9 do
     (if	(not (= (aref arr i) (+ i 2)))
 	(format t "~%;seek clm1 ints: arr[~D] = ~D (should be ~D)~%" i (aref arr i) (+ i 2))))
@@ -402,7 +435,7 @@
       (format t "~%;clm-swap-ints: ~A (should be 50331648)" (aref arr 1)))
   (c-seek file 3 0)
   (c-close file))
-  
+
 (delete-file "test.data")
 
 (let ((temp-file (let ((data (make-double-float-array 32)))
@@ -483,4 +516,3 @@
   (autocorrelate data 8)
   (if (> (abs (- (aref data 0) 1.0)) .001)
       (format t "~%;autocorrelate: ~A" data)))
-

@@ -10,13 +10,13 @@ void shell(char *cmd)
   if ((fd = popen(cmd,"r")) != NULL)
     {
       buf = (char *)calloc(SHELL_BUF_SIZE,sizeof(char));
-      while ((fgets(buf,SHELL_BUF_SIZE,fd)) != NULL) 
+      while ((fgets(buf,SHELL_BUF_SIZE,fd)) != NULL)
 	fprintf(stderr,buf);
       free(buf);
       pclose(fd);
     }
 }
-/* 
-   cc shell.c -c 
+/*
+   cc shell.c -c
    ld -shared -o shell.so shell.o
 */

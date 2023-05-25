@@ -1,12 +1,19 @@
 (in-package :common-tones/plugins)
 
-;;;  ------------------------------------------------------------------------
-;;; another version of gliss-dur (Marco Trevisani)
-;;;
-;;; This one is very similar to Michael's (above) with the advantage that
-;;; one need only provide the envelope.  The disadvantage is that the
-;;; envelope x axis must match the precise duration in the input file (all
-;;; or a portion).
+/*!< ------------------------------------------------------------------------
+
+/*!< another version of gliss-dur (Marco Trevisani)
+
+/*!<
+
+/*!< This one is very similar to Michael's (above) with the advantage that
+
+/*!< one need only provide the envelope.  The disadvantage is that the
+
+/*!< envelope x axis must match the precise duration in the input file (all
+
+/*!< or a portion).
+
 
 (defun dur-gliss (x)
   (if (< (list-length x) 4)

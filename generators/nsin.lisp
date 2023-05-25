@@ -1,6 +1,7 @@
 (in-package :common-tones/generators)
 
-;;; nsin
+/*!< nsin
+
 
 (defun nsin-scaler (n)
   (if (< n 20)

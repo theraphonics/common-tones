@@ -1,6 +1,7 @@
 (in-package :common-tones/generators)
 
-;;; two-pole  y(n) = a0 x(n) - b1 y(n-1) - b2 y(n-2)
+/*!< two-pole  y(n) = a0 x(n) - b1 y(n-1) - b2 y(n-2)
+
 
 (defclass two-pole ()
   ((a0 :initform nil :initarg :a0 :accessor flt-a0)

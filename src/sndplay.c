@@ -55,16 +55,16 @@ int main(int argc, char *argv[])
   int mutate = 1, include_mutate = 0;
 #endif
 
-  if (argc == 1) 
+  if (argc == 1)
     {
-      printf("usage: sndplay file [-start 1.0] [-end 1.0] [-bufsize %d] [-buffers 2x12] [-describe]\n", BUFFER_SIZE); 
+      printf("usage: sndplay file [-start 1.0] [-end 1.0] [-bufsize %d] [-buffers 2x12] [-describe]\n", BUFFER_SIZE);
       exit(0);
     }
   mus_sound_initialize();
 
   for (i = 1; i < argc; i++)
     {
-      if (strcmp(argv[i], "-buffers") == 0) 
+      if (strcmp(argv[i], "-buffers") == 0)
 	{
 #if (HAVE_OSS || HAVE_ALSA)
 	  static char x_string[2] = {'x','\0'};
@@ -80,28 +80,28 @@ int main(int argc, char *argv[])
 	}
       else
 	{
-	  if (strcmp(argv[i], "-bufsize") == 0) 
+	  if (strcmp(argv[i], "-bufsize") == 0)
 	    {
 	      buffer_size = atoi(argv[i + 1]);
 	      i++;
 	    }
 	  else
 	    {
-	      if (strcmp(argv[i], "-start") == 0) 
+	      if (strcmp(argv[i], "-start") == 0)
 		{
 		  begin_time = atof(argv[i + 1]);
 		  i++;
 		}
 	      else
 		{
-		  if (strcmp(argv[i], "-end") == 0) 
+		  if (strcmp(argv[i], "-end") == 0)
 		    {
 		      end_time = atof(argv[i + 1]);
 		      i++;
 		    }
-		  else 
+		  else
 		    {
-		      if (strcmp(argv[i], "-mutable") == 0) 
+		      if (strcmp(argv[i], "-mutable") == 0)
 			{
 #if __APPLE__
 			  mutate = atoi(argv[i + 1]);
@@ -112,9 +112,9 @@ int main(int argc, char *argv[])
 		      else name = argv[i];
 		    }}}}}
 
-  if (!name) 
+  if (!name)
     {
-      printf("usage: sndplay file [-start 1.0] [-end 1.0] [-bufsize %d] [-buffers 2x12] [-mutable 1]\n", BUFFER_SIZE); 
+      printf("usage: sndplay file [-start 1.0] [-end 1.0] [-bufsize %d] [-buffers 2x12] [-mutable 1]\n", BUFFER_SIZE);
       exit(0);
     }
 
@@ -175,22 +175,22 @@ int main(int argc, char *argv[])
 	  if ((m + buffer_size) <= framples)
 	    curframples = buffer_size;
 	  else curframples = framples - m;
-	  mus_file_read(fd, start + m, curframples, chans, bufs); 
+	  mus_file_read(fd, start + m, curframples, chans, bufs);
 	  /* some systems are happier if we read the file before opening the dac */
 	  /* at this point the data is in separate arrays of mus_sample_t's */
 
 	  if (chans == 1)
 	    {
-	      for (k = 0; k < curframples; k++) 
+	      for (k = 0; k < curframples; k++)
 		obuf[k] = MUS_CONVERT(bufs[0][k]);
 	    }
 	  else
 	    {
 	      if (chans == 2)
 		{
-		  for (k = 0, n = 0; k < curframples; k++, n += 2) 
+		  for (k = 0, n = 0; k < curframples; k++, n += 2)
 		    {
-		      obuf[n] = MUS_CONVERT(bufs[0][k]); 
+		      obuf[n] = MUS_CONVERT(bufs[0][k]);
 		      obuf[n + 1] = MUS_CONVERT(bufs[1][k]);
 		    }
 		}
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 		{
 		  for (k = 0, j = 0; k < curframples; k++, j += chans)
 		    {
-		      for (n = 0; n < chans; n++) 
+		      for (n = 0; n < chans; n++)
 			obuf[j + n] = MUS_CONVERT(bufs[n][k]);
 		    }
 		}

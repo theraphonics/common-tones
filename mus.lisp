@@ -49,7 +49,8 @@
   (declare (ignore i-stream))
   nil)
 
-;;; someday: generic outa for CL, not to mention defgenerator and env-any!
+/*!< someday: generic outa for CL, not to mention defgenerator and env-any!
+
 
 (defvar out-already-warned nil)
 
@@ -60,7 +61,8 @@
 	(warn "Lisp interpreted out-any is a no-op")
 	(setf out-already-warned t))))
 
-;;; these need to be macros for the run macro's benefit
+/*!< these need to be macros for the run macro's benefit
+
 (defmacro outa (loc data &optional (o-stream '*output*)) `(out-any ,loc ,data 0 ,o-stream))
 (defmacro outb (loc data &optional (o-stream '*output*)) `(out-any ,loc ,data 1 ,o-stream))
 (defmacro outc (loc data &optional (o-stream '*output*)) `(out-any ,loc ,data 2 ,o-stream))

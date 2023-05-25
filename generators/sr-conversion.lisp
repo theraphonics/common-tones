@@ -1,8 +1,11 @@
 (in-package :common-tones/generators)
 
-;;; Sampling rate conversion (src)
-;;; based on kindly advice of Perry Cook -- see his sweep-srate.c. Changed 13-Jan-98 to match prc's code more closely.
-;;; Renamed sr-conversion.lisp to avoid file name conflicts
+/*!< Sampling rate conversion (src)
+
+/*!< based on kindly advice of Perry Cook -- see his sweep-srate.c. Changed 13-Jan-98 to match prc's code more closely.
+
+/*!< Renamed sr-conversion.lisp to avoid file name conflicts
+
 
 (defmethod mus-file-name ((str t)) str) ; might be string/pathname as file, or nil etc
 
