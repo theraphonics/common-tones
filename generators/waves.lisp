@@ -42,7 +42,7 @@
 	(fix-up-phase s))
     (setf (sw-current-value s) (tri-val (sw-base s) (sw-phase s)))))
 
-/*!< old method using increments tended to wander (and was off by a factor of two)
+;;; old method using increments tended to wander (and was off by a factor of two)
 
 
 (defmethod mus-frequency ((gen triangle-wave)) (radians->hz (sw-freq gen)))

@@ -1,8 +1,8 @@
 (in-package :common-tones/generators)
 
-/*!< Waveshaping
+;;; Waveshaping
 
-/*!< see "Digital Waveshaping Synthesis" by Marc Le Brun in JAES 1979 April, vol 27, no 4, p250
+;;; see "Digital Waveshaping Synthesis" by Marc Le Brun in JAES 1979 April, vol 27, no 4, p250
 
 
 (defun signify (harm-amps)		;taken very directly from MLB's Mus10 code.
@@ -19,11 +19,11 @@
 ; we take the array of signified partial amplitudes (harm-amps) and use them to weight the
 ; associated Chebychev polynomial
 
-/*!< assume we're using synth-data that looks like additive synthesis tables
+;;; assume we're using synth-data that looks like additive synthesis tables
 
-/*!< (i.e. a list of partial-amp pairs).  That means we have to prepare it for
+;;; (i.e. a list of partial-amp pairs).  That means we have to prepare it for
 
-/*!< the preceding two procedures by loading it into an array.
+;;; the preceding two procedures by loading it into an array.
 
 
 (defun normalize-partials (partials)

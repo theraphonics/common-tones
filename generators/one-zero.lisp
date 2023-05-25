@@ -1,5 +1,5 @@
 (in-package :common-tones/generators)
-/*!< one zero  y(n) = a0 x(n) + a1 x(n-1)
+;;; one zero  y(n) = a0 x(n) + a1 x(n-1)
 
 
 (defclass one-zero ()

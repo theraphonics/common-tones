@@ -1,42 +1,42 @@
 (in-package :common-tones)
 
-/*!< Apr-14 -- clm-5 (remove framples and mixers)
+;;; Apr-14 -- clm-5 (remove framples and mixers)
 
-/*!< Feb-08 -- clm-4 (new gens, etc)
+;;; Feb-08 -- clm-4 (new gens, etc)
 
-/*!< Jul-04 -- clm-3 (use clm.c)
+;;; Jul-04 -- clm-3 (use clm.c)
 
-/*!< Mar-00 -- sndlib internal sample representation is now configurable, so clm has to reflect that.
+;;; Mar-00 -- sndlib internal sample representation is now configurable, so clm has to reflect that.
 
-/*!< Jul-99 -- C side uses doubles throughout, Lisp side uses CLOS
+;;; Jul-99 -- C side uses doubles throughout, Lisp side uses CLOS
 
-/*!< Jun-99 -- clm-2 name changes, run-time types -- everything changed!
+;;; Jun-99 -- clm-2 name changes, run-time types -- everything changed!
 
-/*!< Jul-98 -- serious bug in readin forced me to change its layout, rippling through several other gens.
+;;; Jul-98 -- serious bug in readin forced me to change its layout, rippling through several other gens.
 
-/*!< Jun-98 -- _c names removed from cmus0.lisp, and Mac calloc/free replaced by NewPtr/DisposePtr
+;;; Jun-98 -- _c names removed from cmus0.lisp, and Mac calloc/free replaced by NewPtr/DisposePtr
 
-/*!< Apr-98 -- many MCL changes
+;;; Apr-98 -- many MCL changes
 
-/*!< Mar-98 -- higher precision clm_env causes layout changes
+;;; Mar-98 -- higher precision clm_env causes layout changes
 
-/*!< Jul-97 -- no-rld linker support removed -- many prototype changes
+;;; Jul-97 -- no-rld linker support removed -- many prototype changes
 
-/*!< Oct-95 -- many changes for n-channel IO and run-block connections to src et al
+;;; Oct-95 -- many changes for n-channel IO and run-block connections to src et al
 
-/*!< Jul-95 -- array allocation changed for SGI port
+;;; Jul-95 -- array allocation changed for SGI port
 
-/*!< Apr-95 -- boolean handling completely revised.
+;;; Apr-95 -- boolean handling completely revised.
 
-/*!< Oct-94 -- parallel instrument scheduling option.
+;;; Oct-94 -- parallel instrument scheduling option.
 
-/*!< Mar-94 -- full C output, rather than heavy use of foreign function interface
+;;; Mar-94 -- full C output, rather than heavy use of foreign function interface
 
-/*!< Nov-93 -- array version
+;;; Nov-93 -- array version
 
-/*!< Mar-93 -- struct version
+;;; Mar-93 -- struct version
 
-/*!< 1990   -- initial clm implementation from mus10/sambox
+;;; 1990   -- initial clm implementation from mus10/sambox
 
 
 (defvar *clm-report-untyped-vars* nil)
@@ -434,21 +434,21 @@
 	    (make-user-var x))
 	x))))
 
-/*!< return has to thread its way through block lists and get its value returned
+;;; return has to thread its way through block lists and get its value returned
 
-/*!< from the correct place, so it's not enough to just dump the value in A and
+;;; from the correct place, so it's not enough to just dump the value in A and
 
-/*!< jump to the end.  The return stack values is a list of lists, pushed anew
+;;; jump to the end.  The return stack values is a list of lists, pushed anew
 
-/*!< as blocks are opened, and popped as they close.  The inner list is of the
+;;; as blocks are opened, and popped as they close.  The inner list is of the
 
-/*!< form (block-name block-variable block-end-label 0) -- the block-variable is
+;;; form (block-name block-variable block-end-label 0) -- the block-variable is
 
-/*!< what we return (either via return or by falling through the bottom), block-label
+;;; what we return (either via return or by falling through the bottom), block-label
 
-/*!< is the location of the end of the block, and the block-name is either nil
+;;; is the location of the end of the block, and the block-name is either nil
 
-/*!< for an unnamed block or the name provided by the caller.
+;;; for an unnamed block or the name provided by the caller.
 
 
 (defun return-branch (var x)		;return [result]
@@ -1002,7 +1002,7 @@
     `(let (,@(loop for xx in lambda-args and yy in passed-args collect (list xx yy)))
        ,@lambda-body)))
 
-/*!< numbering is 0-based here(!)
+;;; numbering is 0-based here(!)
 
 (defun mark-as-string (val num)
   (declare (ignore num))
@@ -1532,7 +1532,7 @@
 (def-clm-fun 'not               #'(lambda (var x) (package-op '<not> var x :clm-boolean)))
 (def-clm-fun 'the               #'(lambda (var x) (declare (ignore var)) (third x)))
 
-/*!< incf and decf are macros, but they can expand into calls that are specific to a given lisp
+;;; incf and decf are macros, but they can expand into calls that are specific to a given lisp
 
 (def-clm-fun 'incf              #'(lambda (var x) (setf-branch var x +incf+)))
 (def-clm-fun 'decf              #'(lambda (var x) (setf-branch var x +decf+)))
@@ -1578,7 +1578,7 @@
 (def-clm-fun 'length            #'(lambda (var x) (package-op '<length> var x :clm-integer)))
 (def-clm-fun 'array-in-bounds-p #'(lambda (var x) (package-op '<array-in-bounds-p> var x :clm-boolean)))
 
-/*!< array-element-type
+;;; array-element-type
 
 
            ;; no progv prog prog*
@@ -1718,11 +1718,11 @@
       nil))
 
 
-/*!< the following is just a stop-gap for users of cmu-loop -- it generates
+;;; the following is just a stop-gap for users of cmu-loop -- it generates
 
-/*!< macrolets within the lambda form that loop expands into, but these
+;;; macrolets within the lambda form that loop expands into, but these
 
-/*!< macrolets appear to me to be very simple.
+;;; macrolets appear to me to be very simple.
 
 
 (defun submac (name body code)
@@ -1736,21 +1736,21 @@
 			   (declare (ignore var))
 			   (submac (first (second x)) (third (second x)) (third x))))
 
-/*!< I suppose we could make a list of macrolet macros with args, then form
+;;; I suppose we could make a list of macrolet macros with args, then form
 
-/*!< the LETs that are equivalent thereto, then do the substitution with
+;;; the LETs that are equivalent thereto, then do the substitution with
 
-/*!< args in submac -- surely someone has already written such a function.
+;;; args in submac -- surely someone has already written such a function.
 
 
-/*!< ACL might use (it did in 4.3) multiple-value-setq during macroexpansion of psetf, so...
+;;; ACL might use (it did in 4.3) multiple-value-setq during macroexpansion of psetf, so...
 
 
 (def-clm-fun 'multiple-value-setq #'(lambda (var x)
 				      ;; assume simplest case (sq (var) val) -- this is just a stop-gap
 				      (setf-branch var `(setf ,(first (second x)) ,(third x)))))
 
-/*!< MCL similarly uses multiple-value-bind in psetf and others
+;;; MCL similarly uses multiple-value-bind in psetf and others
 
 
 (def-clm-fun 'multiple-value-bind #'(lambda (var x)
@@ -1759,11 +1759,11 @@
 
 #+excl (def-clm-fun 'excl::loop-really-desetq #'(lambda (var x) (setf-branch var x)))
 #+(or cmu openmcl) (def-clm-fun 'ansi-loop::loop-really-desetq #'(lambda (var x) (setf-branch var x)))
-/*!< #+sbcl (def-clm-fun 'sb-loop::loop-really-desetq #'(lambda (var x) (setf-branch var x)))
+;;; #+sbcl (def-clm-fun 'sb-loop::loop-really-desetq #'(lambda (var x) (setf-branch var x)))
 
-/*!< this gets package lock error in version 1.4.3
+;;; this gets package lock error in version 1.4.3
 
-/*!< needed for sum keyword in loop (not needed in clisp?)
+;;; needed for sum keyword in loop (not needed in clisp?)
 
 
 
@@ -2055,9 +2055,9 @@
     (ff:defun-foreign-callable c-sigint () (setf clm::*interrupted* 1))
     (ff:register-foreign-callable 'c-sigint SIGINT_C))
 
-/*!< sbcl traps sigint: doc/manual/ffi.texinfo
+;;; sbcl traps sigint: doc/manual/ffi.texinfo
 
-/*!< C-C seem to work in clisp, cmucl, sbcl (linux) (can't test acl)
+;;; C-C seem to work in clisp, cmucl, sbcl (linux) (can't test acl)
 
 
 #+excl (defconstant CLM-FATAL-WRITE-ERROR 7)
@@ -2180,7 +2180,7 @@
 ;; equal checks for isomorphism, but not in arrays
 ;; equalp checks arrays too and apparently recurses through structs
 
-/*!< the arithmetic ops need to try to maintain the arg types
+;;; the arithmetic ops need to try to maintain the arg types
 
 
 (defun checked-op1 (result opi opr arg)
@@ -3099,7 +3099,7 @@
 
 
 
-/*!< ---- AREF ----
+;;; ---- AREF ----
 
 
 (defun array-header-size (arr)
@@ -3576,7 +3576,7 @@
       (format nil "(double *)(clm_double + ~A)" (array-rblock n)))))
 
 
-/*!< ---- CLEAR-ARRAY ----
+;;; ---- CLEAR-ARRAY ----
 
 (defmacro <clear-array> (data &optional len)
   (format *c-file* "  memset((void *)(~A), 0, (~A) * sizeof(mus_float_t));~%"
@@ -3584,7 +3584,7 @@
   nil)
 
 #|
-/*!< ---- MULTIPLY-ARRAYS ----
+;;; ---- MULTIPLY-ARRAYS ----
 
 (defmacro <multiply-arrays> (data window &optional len)
   (format *c-file* "  mus_multiply_arrays(~A, ~A, ~A);~%"
@@ -3592,21 +3592,21 @@
   nil)
 |#
 
-/*!< ---- RECTANGULAR->POLAR ----
+;;; ---- RECTANGULAR->POLAR ----
 
 (defmacro <rectangular2polar> (rdata idata &optional len)
   (format *c-file* "  mus_rectangular_to_polar(~A, ~A, ~A);~%"
 	  (lc-arr-ref rdata) (lc-arr-ref idata) (if len (lc-num-ref len :integer) (array-size rdata)))
   nil)
 
-/*!< ---- RECTANGULAR->MAGNITUDES ----
+;;; ---- RECTANGULAR->MAGNITUDES ----
 
 (defmacro <rectangular2magnitudes> (rdata idata &optional len)
   (format *c-file* "  mus_rectangular_to_magnitudes(~A, ~A, ~A);~%"
 	  (lc-arr-ref rdata) (lc-arr-ref idata) (if len (lc-num-ref len :integer) (array-size rdata)))
   nil)
 
-/*!< ---- POLAR->RECTANGULAR ----
+;;; ---- POLAR->RECTANGULAR ----
 
 (defmacro <polar2rectangular> (rdata idata &optional len)
   (format *c-file* "  mus_polar_to_rectangular(~A, ~A, ~A);~%"
@@ -3614,7 +3614,7 @@
   nil)
 
 
-/*!< ---- POLYNOMIAL ----
+;;; ---- POLYNOMIAL ----
 
 (defmacro <polynomial> (result tab x &optional len)
   (format *c-file* "  ~A = mus_polynomial(~A, ~A, ~A);~%"
@@ -3622,7 +3622,7 @@
   nil)
 
 
-/*!< ---- CHEBYSHEV_U_SUM ----
+;;; ---- CHEBYSHEV_U_SUM ----
 
 (defmacro <chebyshev-u-sum> (result x un)
   (format *c-file* "  ~A = mus_chebyshev_u_sum(~A, ~A, ~A);~%"
@@ -3630,7 +3630,7 @@
   nil)
 
 
-/*!< ---- CHEBYSHEV_T_SUM ----
+;;; ---- CHEBYSHEV_T_SUM ----
 
 (defmacro <chebyshev-t-sum> (result x tn)
   (format *c-file* "  ~A = mus_chebyshev_t_sum(~A, ~A, ~A);~%"
@@ -3638,7 +3638,7 @@
   nil)
 
 
-/*!< ---- CHEBYSHEV_TU_SUM ----
+;;; ---- CHEBYSHEV_TU_SUM ----
 
 (defmacro <chebyshev-tu-sum> (result x tn un)
   (format *c-file* "  ~A = mus_chebyshev_tu_sum(~A, ~A, ~A, ~A);~%"
@@ -3646,14 +3646,14 @@
   nil)
 
 
-/*!< ---- DOT-PRODUCT ----
+;;; ---- DOT-PRODUCT ----
 
 (defmacro <dot-product> (result s1 s2 &optional len)
   (format *c-file* "  ~A = mus_dot_product(~A, ~A, ~A);~%"
 	  (lc2 result) (lc-arr-ref s1) (lc-arr-ref s2) (if len (lc-num-ref len :integer) (array-size s1)))
   nil)
 
-/*!< ---- FFT ----
+;;; ---- FFT ----
 
 (defmacro <fft> (rdata idata n &optional (sign 1))
   (format *c-file* "  mus_fft(~A, ~A, ~A, ~A);"
@@ -3781,7 +3781,7 @@
 
 
 
-/*!< ---- STRINGS ----
+;;; ---- STRINGS ----
 
 
 (defmacro <string?> (res arg)
@@ -3911,7 +3911,7 @@
 
 
 
-/*!< ---- OSCIL ----
+;;; ---- OSCIL ----
 
 
 (defmethod gen-load ((gen oscil) i r datai datar)
@@ -3975,7 +3975,7 @@
 
 
 
-/*!< ---- SAWTOOTH-WAVE, SQUARE-WAVE, PULSE-TRAIN, TRIANGLE-WAVE ----
+;;; ---- SAWTOOTH-WAVE, SQUARE-WAVE, PULSE-TRAIN, TRIANGLE-WAVE ----
 
 
 (defun load-sw (gen i r datai datar)
@@ -4168,7 +4168,7 @@
 
 
 
-/*!< ---- NCOS ----
+;;; ---- NCOS ----
 
 
 (defmethod gen-load ((s ncos) i r datai datar)
@@ -4231,7 +4231,7 @@
   nil)
 
 
-/*!< ---- NSIN ----
+;;; ---- NSIN ----
 
 
 (defmethod gen-load ((s nsin) i r datai datar)
@@ -4294,7 +4294,7 @@
   nil)
 
 
-/*!< ---- NRXYCOS ----
+;;; ---- NRXYCOS ----
 
 
 (defmethod gen-load ((s nrxycos) i r datai datar)
@@ -4363,7 +4363,7 @@
   nil)
 
 
-/*!< ---- NRXYSIN ----
+;;; ---- NRXYSIN ----
 
 
 (defmethod gen-load ((s nrxysin) i r datai datar)
@@ -4433,7 +4433,7 @@
 
 
 
-/*!< ---- SSB-AM ----
+;;; ---- SSB-AM ----
 
 
 (defmethod gen-load ((gen ssb-am) i r datai datar)
@@ -4482,7 +4482,7 @@
     nil))
 
 
-/*!< ---- RAND, RAND-INTERP ----
+;;; ---- RAND, RAND-INTERP ----
 
 
 (defun noi-load (s i r datai datar)
@@ -4608,7 +4608,7 @@
 	  iloc))
 
 
-/*!< ---- TABLE-LOOKUP ----
+;;; ---- TABLE-LOOKUP ----
 
 
 (defmethod gen-load ((tbl table-lookup) i r datai datar)
@@ -4711,7 +4711,7 @@
   nil)
 
 
-/*!< ---- ONE-POLE ----
+;;; ---- ONE-POLE ----
 
 
 (defmethod gen-load ((s one-pole) i r datai datar)
@@ -4765,7 +4765,7 @@
 	  indent iloc indent result indent indent iloc indent iloc))
 
 
-/*!< ---- ONE-ZERO ----
+;;; ---- ONE-ZERO ----
 
 
 (defmethod gen-load ((s one-zero) i r datai datar)
@@ -4820,7 +4820,7 @@
 
 
 
-/*!< ---- TWO-POLE ----
+;;; ---- TWO-POLE ----
 
 
 (defmethod gen-load ((s two-pole) i r datai datar)
@@ -4879,7 +4879,7 @@
 	  indent iloc indent result indent indent iloc indent iloc indent iloc))
 
 
-/*!< ---- TWO-ZERO ----
+;;; ---- TWO-ZERO ----
 
 
 (defmethod gen-load ((s two-zero) i r datai datar)
@@ -4938,7 +4938,7 @@
 	  indent iloc indent result indent indent iloc indent iloc indent iloc))
 
 
-/*!< ---- FORMANT ----
+;;; ---- FORMANT ----
 
 
 (defmethod gen-load ((s formant) i r datai datar)
@@ -4996,7 +4996,7 @@
 	  indent iloc indent result indent indent iloc indent iloc))
 
 
-/*!< ---- FIRMANT ----
+;;; ---- FIRMANT ----
 
 
 (defmethod gen-load ((s firmant) i r datai datar)
@@ -5055,7 +5055,7 @@
 
 
 
-/*!< ---- POLYSHAPE ----
+;;; ---- POLYSHAPE ----
 
 
 (defmethod gen-load ((w polyshape) i r datai datar)
@@ -5130,7 +5130,7 @@
 
 
 
-/*!< ---- POLYWAVE ----
+;;; ---- POLYWAVE ----
 
 
 (defmethod gen-load ((w polywave) i r datai datar)
@@ -5200,13 +5200,13 @@
 
 
 
-/*!< ---- ASYMMETRIC-FM ----
+;;; ---- ASYMMETRIC-FM ----
 
-/*!<
+;;;
 
-/*!< 0:type 1:datar
+;;; 0:type 1:datar
 
-/*!< 0:freq 1:phase 2:ratio 3:r
+;;; 0:freq 1:phase 2:ratio 3:r
 
 
 (defmethod gen-load ((w asymmetric-fm) i r datai datar)
@@ -5273,7 +5273,7 @@
 
 
 
-/*!< ---- OUT-ANY
+;;; ---- OUT-ANY
 
 
 (defmacro <out-any> (result pass val &optional (chan 0) stream)
@@ -5345,7 +5345,7 @@
 	  iloc))))
 
 
-/*!< -------- IN-ANY
+;;; -------- IN-ANY
 
 
 (defmethod gen-load ((rd file->sample) i r datai datar)
@@ -5429,7 +5429,7 @@
 
 
 
-/*!< ---- READIN ----
+;;; ---- READIN ----
 
 
 (defmethod gen-load ((rd readin) i r datai datar)
@@ -5493,7 +5493,7 @@
 
 
 
-/*!< ---- LOCSIG ----
+;;; ---- LOCSIG ----
 
 
 (defmacro <locsig-ref> (result loc chan)
@@ -5601,7 +5601,7 @@
 
 
 
-/*!< ---- MOVE-SOUND ----
+;;; ---- MOVE-SOUND ----
 
 
 (defmacro <move-sound?> (res arg)
@@ -5793,7 +5793,7 @@
 
 
 
-/*!< ---- WAVE-TRAIN ----
+;;; ---- WAVE-TRAIN ----
 
 
 (defmethod gen-load ((w wave-train) i r datai datar)
@@ -5862,7 +5862,7 @@
 
 
 
-/*!< ---- FILTER ----
+;;; ---- FILTER ----
 
 
 (defmethod gen-load ((s filter) i r datai datar)
@@ -6025,7 +6025,7 @@
 
 
 
-/*!< ---- DELAY ----
+;;; ---- DELAY ----
 
 
 (defmethod gen-load ((d delay) i r datai datar)
@@ -6095,7 +6095,7 @@
 	  iloc))
 
 
-/*!< ---- COMB ----
+;;; ---- COMB ----
 
 
 (defmethod gen-load ((d comb) i r datai datar)
@@ -6160,7 +6160,7 @@
 	  iloc))
 
 
-/*!< ---- FILTERED-COMB ----
+;;; ---- FILTERED-COMB ----
 
 
 (defmethod gen-load ((d filtered-comb) i r datai datar)
@@ -6230,7 +6230,7 @@
 	  ))
 
 
-/*!< ---- NOTCH ----
+;;; ---- NOTCH ----
 
 
 (defmethod gen-load ((d notch) i r datai datar)
@@ -6296,7 +6296,7 @@
 
 
 
-/*!< ---- ALL-PASS ----
+;;; ---- ALL-PASS ----
 
 
 (defmethod gen-load ((d all-pass) i r datai datar)
@@ -6367,7 +6367,7 @@
 	  iloc))
 
 
-/*!< ---- MOVING-AVERAGE ----
+;;; ---- MOVING-AVERAGE ----
 
 
 (defmethod gen-load ((d moving-average) i r datai datar)
@@ -6414,7 +6414,7 @@
 
 
 
-/*!< ---- ENV ----
+;;; ---- ENV ----
 
 
 (defun load-envelope (arr i r datai datar)
@@ -6512,7 +6512,7 @@
 
 
 
-/*!< ---- AS-NEEDED INPUT FUNCTION ----
+;;; ---- AS-NEEDED INPUT FUNCTION ----
 
 
 (defmacro <start-function> (ctr type)
@@ -6541,7 +6541,7 @@
 
 
 
-/*!< ---- CONVOLVE ----
+;;; ---- CONVOLVE ----
 
 
 (defmethod gen-load ((c convolve) i r datai datar)
@@ -6635,7 +6635,7 @@
 	      iloc indent))))
 
 
-/*!< ---- SRC ----
+;;; ---- SRC ----
 
 
 (defmethod gen-load ((s src) i r datai datar)
@@ -6734,10 +6734,10 @@
 
 
 
-/*!< ---- GRANULATE ----
+;;; ---- GRANULATE ----
 
 
-/*!< I think it would work to pass the edit and input funcs at run-time via mus_granulate_with_editor
+;;; I think it would work to pass the edit and input funcs at run-time via mus_granulate_with_editor
 
 
 (defmethod gen-load ((s granulate) i r datai datar)
@@ -6867,7 +6867,7 @@
 
 
 
-/*!< -------- PHASE-VOCODER
+;;; -------- PHASE-VOCODER
 
 
 (defmethod gen-load ((s phase-vocoder) i r datai datar)
@@ -7037,7 +7037,7 @@
 
 
 
-/*!< -------- DEF-CLM-STRUCT
+;;; -------- DEF-CLM-STRUCT
 
 
 (defmacro def-clm-struct (name &rest fields)
@@ -7086,9 +7086,9 @@
 		   (push (list (intern ,fieldname) 'clm::<setf-double-aref> (list ,i) :clm-real) clm::setf-functions)))))))
 
 
-/*!< ---------------- RUN*
+;;; ---------------- RUN*
 
-/*!< new form courtesy Larry Troxler
+;;; new form courtesy Larry Troxler
 
 
 (defvar *with-reflection* nil)
@@ -7114,42 +7114,42 @@
 		    (when val (setf ,v val))))))))))
 
 
-/*!< This is the story, a sad tale but true
+;;; This is the story, a sad tale but true
 
-/*!< Of a programmer who had far too little to do.
+;;; Of a programmer who had far too little to do.
 
-/*!< One day as he sat in his hut swilling stew,
+;;; One day as he sat in his hut swilling stew,
 
-/*!< He cried "CLM takes forever, it's stuck in a slough!,
+;;; He cried "CLM takes forever, it's stuck in a slough!,
 
-/*!< Its C code is slow, too slow by a few.
+;;; Its C code is slow, too slow by a few.
 
-/*!< Why, with just a small effort, say one line or two,
+;;; Why, with just a small effort, say one line or two,
 
-/*!< It could outpace a no-op, you could scarcely say 'boo'"!
+;;; It could outpace a no-op, you could scarcely say 'boo'"!
 
-/*!< So he sat in his kitchen and worked like a dog.
+;;; So he sat in his kitchen and worked like a dog.
 
-/*!< He typed and he typed 'til his mind was a fog.
+;;; He typed and he typed 'til his mind was a fog.
 
-/*!< Now 6000 lines later, what wonders we see!
+;;; Now 6000 lines later, what wonders we see!
 
-/*!< CLM is much faster, and faster still it will be!
+;;; CLM is much faster, and faster still it will be!
 
-/*!< In fact, for most cases, C beats the DSP!
+;;; In fact, for most cases, C beats the DSP!
 
-/*!< But bummed is our coder; he grumbles at night.
+;;; But bummed is our coder; he grumbles at night.
 
-/*!< That DSP code took him a year to write.
+;;; That DSP code took him a year to write.
 
-/*!< He was paid many dollars, and spent them with glee,
+;;; He was paid many dollars, and spent them with glee,
 
-/*!< But his employer might mutter, this result were he to see.
-
-
+;;; But his employer might mutter, this result were he to see.
 
 
-/*!< Generic Functions
+
+
+;;; Generic Functions
 
 
 (defun generator? (gen)
@@ -8018,4 +8018,4 @@
 
 	    ))))
 
-/*!< % in clm-print should be translated in C to %%
+;;; % in clm-print should be translated in C to %%

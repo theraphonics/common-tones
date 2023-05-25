@@ -1,4 +1,4 @@
-/*!< ncos
+;;; ncos
 
 
 (defclass ncos ()

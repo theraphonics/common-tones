@@ -80,7 +80,7 @@
   (pwait w8)
 
 
-/*!<
+;;;
 
   (vox w4 :f3 :ay :female 0.0)
   (pwait w8)
@@ -96,7 +96,7 @@
   (vox w8 :gs4 :ow :female 0.0)
   (pwait w8)
 
-/*!<
+;;;
 
 
   (vox w4 :d3 :ee :male 0.0)
@@ -113,7 +113,7 @@
   (vox w8 :f4 :ow :female 0.0)
   (pwait w8)
 
-/*!<
+;;;
 
   (cow)
 
@@ -131,7 +131,7 @@
   (pwait w8)
 
 
-/*!< ;;;;;;
+;;; ;;;;;;
 
 
   (vox w8  :c6  :ow  :female 0.5) ;;
@@ -154,7 +154,7 @@
   (pwait w8)
 
 
-/*!<
+;;;
 
 
   (vox w8  :a5  :ah  :female 0.5) ;;
@@ -174,7 +174,7 @@
   (vox w8 :gs5 :ow :female 0.0)
   (pwait w8)
 
-/*!<
+;;;
 
   (vox w8  :e6  :ee  :female 0.5) ;;
   (vox w4 :d3 :ee :male 0.0)
@@ -194,7 +194,7 @@
   (vox w8 :f4 :ow :female 0.0)
   (pwait w8)
 
-/*!<
+;;;
 
   (vox w4  :c6  :oh  :female 0.5) ;;
 
@@ -213,7 +213,7 @@
   (vox w8 :cs5 :ee :female 0.0)
   (pwait w8)
 
-/*!< ;;;;;;
+;;; ;;;;;;
 
 
   (vox w8  :c6  :ah  :female 0.5) ;;
@@ -236,7 +236,7 @@
   (pwait w8)
 
 
-/*!<
+;;;
 
 
   (vox w8  :a5  :ah  :female 0.5) ;;
@@ -256,7 +256,7 @@
   (vox w8 :gs5 :ow :female 0.0)
   (pwait w8)
 
-/*!<
+;;;
 
   (vox w8  :e6  :ee  :female 0.5) ;;
   (vox w4 :d3 :ee :male 0.0)
@@ -276,7 +276,7 @@
   (vox w8 :f4 :ow :female 0.0)
   (pwait w8)
 
-/*!<
+;;;
 
   (vox w2  :c3  :ah  :male 1.0)
   (vox w2  :g3  :ah  :male 1.0)

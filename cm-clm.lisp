@@ -2,12 +2,12 @@
 #+cltl2 (in-package :common-music)
 #-cltl2 (in-package "COMMON-MUSIC")
 
-/*!< rather than typing
+;;; rather than typing
 
-/*!< type clm-scorefile
+;;; type clm-scorefile
 
 ;; all the time, you can
-/*!< (setf *default-score-file-class* 'clm-scorefile)
+;;; (setf *default-score-file-class* 'clm-scorefile)
 
 
 
@@ -28,23 +28,23 @@
     ))
 
 
-/*!< start up CM (/dist/lisp/cm/cm)
+;;; start up CM (/dist/lisp/cm/cm)
 
-/*!< load the part definitions (:ld /dist/lisp/cm/clm/clm-parts)
+;;; load the part definitions (:ld /dist/lisp/cm/clm/clm-parts)
 
-/*!< and :ld /dist/lisp/cm/clm/examples/ex2
+;;; and :ld /dist/lisp/cm/clm/examples/ex2
 
 
 
-/*!< To get reverb, use an "after" option something like:
+;;; To get reverb, use an "after" option something like:
 
-/*!< after '(load :reverb nrev :decay-time 3.0)
+;;; after '(load :reverb nrev :decay-time 3.0)
 
-/*!< and so on.
+;;; and so on.
 
 
 #|
-/*!< here is an example init.lisp:
+;;; here is an example init.lisp:
 
 
 (setf *default-scorefile-pathname* "/user/bil/cl/test.clm")
@@ -53,7 +53,7 @@
 
 (setf *default-clm-load-options* '(:reverb jc-reverb))
 
-/*!< here's an example of how dbs and I got lists passed:
+;;; here's an example of how dbs and I got lists passed:
 
 
 (defscorefile (pathname "test" type CLM-SCOREFILE)
@@ -79,9 +79,9 @@
     (setf pitch (item (pitches a4 as b) :kill t))
     (setf rhythm (item (rhythms q w e s)))))
 
-/*!< the CM manual says the slot values are evaluated on every note, so to get a quoted
+;;; the CM manual says the slot values are evaluated on every note, so to get a quoted
 
-/*!< list into the note list (as an envelope for the clm instrument), we quote it twice.
+;;; list into the note list (as an envelope for the clm instrument), we quote it twice.
 
 
 |#

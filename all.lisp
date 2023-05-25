@@ -1,30 +1,30 @@
-/*!< Load file for CLM.
+;;; Load file for CLM.
 
-/*!<
+;;;
 
-/*!< The CLM sources are found on the current directory unless the variable clm-directory is set.
+;;; The CLM sources are found on the current directory unless the variable clm-directory is set.
 
-/*!< The binaries (and compiled C modules, where applicable) are written to clm-bin-directory, if bound.
+;;; The binaries (and compiled C modules, where applicable) are written to clm-bin-directory, if bound.
 
-/*!< See make-clm.cl for one example of how to set everything up.
+;;; See make-clm.cl for one example of how to set everything up.
 
-/*!<
+;;;
 
-/*!< for example, say we've untarred clm-4.tar to the current directory,
+;;; for example, say we've untarred clm-4.tar to the current directory,
 
-/*!< but we want the .fasl and .o files written to /zap -- start lisp,
+;;; but we want the .fasl and .o files written to /zap -- start lisp,
 
-/*!< (setf clm-directory ".") (setf clm-bin-directory "/zap/") (load "all.lisp")
+;;; (setf clm-directory ".") (setf clm-bin-directory "/zap/") (load "all.lisp")
 
-/*!<
+;;;
 
-/*!< (setf *clm-player* (concatenate 'string clm-bin-directory "sndplay"))
+;;; (setf *clm-player* (concatenate 'string clm-bin-directory "sndplay"))
 
-/*!< causes CLM to use its local version of sndplay
+;;; causes CLM to use its local version of sndplay
 
-/*!<
+;;;
 
-/*!< to force the configure script to run even if mus-config.h exists, (pushnew :reconfigure *features*)
+;;; to force the configure script to run even if mus-config.h exists, (pushnew :reconfigure *features*)
 
 
 (pushnew :clm2 *features*) ; for CM
@@ -104,7 +104,7 @@ The *features* that CLM adds itself are:
 #+(and linux86 (not linux)) (pushnew :linux *features*)
 #+(and excl linux86 little-endian) (setf *features* (remove :sun *features*))
 #+bsd386 (pushnew :linux *features*)
-/*!< acl-50 et all pushed in acl.cl
+;;; acl-50 et all pushed in acl.cl
 
 #+irix (pushnew :sgi *features*)
 #+(or x3j13 draft-ansi-cl-2) (pushnew :cltl2 *features*)
@@ -225,9 +225,9 @@ The *features* that CLM adds itself are:
 (defvar *ldflags* #+windoze " " #-windoze " -r -o ")
 
 
-/*!< --------------------------------
+;;; --------------------------------
 
-/*!< Allegro CL
+;;; Allegro CL
 
 
 #+excl (setf (excl:package-definition-lock (find-package ':common-lisp)) nil)
@@ -239,13 +239,13 @@ The *features* that CLM adds itself are:
 #+(and excl windoze) (chdir clm-directory)
 #+(and excl windoze) (setf *default-pathname-defaults* (excl:current-directory))
 
-/*!< in ACL 8.2/Linux, there can be a problem with selinux leading to the loader complaint:
+;;; in ACL 8.2/Linux, there can be a problem with selinux leading to the loader complaint:
 
-/*!< "libclm.so: cannot restore segment prot after reloc: Permission denied."
+;;; "libclm.so: cannot restore segment prot after reloc: Permission denied."
 
-/*!< it's a bother to call chcon -t textrel_shlib_t libclm.so by hand all the time, so
+;;; it's a bother to call chcon -t textrel_shlib_t libclm.so by hand all the time, so
 
-/*!< in that case define use-chcon t below
+;;; in that case define use-chcon t below
 
 
 (defvar use-chcon nil)
@@ -287,9 +287,9 @@ The *features* that CLM adds itself are:
   )
 
 
-/*!< --------------------------------
+;;; --------------------------------
 
-/*!< OpenMCL
+;;; OpenMCL
 
 
 #+openmcl
@@ -322,9 +322,9 @@ The *features* that CLM adds itself are:
     (load lname)))
 
 
-/*!< --------------------------------
+;;; --------------------------------
 
-/*!< CMU CL
+;;; CMU CL
 
 
 #+cmu (declaim (optimize (extensions:inhibit-warnings 3)))
@@ -345,9 +345,9 @@ The *features* that CLM adds itself are:
 	  (load lname)))
 
 
-/*!< --------------------------------
+;;; --------------------------------
 
-/*!< Steel Bank CL
+;;; Steel Bank CL
 
 
 #+sbcl (setf *compile-print* nil)
@@ -375,9 +375,9 @@ The *features* that CLM adds itself are:
 	    )))
 
 
-/*!< --------------------------------
+;;; --------------------------------
 
-/*!< Lispworks
+;;; Lispworks
 
 
 #+lispworks(setf *compile-print* nil)
@@ -405,9 +405,9 @@ The *features* that CLM adds itself are:
 		 )))
 
 
-/*!< --------------------------------
+;;; --------------------------------
 
-/*!< Clisp
+;;; Clisp
 
 
 #+clisp (defun compile-and-load (name)
@@ -428,9 +428,9 @@ The *features* that CLM adds itself are:
 
 
 
-/*!< --------------------------------
+;;; --------------------------------
 
-/*!< CLM proper
+;;; CLM proper
 
 
 ; (compile-and-load "ffi")

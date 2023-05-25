@@ -1,22 +1,22 @@
 (in-package :common-tones/generators)
 
-/*!< All-pass or "moving moving-average comb" filter
+;;; All-pass or "moving moving-average comb" filter
 
-/*!<
+;;;
 
-/*!< (if feedback scaler = 0, we get the moving moving-average comb)
+;;; (if feedback scaler = 0, we get the moving moving-average comb)
 
-/*!< (if both scale terms = 0, we get a pure delay line)
+;;; (if both scale terms = 0, we get a pure delay line)
 
-/*!< (if feedback = -feedforward, we get a Schroeder all-pass)
+;;; (if feedback = -feedforward, we get a Schroeder all-pass)
 
-/*!< In filter parlance, y(n) <= feedforward*x(n) + x(n-D) + feedback*y(n-D)
+;;; In filter parlance, y(n) <= feedforward*x(n) + x(n-D) + feedback*y(n-D)
 
-/*!< see Peter Samson's article on the Samson box in Strawn, "Digital Audio Signal Processing" for a diagram,
+;;; see Peter Samson's article on the Samson box in Strawn, "Digital Audio Signal Processing" for a diagram,
 
-/*!< This is the same as the C version in Ofranidis "Introduction to Signal Processing" p371, given that
+;;; This is the same as the C version in Ofranidis "Introduction to Signal Processing" p371, given that
 
-/*!< I use tap and delay both as "sD" in his notation.
+;;; I use tap and delay both as "sD" in his notation.
 
 
 

@@ -1,4 +1,4 @@
-/*!< -------- FILE->FRAMPLE --------
+;;; -------- FILE->FRAMPLE --------
 
 
 (defclass file->frample ()

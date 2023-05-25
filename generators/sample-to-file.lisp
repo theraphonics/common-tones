@@ -1,5 +1,5 @@
 (in-package :common-tones/generators)
-/*!< -------- SAMPLE->FILE --------
+;;; -------- SAMPLE->FILE --------
 
 
 (defclass sample->file ()

@@ -1,5 +1,5 @@
 (in-package :common-tones/generators)
-/*!< -------- READIN --------
+;;; -------- READIN --------
 
 
 (defclass readin ()

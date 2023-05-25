@@ -1,7 +1,7 @@
 (in-package :common-tones/plugins)
-/*!< ------------------------------------------------------------------------
+;;; ------------------------------------------------------------------------
 
-/*!< often one wants to save and annotate the last sound, so...
+;;; often one wants to save and annotate the last sound, so...
 
 
 (defun hey (new-name &optional comment old-name)

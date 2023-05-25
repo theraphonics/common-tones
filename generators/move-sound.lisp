@@ -1,5 +1,5 @@
 (in-package :common-tones/generators)
-/*!< -------- move-sound (dlocsig) --------
+;;; -------- move-sound (dlocsig) --------
 
 
 (defclass move-sound ()

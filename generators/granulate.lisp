@@ -1,7 +1,7 @@
 (in-package :common-tones/generators)
-/*!< Granulate was originally called SpeedFile (in Mixer.Sai)
+;;; Granulate was originally called SpeedFile (in Mixer.Sai)
 
-/*!< Another version of SpeedFile alternated between forward and backward segments.
+;;; Another version of SpeedFile alternated between forward and backward segments.
 
 
 (defclass granulate ()

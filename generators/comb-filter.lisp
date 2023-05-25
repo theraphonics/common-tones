@@ -1,22 +1,22 @@
 (in-package :common-tones/generators)
 
-/*!< Comb filter (a delay line with a scaler on the feedback term)
+;;; Comb filter (a delay line with a scaler on the feedback term)
 
-/*!<
+;;;
 
-/*!< in filter parlance, y(n) <= x(n-D) + scaler * y(n-D)
+;;; in filter parlance, y(n) <= x(n-D) + scaler * y(n-D)
 
-/*!< As a rule of thumb, the decay time of the feedback part is 7*(delay)/(1-scaler) samples,
+;;; As a rule of thumb, the decay time of the feedback part is 7*(delay)/(1-scaler) samples,
 
-/*!< so to get a decay of DUR seconds, scaler <= 1-7*D/(DUR*Srate).  (D=delay length here).
+;;; so to get a decay of DUR seconds, scaler <= 1-7*D/(DUR*Srate).  (D=delay length here).
 
-/*!< The peak gain is 1/(1-(abs scaler)).
+;;; The peak gain is 1/(1-(abs scaler)).
 
-/*!<
+;;;
 
-/*!< See Julius Smith's "An Introduction to Digital Filter Theory" in Strawn "Digital
+;;; See Julius Smith's "An Introduction to Digital Filter Theory" in Strawn "Digital
 
-/*!< Audio Signal Processing"
+;;; Audio Signal Processing"
 
 
 

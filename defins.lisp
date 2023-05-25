@@ -1,22 +1,22 @@
-/*!< definstrument, various instrument debugging functions
+;;; definstrument, various instrument debugging functions
 
-/*!<
+;;;
 
-/*!< used to be in sound.lisp, but split out to make debugging the new versions simpler.
+;;; used to be in sound.lisp, but split out to make debugging the new versions simpler.
 
-/*!< Definstrument was straightforward until version 3 of cmus -- in its new incarnation
+;;; Definstrument was straightforward until version 3 of cmus -- in its new incarnation
 
-/*!< it has to know how to write/compile/load c modules on each system.  And as of
+;;; it has to know how to write/compile/load c modules on each system.  And as of
 
-/*!< 12-Feb-97 it has to be able to live with any combination of lisp/machine output
+;;; 12-Feb-97 it has to be able to live with any combination of lisp/machine output
 
-/*!< on the same directory (i.e. user here at ccrma starts clm, which automatically chooses
+;;; on the same directory (i.e. user here at ccrma starts clm, which automatically chooses
 
-/*!< whichever lisp/machine combination happens to work there, all such machines
+;;; whichever lisp/machine combination happens to work there, all such machines
 
-/*!< mounting the user's directories, so when he loads his instruments, clm has to
+;;; mounting the user's directories, so when he loads his instruments, clm has to
 
-/*!< find the right versions).
+;;; find the right versions).
 
 
 (in-package :common-tones)
@@ -142,19 +142,19 @@
 (defvar *ins-file-loading* nil)
 #+(or clisp cmu) (defvar so-ctr 0)
 
-/*!< *definstrument-hook* can be set to a function that returns a
+;;; *definstrument-hook* can be set to a function that returns a
 
-/*!< form to include in the definstrument expansion. If the hook
+;;; form to include in the definstrument expansion. If the hook
 
-/*!< is already set at macroexpansion time then its result will
+;;; is already set at macroexpansion time then its result will
 
-/*!< be expanded and compiled with the instrument definition.
+;;; be expanded and compiled with the instrument definition.
 
-/*!< Otherwise, if the hook is set at load time then its result
+;;; Otherwise, if the hook is set at load time then its result
 
-/*!< will be evaluated when the ins is loaded. Otherwise the hook
+;;; will be evaluated when the ins is loaded. Otherwise the hook
 
-/*!< is nil and it has no effect.
+;;; is nil and it has no effect.
 
 
 (defvar *definstrument-hook* nil)
@@ -360,26 +360,26 @@
 			#+(and (or excl cmu sbcl lispworks (and openmcl (or linux-target linuxppc-target))))
 			(princ (format nil "; Creating shared object file ~S~%" ,so-file-name))
 
-/*!< ---------------- SGI (all)
+;;; ---------------- SGI (all)
 
 			#+(and (or excl cmu sbcl) sgi)
 			(clm::run-in-shell "ld" (format nil "-shared -all ~A -o ~A ~A -L~A -lclm -lm -lc~%"
 							,so-file-name ,l-file-name *clm-binary-directory*))
 			;; what about -laudio?
 
-/*!< ---------------- SUN (not acl 7)
+;;; ---------------- SUN (not acl 7)
 
 			#+(and (or excl cmu sbcl) (not acl-70) sun)
 			(clm::run-in-shell "ld" (format nil "-G -o ~A ~A -L~A -lclm -lm -lc~%"
 							,so-file-name ,l-file-name *clm-binary-directory*))
 
-/*!< ---------------- SUN (acl 7)
+;;; ---------------- SUN (acl 7)
 
 			#+(and acl-70 sun)
 			(clm::run-in-shell "ld" (format nil "-G -o ~A ~A -L~A ~A -lm -lc~%"
 							,so-file-name ,l-file-name *clm-binary-directory* *libclm-pathname*))
 
-/*!< ---------------- LISPWORKS
+;;; ---------------- LISPWORKS
 
 			#+lispworks
 			(clm::run-in-shell "gcc"
@@ -388,40 +388,40 @@
 						   #-lispworks-32 "-shared -o ~A ~A ~A ~A~%"
 						   ,so-file-name ,l-file-name *libclm-pathname*
 						   "-lm"))
-/*!< ---------------- LINUX (all except clisp), NETBSD
+;;; ---------------- LINUX (all except clisp), NETBSD
 
 			#+(and (or excl cmu sbcl) (or linux netbsd) (not freebsd))
 			(clm::run-in-shell "ld" (format nil "-shared -whole-archive -o ~A ~A ~A ~A~%"
 							,so-file-name ,l-file-name *libclm-pathname*
 							"-lm"))
 
-/*!< ---------------- OSX (ACL 7)
+;;; ---------------- OSX (ACL 7)
 
 			#+(and acl-70 (not acl-80) macosx)
 			(clm::run-in-shell "ld"
 					   (format nil "-bundle /usr/lib/bundle1.o -flat_namespace -undefined suppress -o ~A ~A -lm -lc -lcc_dynamic -framework CoreAudio "
 						   ,so-file-name ,l-file-name))
 
-/*!< ---------------- OSX (ACL 8)
+;;; ---------------- OSX (ACL 8)
 
 			#+(and acl-80 macosx)
 			(clm::run-in-shell "ld"
 					   (format nil "-bundle /usr/lib/bundle1.o -flat_namespace -undefined suppress -o ~A ~A -lm -lc -framework CoreAudio "
 						   ,so-file-name ,l-file-name))
 
-/*!< ---------------- OSX CMUCL/SBCL
+;;; ---------------- OSX CMUCL/SBCL
 
 			#+(and mac-osx (or cmu sbcl))
 			(clm::run-in-shell "gcc"
 					   (format nil "-o ~A ~A ~A -dynamiclib" ,so-file-name ,l-file-name *libclm-pathname*))
 
-/*!< ---------------- PPC (openmcl)
+;;; ---------------- PPC (openmcl)
 
 			#+(and openmcl (or linux-target linuxppc-target))
 			(clm::run-in-shell "ld" (format nil "-shared -whole-archive -o ~A ~A ~A~%"
 							,so-file-name ,l-file-name *libclm-pathname*))
 
-/*!< ---------------- FREEBSD
+;;; ---------------- FREEBSD
 
 			#+(and cmu freebsd)
 			(clm::run-in-shell "ld" (format nil "-r -L/usr/lib -o ~A ~A -L~A -lm~%"
@@ -437,7 +437,7 @@
 						 "-lm"))
 
 
-/*!< ---------------- WINDOWS
+;;; ---------------- WINDOWS
 
 			#+(and excl windoze)
 			(clm::run-in-shell "cl" (concatenate 'string " -D_MT -MD -nologo -LD -Zi -W3 -Fe"

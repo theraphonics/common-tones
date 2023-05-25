@@ -1,15 +1,15 @@
 (in-package :common-tones/generators)
 
-/*!< locsig
+;;; locsig
 
-/*!< "placement" in speakers (i.e. take degree and distance and pretend to conjure up some amplitudes
+;;; "placement" in speakers (i.e. take degree and distance and pretend to conjure up some amplitudes
 
-/*!< before sending the signal out the speakers.  This (despite its name) gives you a very diffuse
+;;; before sending the signal out the speakers.  This (despite its name) gives you a very diffuse
 
-/*!< apparent source, and under normal conditions, that is exactly the right thing.
+;;; apparent source, and under normal conditions, that is exactly the right thing.
 
 
-/*!< backwards compatibility
+;;; backwards compatibility
 
 (defconstant mus-linear 0)
 (defconstant mus-sinusoidal 1)

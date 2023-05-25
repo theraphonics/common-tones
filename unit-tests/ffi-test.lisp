@@ -1,68 +1,68 @@
-/*!< test clm ffi
+;;; test clm ffi
 
-/*!<
+;;;
 
-/*!< links are in ffi.lisp, sndlib2clm.lisp, and clm1.lisp
+;;; links are in ffi.lisp, sndlib2clm.lisp, and clm1.lisp
 
-/*!<
+;;;
 
-/*!< the linked functions are:
+;;; the linked functions are:
 
-/*!< sndlib2clm.lisp:
+;;; sndlib2clm.lisp:
 
-/*!< mus-error->string mus-sound-samples mus-sound-framples mus-sound-datum-size mus-sound-data-location mus-sound-chans
+;;; mus-error->string mus-sound-samples mus-sound-framples mus-sound-datum-size mus-sound-data-location mus-sound-chans
 
-/*!< mus-sound-srate mus-sound-header-type mus-sound-data-format mus-sound-original-format mus-sound-write-date mus-sound-comment-start
+;;; mus-sound-srate mus-sound-header-type mus-sound-data-format mus-sound-original-format mus-sound-write-date mus-sound-comment-start
 
-/*!< mus-sound-comment-end mus-sound-length mus-sound-type-specifier mus-sound-bits-per-sample mus-header-type-name mus-data-format-name
+;;; mus-sound-comment-end mus-sound-length mus-sound-type-specifier mus-sound-bits-per-sample mus-header-type-name mus-data-format-name
 
-/*!< mus-sound-comment mus-sound-duration mus-sound-initialize mus-sound-forget
+;;; mus-sound-comment mus-sound-duration mus-sound-initialize mus-sound-forget
 
-/*!< mus-audio-initialize mus-file-probe mus-clipping
+;;; mus-audio-initialize mus-file-probe mus-clipping
 
-/*!< mus-set-clipping mus-header-samples mus-header-data-location
+;;; mus-set-clipping mus-header-samples mus-header-data-location
 
-/*!< mus-header-srate mus-header-type mus-header-format mus-header-comment-start mus-header-comment-end mus-header-type-specifier
+;;; mus-header-srate mus-header-type mus-header-format mus-header-comment-start mus-header-comment-end mus-header-type-specifier
 
-/*!< mus-header-bits-per-sample mus-header-loop-mode mus-header-loop-start mus-header-loop-end mus-header-mark-position mus-header-base-note
+;;; mus-header-bits-per-sample mus-header-loop-mode mus-header-loop-start mus-header-loop-end mus-header-mark-position mus-header-base-note
 
-/*!< mus-header-base-detune mus-header-set-raw-defaults mus-header-true-length mus-header-original-format mus-samples-to-bytes mus-bytes-to-samples
+;;; mus-header-base-detune mus-header-set-raw-defaults mus-header-true-length mus-header-original-format mus-samples-to-bytes mus-bytes-to-samples
 
-/*!< mus-header-read mus-header-write mus-header-aux-comment-start mus-header-aux-comment-end mus-header-initialize mus-header-writable
+;;; mus-header-read mus-header-write mus-header-aux-comment-start mus-header-aux-comment-end mus-header-initialize mus-header-writable
 
-/*!< mus-header-sf2-entries mus-header-sf2-name mus-header-sf2-start mus-header-sf2-end mus-header-sf2-loop-start mus-header-sf2-loop-end
+;;; mus-header-sf2-entries mus-header-sf2-name mus-header-sf2-start mus-header-sf2-end mus-header-sf2-loop-start mus-header-sf2-loop-end
 
-/*!< mus-header-original-format-name mus-bytes-per-sample mus-header-chans
+;;; mus-header-original-format-name mus-bytes-per-sample mus-header-chans
 
-/*!<
+;;;
 
-/*!< ffi.lisp wrappers
+;;; ffi.lisp wrappers
 
-/*!< sound-chans sound-duration sound-data-format sound-data-location sound-datum-size sound-header-type sound-length sound-samples
+;;; sound-chans sound-duration sound-data-format sound-data-location sound-datum-size sound-header-type sound-length sound-samples
 
-/*!< sound-framples sound-srate sound-comment mus-sound-loop-info
+;;; sound-framples sound-srate sound-comment mus-sound-loop-info
 
-/*!<
+;;;
 
-/*!< ffi.lisp via cmus.c:
+;;; ffi.lisp via cmus.c:
 
-/*!< array->file basic-convolve clm-continue-output clm-continue-reverb clm-fft clm-make-output clm-make-reverb
+;;; array->file basic-convolve clm-continue-output clm-continue-reverb clm-fft clm-make-output clm-make-reverb
 
-/*!< clm-mix clm-random clm-scale-file file->array initialize-cmus mus-file-buffer-size
+;;; clm-mix clm-random clm-scale-file file->array initialize-cmus mus-file-buffer-size
 
-/*!< mus-set-file-buffer-size mus-set-rand-seed mus-set-srate mus-srate reset-audio reset-headers reset-io sound-maxamp init-sc
+;;; mus-set-file-buffer-size mus-set-rand-seed mus-set-srate mus-srate reset-audio reset-headers reset-io sound-maxamp init-sc
 
-/*!<
+;;;
 
-/*!< clm1.lisp:
+;;; clm1.lisp:
 
-/*!< clm-seek-bytes clm-seek-floats clm-read-floats clm-write-floats clm-read-ints clm-write-ints c-open-input-file
+;;; clm-seek-bytes clm-seek-floats clm-read-floats clm-write-floats clm-read-ints clm-write-ints c-open-input-file
 
-/*!< c-open-output-file c-create-file c-close c-seek clm-swap-ints clm-swap-doubles
+;;; c-open-output-file c-create-file c-close c-seek clm-swap-ints clm-swap-doubles
 
-/*!<
+;;;
 
-/*!< functions used in with-sound are not re-tested here (clm-scale-file, clm-mix, etc)
+;;; functions used in with-sound are not re-tested here (clm-scale-file, clm-mix, etc)
 
 
 #-(or sun opencml mac-osx) (defvar oboe "/home/bil/cl/oboe.snd")

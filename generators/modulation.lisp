@@ -3,7 +3,7 @@
 
 (defmacro ring-modulate (in1 in2) `(* ,in1 ,in2))
 
-/*!< Amplitude modulation (one often seen definition is in1 * (k + in2))
+;;; Amplitude modulation (one often seen definition is in1 * (k + in2))
 
 (defmacro amplitude-modulate (am-carrier input1 input2) `(* ,input1 (+ ,am-carrier ,input2)))
 

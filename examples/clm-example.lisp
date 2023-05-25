@@ -1,16 +1,16 @@
-/*!< an example of using clm in "algorithmic composition"
+;;; an example of using clm in "algorithmic composition"
 
-/*!<
+;;;
 
-/*!< this is a translation of the Pla example in Douglas Keislar's article
+;;; this is a translation of the Pla example in Douglas Keislar's article
 
-/*!< "Six Microtonal Composers" in Perspectives of New Music
+;;; "Six Microtonal Composers" in Perspectives of New Music
 
-/*!<
+;;;
 
-/*!< :ld clm-example.lisp creates tst.clm.
+;;; :ld clm-example.lisp creates tst.clm.
 
-/*!< :ld tst.clm then produces our little tune.
+;;; :ld tst.clm then produces our little tune.
 
 
 (mus-set-rand-seed 5676)

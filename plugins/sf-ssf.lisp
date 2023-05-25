@@ -1,8 +1,8 @@
 (in-package :common-tones/plugins)
 
-/*!< ------------------------------------------------------------------------
+;;; ------------------------------------------------------------------------
 
-/*!< get a listing of sound files in a given directory (courtesy Marco Trevisani)
+;;; get a listing of sound files in a given directory (courtesy Marco Trevisani)
 
 
 (defun sf (path)
@@ -18,9 +18,9 @@
 		  (float (/ (* (sound-samples name) (sound-datum-size name)) 1000000))
 		  (sound-duration name)))))))
 
-/*!< short-sf
+;;; short-sf
 
-/*!< just filename and duration
+;;; just filename and duration
 
 (defun ssf (path)
   (let ((dir (directory path)))
@@ -31,6 +31,6 @@
 	  (format t "~2&Filename:~S ~%DURATION:~,4Fsec"
 		  name (sound-duration name)))))))
 
-/*!< example (sf "/user/marco/mrc/temp/")
+;;; example (sf "/user/marco/mrc/temp/")
 
-/*!< and     (ssf "/user/marco/mrc/temp/")
+;;; and     (ssf "/user/marco/mrc/temp/")

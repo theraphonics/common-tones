@@ -1,12 +1,12 @@
 (in-package :common-tones/plugins)
 
-/*!< ------------------------------------------------------------------------
+;;; ------------------------------------------------------------------------
 
-/*!< with-instruments -- make sure needed instruments are loaded before going on.
+;;; with-instruments -- make sure needed instruments are loaded before going on.
 
-/*!<
+;;;
 
-/*!< (with-instruments (FM-VIOLIN "v") (JC-REVERB "jcrev")) for example
+;;; (with-instruments (FM-VIOLIN "v") (JC-REVERB "jcrev")) for example
 
 
 (defmacro with-instruments (&rest ins)

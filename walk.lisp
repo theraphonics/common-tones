@@ -1,124 +1,124 @@
-/*!< -*- Mode:LISP; Package:(WALKER LISP 1000); Base:10; Syntax:Common-lisp -*-
+;;; -*- Mode:LISP; Package:(WALKER LISP 1000); Base:10; Syntax:Common-lisp -*-
 
-/*!<
+;;;
 
-/*!< *************************************************************************
+;;; *************************************************************************
 
-/*!< Copyright (c) 1985, 1986, 1987, 1988, 1989, 1990 Xerox Corporation.
+;;; Copyright (c) 1985, 1986, 1987, 1988, 1989, 1990 Xerox Corporation.
 
-/*!< All rights reserved.
+;;; All rights reserved.
 
-/*!<
+;;;
 
-/*!< Use and copying of this software and preparation of derivative works
+;;; Use and copying of this software and preparation of derivative works
 
-/*!< based upon this software are permitted.  Any distribution of this
+;;; based upon this software are permitted.  Any distribution of this
 
-/*!< software or derivative works must comply with all applicable United
+;;; software or derivative works must comply with all applicable United
 
-/*!< States export control laws.
+;;; States export control laws.
 
-/*!<
+;;;
 
-/*!< This software is made available AS IS, and Xerox Corporation makes no
+;;; This software is made available AS IS, and Xerox Corporation makes no
 
-/*!< warranty about the software, its performance or its conformity to any
+;;; warranty about the software, its performance or its conformity to any
 
-/*!< specification.
+;;; specification.
 
-/*!<
+;;;
 
-/*!< Any person obtaining a copy of this software is requested to send their
+;;; Any person obtaining a copy of this software is requested to send their
 
-/*!< name and post office or electronic mail address to:
+;;; name and post office or electronic mail address to:
 
-/*!< CommonLoops Coordinator
+;;; CommonLoops Coordinator
 
-/*!< Xerox PARC
+;;; Xerox PARC
 
-/*!< 3333 Coyote Hill Rd.
+;;; 3333 Coyote Hill Rd.
 
-/*!< Palo Alto, CA 94304
+;;; Palo Alto, CA 94304
 
-/*!< (or send Arpanet mail to CommonLoops-Coordinator.pa@Xerox.arpa)
+;;; (or send Arpanet mail to CommonLoops-Coordinator.pa@Xerox.arpa)
 
-/*!<
+;;;
 
-/*!< Suggestions, comments and requests for improvements are also welcome.
+;;; Suggestions, comments and requests for improvements are also welcome.
 
-/*!< *************************************************************************
+;;; *************************************************************************
 
-/*!<
+;;;
 
-/*!< A simple code walker, based IN PART on: (roll the credits)
+;;; A simple code walker, based IN PART on: (roll the credits)
 
-/*!< Larry Masinter's Masterscope
+;;; Larry Masinter's Masterscope
 
-/*!< Moon's Common Lisp code walker
+;;; Moon's Common Lisp code walker
 
-/*!< Gary Drescher's code walker
+;;; Gary Drescher's code walker
 
-/*!< Larry Masinter's simple code walker
+;;; Larry Masinter's simple code walker
 
-/*!< .
+;;; .
 
-/*!< .
+;;; .
 
-/*!< boy, thats fair (I hope).
+;;; boy, thats fair (I hope).
 
-/*!<
+;;;
 
-/*!< For now at least, this code walker really only does what PCL needs it to
+;;; For now at least, this code walker really only does what PCL needs it to
 
-/*!< do.  Maybe it will grow up someday.
+;;; do.  Maybe it will grow up someday.
 
-/*!<
+;;;
 
 
-/*!<
+;;;
 
-/*!< This code walker used to be completely portable.  Now it is just "Real
+;;; This code walker used to be completely portable.  Now it is just "Real
 
-/*!< easy to port".  This change had to happen because the hack that made it
+;;; easy to port".  This change had to happen because the hack that made it
 
-/*!< completely portable kept breaking in different releases of different
+;;; completely portable kept breaking in different releases of different
 
-/*!< Common Lisps, and in addition it never worked entirely anyways.  So,
+;;; Common Lisps, and in addition it never worked entirely anyways.  So,
 
-/*!< its now easy to port.  To port this walker, all you have to write is one
+;;; its now easy to port.  To port this walker, all you have to write is one
 
-/*!< simple macro and two simple functions.  These macros and functions are
+;;; simple macro and two simple functions.  These macros and functions are
 
-/*!< used by the walker to manipluate the macroexpansion environments of
+;;; used by the walker to manipluate the macroexpansion environments of
 
-/*!< the Common Lisp it is running in.
+;;; the Common Lisp it is running in.
 
-/*!<
+;;;
 
-/*!< The code which implements the macroexpansion environment manipulation
+;;; The code which implements the macroexpansion environment manipulation
 
-/*!< mechanisms is in the first part of the file, the real walker follows it.
+;;; mechanisms is in the first part of the file, the real walker follows it.
 
-/*!<
+;;;
 
 
 #+(or openmcl (and clisp ansi-cl)) (defpackage :walker)
 #+cltl2 (defpackage :walker)
 (in-package :walker)
 
-/*!<
+;;;
 
-/*!< The user entry points are walk-form and nested-walked-form.  In addition,
+;;; The user entry points are walk-form and nested-walked-form.  In addition,
 
-/*!< it is legal for user code to call the variable information functions:
+;;; it is legal for user code to call the variable information functions:
 
-/*!< variable-lexical-p, variable-special-p and variable-class.  Some users
+;;; variable-lexical-p, variable-special-p and variable-class.  Some users
 
-/*!< will need to call define-walker-template, they will have to figure that
+;;; will need to call define-walker-template, they will have to figure that
 
-/*!< out for themselves.
+;;; out for themselves.
 
-/*!<
+;;;
 
 (export '(define-walker-template
 	  walk-form
@@ -135,81 +135,81 @@
 
 
 
-/*!<
+;;;
 
-/*!< On the following pages are implementations of the implementation specific
+;;; On the following pages are implementations of the implementation specific
 
-/*!< environment hacking functions for each of the implementations this walker
+;;; environment hacking functions for each of the implementations this walker
 
-/*!< has been ported to.  If you add a new one, so this walker can run in a new
+;;; has been ported to.  If you add a new one, so this walker can run in a new
 
-/*!< implementation of Common Lisp, please send the changes back to us so that
+;;; implementation of Common Lisp, please send the changes back to us so that
 
-/*!< others can also use this walker in that implementation of Common Lisp.
+;;; others can also use this walker in that implementation of Common Lisp.
 
-/*!<
+;;;
 
-/*!< This code just hacks 'macroexpansion environments'.  That is, it is only
+;;; This code just hacks 'macroexpansion environments'.  That is, it is only
 
-/*!< concerned with the function binding of symbols in the environment.  The
+;;; concerned with the function binding of symbols in the environment.  The
 
-/*!< walker needs to be able to tell if the symbol names a lexical macro or
+;;; walker needs to be able to tell if the symbol names a lexical macro or
 
-/*!< function, and it needs to be able to build environments which contain
+;;; function, and it needs to be able to build environments which contain
 
-/*!< lexical macro or function bindings.  It must be able, when walking a
+;;; lexical macro or function bindings.  It must be able, when walking a
 
-/*!< macrolet, flet or labels form to construct an environment which reflects
+;;; macrolet, flet or labels form to construct an environment which reflects
 
-/*!< the bindings created by that form.  Note that the environment created
+;;; the bindings created by that form.  Note that the environment created
 
-/*!< does NOT have to be sufficient to evaluate the body, merely to walk its
+;;; does NOT have to be sufficient to evaluate the body, merely to walk its
 
-/*!< body.  This means that definitions do not have to be supplied for lexical
+;;; body.  This means that definitions do not have to be supplied for lexical
 
-/*!< functions, only the fact that that function is bound is important.  For
+;;; functions, only the fact that that function is bound is important.  For
 
-/*!< macros, the macroexpansion function must be supplied.
+;;; macros, the macroexpansion function must be supplied.
 
-/*!<
+;;;
 
-/*!< This code is organized in a way that lets it work in implementations that
+;;; This code is organized in a way that lets it work in implementations that
 
-/*!< stack cons their environments.  That is reflected in the fact that the
+;;; stack cons their environments.  That is reflected in the fact that the
 
-/*!< only operation that lets a user build a new environment is a with-body
+;;; only operation that lets a user build a new environment is a with-body
 
-/*!< macro which executes its body with the specified symbol bound to the new
+;;; macro which executes its body with the specified symbol bound to the new
 
-/*!< environment.  No code in this walker or in PCL will hold a pointer to
+;;; environment.  No code in this walker or in PCL will hold a pointer to
 
-/*!< these environments after the body returns.  Other user code is free to do
+;;; these environments after the body returns.  Other user code is free to do
 
-/*!< so in implementations where it works, but that code is not considered
+;;; so in implementations where it works, but that code is not considered
 
-/*!< portable.
+;;; portable.
 
-/*!<
+;;;
 
-/*!< There are 3 environment hacking tools.  One macro which is used for
+;;; There are 3 environment hacking tools.  One macro which is used for
 
-/*!< creating new environments, and two functions which are used to access the
+;;; creating new environments, and two functions which are used to access the
 
-/*!< bindings of existing environments.
+;;; bindings of existing environments.
 
-/*!<
+;;;
 
-/*!< WITH-AUGMENTED-ENVIRONMENT
+;;; WITH-AUGMENTED-ENVIRONMENT
 
-/*!<
+;;;
 
-/*!< ENVIRONMENT-FUNCTION
+;;; ENVIRONMENT-FUNCTION
 
-/*!<
+;;;
 
-/*!< ENVIRONMENT-MACRO
+;;; ENVIRONMENT-MACRO
 
-/*!<
+;;;
 
 
 (defun unbound-lexical-function (&rest args)
@@ -223,35 +223,35 @@
           to use the PCL portable code walker to build its own evaluator."))
 
 
-/*!<
+;;;
 
-/*!< In Coral Common Lisp, the macroexpansion environment is just a list
+;;; In Coral Common Lisp, the macroexpansion environment is just a list
 
-/*!< of environment entries.  The cadr of each element specifies the type
+;;; of environment entries.  The cadr of each element specifies the type
 
-/*!< of the element.  The only types that interest us are CCL::MACRO and
+;;; of the element.  The only types that interest us are CCL::MACRO and
 
-/*!< FUNCTION.  In these cases the element is interpreted as follows.
+;;; FUNCTION.  In these cases the element is interpreted as follows.
 
-/*!<
+;;;
 
-/*!< (<function-name> CCL::MACRO . macroexpansion-function)
+;;; (<function-name> CCL::MACRO . macroexpansion-function)
 
-/*!<
+;;;
 
-/*!< (<function-name> FUNCTION . <fn>)
+;;; (<function-name> FUNCTION . <fn>)
 
-/*!<
+;;;
 
-/*!< When in the compiler, <fn> is a gensym which will be
+;;; When in the compiler, <fn> is a gensym which will be
 
-/*!< a variable which bound at run-time to the function.
+;;; a variable which bound at run-time to the function.
 
-/*!< When in the interpreter, <fn> is the actual function.
+;;; When in the interpreter, <fn> is the actual function.
 
-/*!<
+;;;
 
-/*!<
+;;;
 
 #+(and :Coral (not :mcl))
 (progn
@@ -300,15 +300,15 @@
    :function (mapcar #'car functions)
    :macro macros))
 
-/*!< This doesn't seem to be used!
+;;; This doesn't seem to be used!
 
 
 (defun environment-function (env fn)
   (function-information fn env))
 
-/*!< SEM 06/12/91
+;;; SEM 06/12/91
 
-/*!< This lets things run without errors, but I have no idea if it's correct.
+;;; This lets things run without errors, but I have no idea if it's correct.
 
 
 (defun environment-macro (env macro)
@@ -344,53 +344,53 @@
 );#+aclpc
 
 
-/*!<
+;;;
 
-/*!< Franz Common Lisp is a lot like Coral Lisp.  The macroexpansion
+;;; Franz Common Lisp is a lot like Coral Lisp.  The macroexpansion
 
-/*!< environment is just a list of entries.  The cadr of each element
+;;; environment is just a list of entries.  The cadr of each element
 
-/*!< specifies the type of the element.  The types that interest us
+;;; specifies the type of the element.  The types that interest us
 
-/*!< are FUNCTION, EXCL::MACRO, and COMPILER::FUNCTION-VALUE.  These
+;;; are FUNCTION, EXCL::MACRO, and COMPILER::FUNCTION-VALUE.  These
 
-/*!< are interpreted as follows:
+;;; are interpreted as follows:
 
-/*!<
+;;;
 
-/*!< (<function-name> FUNCTION . <a lexical closure>)
+;;; (<function-name> FUNCTION . <a lexical closure>)
 
-/*!<
+;;;
 
-/*!< This happens in the interpreter with lexically
+;;; This happens in the interpreter with lexically
 
-/*!< bound functions.
+;;; bound functions.
 
-/*!<
+;;;
 
-/*!< (<function-name> COMPILER::FUNCTION-VALUE . <gensym>)
+;;; (<function-name> COMPILER::FUNCTION-VALUE . <gensym>)
 
-/*!<
+;;;
 
-/*!< This happens in the compiler.  The gensym represents
+;;; This happens in the compiler.  The gensym represents
 
-/*!< a variable which will be bound at run time to the
+;;; a variable which will be bound at run time to the
 
-/*!< function object.
+;;; function object.
 
-/*!<
+;;;
 
-/*!< (<function-name> EXCL::MACRO . <a lambda>)
+;;; (<function-name> EXCL::MACRO . <a lambda>)
 
-/*!<
+;;;
 
-/*!< In both interpreter and compiler, this is the
+;;; In both interpreter and compiler, this is the
 
-/*!< representation used for macro definitions.
+;;; representation used for macro definitions.
 
-/*!<
+;;;
 
-/*!<
+;;;
 
 #+:ExCL
 (progn
@@ -520,13 +520,13 @@
 							 ,macros)))
      ,@body))
 
-/*!<
+;;;
 
-/*!< with-augmented-environment-internal is where the real work of augmenting
+;;; with-augmented-environment-internal is where the real work of augmenting
 
-/*!< the environment happens.
+;;; the environment happens.
 
-/*!<
+;;;
 
 (defun with-augmented-environment-internal (env functions macros)
   (let ((function-names (mapcar #'first functions))
@@ -602,57 +602,57 @@
 
 
 
-/*!<
+;;;
 
-/*!< On the 3600, the documentation for how the environments are represented
+;;; On the 3600, the documentation for how the environments are represented
 
-/*!< is in sys:sys;eval.lisp.  That total information is not repeated here.
+;;; is in sys:sys;eval.lisp.  That total information is not repeated here.
 
-/*!< The important points are that:
+;;; The important points are that:
 
-/*!< si:env-variables returns a list of which each element is:
+;;; si:env-variables returns a list of which each element is:
 
-/*!<
+;;;
 
-/*!< (symbol value)
+;;; (symbol value)
 
-/*!< or (symbol . locative)
+;;; or (symbol . locative)
 
-/*!<
+;;;
 
-/*!< The first form is for lexical variables, the second for
+;;; The first form is for lexical variables, the second for
 
-/*!< special and instance variables.  In either case CADR of
+;;; special and instance variables.  In either case CADR of
 
-/*!< the entry is the value and SETF of CADR is used to change
+;;; the entry is the value and SETF of CADR is used to change
 
-/*!< the value.  Variables are looked up with ASSQ.
+;;; the value.  Variables are looked up with ASSQ.
 
-/*!<
+;;;
 
-/*!< si:env-functions returns a list of which each element is:
+;;; si:env-functions returns a list of which each element is:
 
-/*!<
+;;;
 
-/*!< (symbol definition)
+;;; (symbol definition)
 
-/*!<
+;;;
 
-/*!< where definition is anything that could go in a function cell.
+;;; where definition is anything that could go in a function cell.
 
-/*!< This is used for both local functions and local macros.
+;;; This is used for both local functions and local macros.
 
-/*!<
+;;;
 
-/*!< The 3600 stack conses its environments (at least in the interpreter).
+;;; The 3600 stack conses its environments (at least in the interpreter).
 
-/*!< This means that code written using this walker and running on the 3600
+;;; This means that code written using this walker and running on the 3600
 
-/*!< must not hold on to the environment after the walk-function returns.
+;;; must not hold on to the environment after the walk-function returns.
 
-/*!< No code in this walker or in PCL does that.
+;;; No code in this walker or in PCL does that.
 
-/*!<
+;;;
 
 #+Genera
 (progn
@@ -734,15 +734,15 @@
 );#+Cloe-Runtime
 
 
-/*!<
+;;;
 
-/*!< In Xerox Lisp, the compiler and interpreter use different structures for
+;;; In Xerox Lisp, the compiler and interpreter use different structures for
 
-/*!< the environment.  This doesn't cause a serious problem, the parts of the
+;;; the environment.  This doesn't cause a serious problem, the parts of the
 
-/*!< environments we are concerned with are fairly similar.
+;;; environments we are concerned with are fairly similar.
 
-/*!<
+;;;
 
 #+:Xerox
 (progn
@@ -754,19 +754,19 @@
 							 ,macros)))
      ,@body))
 
-/*!<
+;;;
 
-/*!< with-augmented-environment-internal is where the real work of augmenting
+;;; with-augmented-environment-internal is where the real work of augmenting
 
-/*!< the environment happens.  Before it gets there, env had better not be NIL
+;;; the environment happens.  Before it gets there, env had better not be NIL
 
-/*!< anymore because we have to know what kind of environment we are supposed
+;;; anymore because we have to know what kind of environment we are supposed
 
-/*!< to be building up.  This is probably never a real concern in practice.
+;;; to be building up.  This is probably never a real concern in practice.
 
-/*!< It better not be because we don't do anything about it.
+;;; It better not be because we don't do anything about it.
 
-/*!<
+;;;
 
 (defun with-augmented-environment-internal (env functions macros)
   (cond
@@ -814,23 +814,23 @@
 );#+:Xerox
 
 
-/*!<
+;;;
 
-/*!< In IBUKI Common Lisp, the macroexpansion environment is a three element
+;;; In IBUKI Common Lisp, the macroexpansion environment is a three element
 
-/*!< list.  The second element describes lexical functions and macros.  The
+;;; list.  The second element describes lexical functions and macros.  The
 
-/*!< function entries in this list have the form
+;;; function entries in this list have the form
 
-/*!< (<name> . (FUNCTION . (<function-value> . nil))
+;;; (<name> . (FUNCTION . (<function-value> . nil))
 
-/*!< The macro entries have the form
+;;; The macro entries have the form
 
-/*!< (<name> . (MACRO . (<macro-value> . nil)).
+;;; (<name> . (MACRO . (<macro-value> . nil)).
 
-/*!<
+;;;
 
-/*!<
+;;;
 
 #+(or KCL IBCL)
 (progn
@@ -870,31 +870,31 @@
 );#+(or KCL IBCL)
 
 
-/*!<
+;;;
 
-/*!< In CLISP Common Lisp, the macroexpansion environment has the form
+;;; In CLISP Common Lisp, the macroexpansion environment has the form
 
-/*!< NIL  or  #(sym1 def1 ... symn defn next-env)
+;;; NIL  or  #(sym1 def1 ... symn defn next-env)
 
-/*!< where next-env is an macroexpansion environment of the same form.
+;;; where next-env is an macroexpansion environment of the same form.
 
-/*!< A def entry herein is a cons (SYS::MACRO . macroexpansion-function)
+;;; A def entry herein is a cons (SYS::MACRO . macroexpansion-function)
 
-/*!< for macros, and a symbol (a gensym in compiler, or NIL during
+;;; for macros, and a symbol (a gensym in compiler, or NIL during
 
-/*!< interpretation of LABELS) or a function object for functions.
+;;; interpretation of LABELS) or a function object for functions.
 
-/*!<
+;;;
 
-/*!< From 5.6.1993 on, this description holds only for the function
+;;; From 5.6.1993 on, this description holds only for the function
 
-/*!< and macro environment. The entire macroexpansion environment is a
+;;; and macro environment. The entire macroexpansion environment is a
 
-/*!< simple-vector of length 2 whose second component obeys the description
+;;; simple-vector of length 2 whose second component obeys the description
 
-/*!< above.
+;;; above.
 
-/*!<
+;;;
 
 
 #+CLISP
@@ -939,72 +939,72 @@
 );#+CLISP
 
 
-/*!< --- TI Explorer --
+;;; --- TI Explorer --
 
 
-/*!< An environment is a two element list, whose car we can ignore and
+;;; An environment is a two element list, whose car we can ignore and
 
-/*!< whose cadr is list of the local-definitions-frames. Each
+;;; whose cadr is list of the local-definitions-frames. Each
 
-/*!< local-definitions-frame holds either macros or functions, but not
+;;; local-definitions-frame holds either macros or functions, but not
 
-/*!< both.  Each frame is a plist of <name> <def> <name> <def> ...  where
+;;; both.  Each frame is a plist of <name> <def> <name> <def> ...  where
 
-/*!< <name> is a locative to the function cell of the symbol that names
+;;; <name> is a locative to the function cell of the symbol that names
 
-/*!< the function or macro, and <def> is the new def or NIL if this is function
+;;; the function or macro, and <def> is the new def or NIL if this is function
 
-/*!< redefinition or (cons 'ticl:macro <macro-expansion-function>) if this is a macro
+;;; redefinition or (cons 'ticl:macro <macro-expansion-function>) if this is a macro
 
-/*!< redefinition.
+;;; redefinition.
 
-/*!<
+;;;
 
-/*!< Here's an example.  For the form:
+;;; Here's an example.  For the form:
 
-/*!< (defun foo ()
+;;; (defun foo ()
 
-/*!< (macrolet ((bar (a b) (list a b))
+;;; (macrolet ((bar (a b) (list a b))
 
-/*!< (bar2 (a b) (list a b)))
+;;; (bar2 (a b) (list a b)))
 
-/*!< (flet ((some-local-fn (c d) (print (list c d)))
+;;; (flet ((some-local-fn (c d) (print (list c d)))
 
-/*!< (another (c d) (print (list c d))))
+;;; (another (c d) (print (list c d))))
 
-/*!< (bar (some-local-fn 1 2) 3))))
+;;; (bar (some-local-fn 1 2) 3))))
 
 
-/*!< the environment arg to macroexpand-1 when called on
+;;; the environment arg to macroexpand-1 when called on
 
-/*!< (bar (some-local-fn 1 2) 3)
+;;; (bar (some-local-fn 1 2) 3)
 
-/*!< is
+;;; is
 
-/*!< (NIL ((#<DTP-LOCATIVE 4710602> NIL
+;;; (NIL ((#<DTP-LOCATIVE 4710602> NIL
 
-/*!< #<DTP-LOCATIVE 4710671> NIL)
+;;; #<DTP-LOCATIVE 4710671> NIL)
 
-/*!< (#<DTP-LOCATIVE 7346562>
+;;; (#<DTP-LOCATIVE 7346562>
 
-/*!< (TICL:MACRO TICL:NAMED-LAMBDA (BAR (:DESCRIPTIVE-ARGLIST (A B)))
+;;; (TICL:MACRO TICL:NAMED-LAMBDA (BAR (:DESCRIPTIVE-ARGLIST (A B)))
 
-/*!< (SYS::*MACROARG* &OPTIONAL SYS::*MACROENVIRONMENT*)
+;;; (SYS::*MACROARG* &OPTIONAL SYS::*MACROENVIRONMENT*)
 
-/*!< (BLOCK BAR ....))
+;;; (BLOCK BAR ....))
 
-/*!< #<DTP-LOCATIVE 4710664>
+;;; #<DTP-LOCATIVE 4710664>
 
-/*!< (TICL:MACRO TICL:NAMED-LAMBDA (BAR2 (:DESCRIPTIVE-ARGLIST (A B)))
+;;; (TICL:MACRO TICL:NAMED-LAMBDA (BAR2 (:DESCRIPTIVE-ARGLIST (A B)))
 
-/*!< (SYS::*MACROARG* &OPTIONAL SYS::*MACROENVIRONMENT*)
+;;; (SYS::*MACROARG* &OPTIONAL SYS::*MACROENVIRONMENT*)
 
-/*!< (BLOCK BAR2 ....))))
+;;; (BLOCK BAR2 ....))))
 
 #+TI
 (progn
 
-/*!< from sys:site;macros.lisp
+;;; from sys:site;macros.lisp
 
 (eval-when (compile load eval)
 
@@ -1027,7 +1027,7 @@
        nil)))
 
 
-/*!< Edited by Reed Hastings         13 Jan 88  16:29
+;;; Edited by Reed Hastings         13 Jan 88  16:29
 
 (defun environment-macro (env macro)
   "returns what macro-function would, ie. the expansion function"
@@ -1037,9 +1037,9 @@
     (if (macro-def? local-def)
 	(cdr local-def))))
 
-/*!< Edited by Reed Hastings         13 Jan 88  16:29
+;;; Edited by Reed Hastings         13 Jan 88  16:29
 
-/*!< Edited by Reed Hastings         7 Mar 88  19:07
+;;; Edited by Reed Hastings         7 Mar 88  19:07
 
 (defun environment-function (env fn)
   (let* ((local-definitions (cadr env)))
@@ -1056,9 +1056,9 @@
 	       (error "we are confused")))))))
 
 
-/*!< Edited by Reed Hastings         13 Jan 88  16:29
+;;; Edited by Reed Hastings         13 Jan 88  16:29
 
-/*!< Edited by Reed Hastings         7 Mar 88  19:07
+;;; Edited by Reed Hastings         7 Mar 88  19:07
 
 (defun with-augmented-environment-internal (env functions macros)
   (let ((local-definitions (cadr env))
@@ -1078,7 +1078,7 @@
     `(,(car env) ,local-definitions)))
 
 
-/*!< Edited by Reed Hastings         7 Mar 88  19:07
+;;; Edited by Reed Hastings         7 Mar 88  19:07
 
 (defmacro with-augmented-environment
 	  ((new-env old-env &key functions macros) &body body)
@@ -1122,50 +1122,50 @@
     (and (not (eq m :function))
          m)))
 
-/*!< Nobody calls environment-function.  What would it return, anyway?
+;;; Nobody calls environment-function.  What would it return, anyway?
 
 );#+(and dec vax common)
 
 
-/*!<
+;;;
 
-/*!< In Golden Common Lisp, the macroexpansion environment is just a list
+;;; In Golden Common Lisp, the macroexpansion environment is just a list
 
-/*!< of environment entries.  Unless the car of the list is :compiler-menv
+;;; of environment entries.  Unless the car of the list is :compiler-menv
 
-/*!< it is an interpreted environment.  The cadr of each element specifies
+;;; it is an interpreted environment.  The cadr of each element specifies
 
-/*!< the type of the element.  The only types that interest us are GCL:MACRO
+;;; the type of the element.  The only types that interest us are GCL:MACRO
 
-/*!< and FUNCTION.  In these cases the element is interpreted as follows.
+;;; and FUNCTION.  In these cases the element is interpreted as follows.
 
-/*!<
+;;;
 
-/*!< Compiled:
+;;; Compiled:
 
-/*!< (<function-name> <gensym> macroexpansion-function)
+;;; (<function-name> <gensym> macroexpansion-function)
 
-/*!< (<function-name> <fn>)
+;;; (<function-name> <fn>)
 
-/*!<
+;;;
 
-/*!< Interpreted:
+;;; Interpreted:
 
-/*!< (<function-name> GCL:MACRO macroexpansion-function)
+;;; (<function-name> GCL:MACRO macroexpansion-function)
 
-/*!< (<function-name> <fn>)
+;;; (<function-name> <fn>)
 
-/*!<
+;;;
 
-/*!< When in the compiler, <fn> is a gensym which will be
+;;; When in the compiler, <fn> is a gensym which will be
 
-/*!< a variable which bound at run-time to the function.
+;;; a variable which bound at run-time to the function.
 
-/*!< When in the interpreter, <fn> is the actual function.
+;;; When in the interpreter, <fn> is the actual function.
 
-/*!<
+;;;
 
-/*!<
+;;;
 
 #+gclisp
 (progn
@@ -1212,20 +1212,20 @@
 );#+gclisp
 
 
-/*!< ; CMU Common Lisp version of environment frobbing stuff.
+;;; ; CMU Common Lisp version of environment frobbing stuff.
 
 
-/*!< In CMU Common Lisp, the environment is represented with a structure
+;;; In CMU Common Lisp, the environment is represented with a structure
 
-/*!< that holds alists for the functional things, variables, blocks, etc.
+;;; that holds alists for the functional things, variables, blocks, etc.
 
-/*!< Only the c::lexenv-functions slot is relevent.  It holds:
+;;; Only the c::lexenv-functions slot is relevent.  It holds:
 
-/*!< Alist (name . what), where What is either a Functional (a local function)
+;;; Alist (name . what), where What is either a Functional (a local function)
 
-/*!< or a list (MACRO . <function>) (a local macro, with the specifier
+;;; or a list (MACRO . <function>) (a local macro, with the specifier
 
-/*!< expander.)    Note that Name may be a (SETF <name>) function.
+;;; expander.)    Note that Name may be a (SETF <name>) function.
 
 
 #+:CMU
@@ -1311,25 +1311,25 @@
 
 
 
-/*!<
+;;;
 
-/*!< Now comes the real walker.
+;;; Now comes the real walker.
 
-/*!<
+;;;
 
-/*!< As the walker walks over the code, it communicates information to itself
+;;; As the walker walks over the code, it communicates information to itself
 
-/*!< about the walk.  This information includes the walk function, variable
+;;; about the walk.  This information includes the walk function, variable
 
-/*!< bindings, declarations in effect etc.  This information is inherently
+;;; bindings, declarations in effect etc.  This information is inherently
 
-/*!< lexical, so the walker passes it around in the actual environment the
+;;; lexical, so the walker passes it around in the actual environment the
 
-/*!< walker passes to macroexpansion functions.  This is what makes the
+;;; walker passes to macroexpansion functions.  This is what makes the
 
-/*!< nested-walk-form facility work properly.
+;;; nested-walk-form facility work properly.
 
-/*!<
+;;;
 
 (defmacro walker-environment-bind ((var env &rest key-args)
 				      &body body)
@@ -1400,37 +1400,37 @@
   (or (not (null (variable-declaration 'special var env)))
       (variable-globally-special-p var)))
 
-/*!<
+;;;
 
-/*!< VARIABLE-GLOBALLY-SPECIAL-P is used to ask if a variable has been
+;;; VARIABLE-GLOBALLY-SPECIAL-P is used to ask if a variable has been
 
-/*!< declared globally special.  Any particular CommonLisp implementation
+;;; declared globally special.  Any particular CommonLisp implementation
 
-/*!< should customize this function accordingly and send their customization
+;;; should customize this function accordingly and send their customization
 
-/*!< back.
+;;; back.
 
-/*!<
+;;;
 
-/*!< The default version of variable-globally-special-p is probably pretty
+;;; The default version of variable-globally-special-p is probably pretty
 
-/*!< slow, so it uses *globally-special-variables* as a cache to remember
+;;; slow, so it uses *globally-special-variables* as a cache to remember
 
-/*!< variables that it has already figured out are globally special.
+;;; variables that it has already figured out are globally special.
 
-/*!<
+;;;
 
-/*!< This would need to be reworked if an unspecial declaration got added to
+;;; This would need to be reworked if an unspecial declaration got added to
 
-/*!< Common Lisp.
+;;; Common Lisp.
 
-/*!<
+;;;
 
-/*!< Common Lisp nit:
+;;; Common Lisp nit:
 
-/*!< variable-globally-special-p should be defined in Common Lisp.
+;;; variable-globally-special-p should be defined in Common Lisp.
 
-/*!<
+;;;
 
 #-(or Genera Cloe-Runtime Lucid Xerox Excl KCL IBCL (and dec vax common) :CMU HP-HPLabs
       GCLisp TI pyramid)
@@ -1465,99 +1465,99 @@
 
 
   ;;
-/*!< ;;; Handling of special forms (the infamous 24).
+;;; ;;; Handling of special forms (the infamous 24).
 
   ;;
-/*!<
+;;;
 
-/*!< and I quote...
+;;; and I quote...
 
-/*!<
+;;;
 
-/*!< The set of special forms is purposely kept very small because
+;;; The set of special forms is purposely kept very small because
 
-/*!< any program analyzing program (read code walker) must have
+;;; any program analyzing program (read code walker) must have
 
-/*!< special knowledge about every type of special form. Such a
+;;; special knowledge about every type of special form. Such a
 
-/*!< program needs no special knowledge about macros...
+;;; program needs no special knowledge about macros...
 
-/*!<
+;;;
 
-/*!< So all we have to do here is a define a way to store and retrieve
+;;; So all we have to do here is a define a way to store and retrieve
 
-/*!< templates which describe how to walk the 24 special forms and we are all
+;;; templates which describe how to walk the 24 special forms and we are all
 
-/*!< set...
+;;; set...
 
-/*!<
+;;;
 
-/*!< Well, its a nice concept, and I have to admit to being naive enough that
+;;; Well, its a nice concept, and I have to admit to being naive enough that
 
-/*!< I believed it for a while, but not everyone takes having only 24 special
+;;; I believed it for a while, but not everyone takes having only 24 special
 
-/*!< forms as seriously as might be nice.  There are (at least) 3 ways to
+;;; forms as seriously as might be nice.  There are (at least) 3 ways to
 
-/*!< lose:
+;;; lose:
 
 ;;
-/*!< 1 - Implementation x implements a Common Lisp special form as a macro
+;;; 1 - Implementation x implements a Common Lisp special form as a macro
 
-/*!< which expands into a special form which:
+;;; which expands into a special form which:
 
-/*!< - Is a common lisp special form (not likely)
+;;; - Is a common lisp special form (not likely)
 
-/*!< - Is not a common lisp special form (on the 3600 IF --> COND).
+;;; - Is not a common lisp special form (on the 3600 IF --> COND).
 
-/*!<
+;;;
 
-/*!< * We can safe ourselves from this case (second subcase really) by
+;;; * We can safe ourselves from this case (second subcase really) by
 
-/*!< checking to see if there is a template defined for something
+;;; checking to see if there is a template defined for something
 
-/*!< before we check to see if we we can macroexpand it.
+;;; before we check to see if we we can macroexpand it.
 
-/*!<
+;;;
 
-/*!< 2 - Implementation x implements a Common Lisp macro as a special form.
+;;; 2 - Implementation x implements a Common Lisp macro as a special form.
 
-/*!<
+;;;
 
-/*!< * This is a screw, but not so bad, we save ourselves from it by
+;;; * This is a screw, but not so bad, we save ourselves from it by
 
-/*!< defining extra templates for the macros which are *likely* to
+;;; defining extra templates for the macros which are *likely* to
 
-/*!< be implemented as special forms.  (DO, DO* ...)
+;;; be implemented as special forms.  (DO, DO* ...)
 
-/*!<
+;;;
 
-/*!< 3 - Implementation x has a special form which is not on the list of
+;;; 3 - Implementation x has a special form which is not on the list of
 
-/*!< Common Lisp special forms.
+;;; Common Lisp special forms.
 
-/*!<
+;;;
 
-/*!< * This is a bad sort of a screw and happens more than I would like
+;;; * This is a bad sort of a screw and happens more than I would like
 
-/*!< to think, especially in the implementations which provide more
+;;; to think, especially in the implementations which provide more
 
-/*!< than just Common Lisp (3600, Xerox etc.).
+;;; than just Common Lisp (3600, Xerox etc.).
 
-/*!< The fix is not terribly staisfactory, but will have to do for
+;;; The fix is not terribly staisfactory, but will have to do for
 
-/*!< now.  There is a hook in get walker-template which can get a
+;;; now.  There is a hook in get walker-template which can get a
 
-/*!< template from the implementation's own walker.  That template
+;;; template from the implementation's own walker.  That template
 
-/*!< has to be converted, and so it may be that the right way to do
+;;; has to be converted, and so it may be that the right way to do
 
-/*!< this would actually be for that implementation to provide an
+;;; this would actually be for that implementation to provide an
 
-/*!< interface to its walker which looks like the interface to this
+;;; interface to its walker which looks like the interface to this
 
-/*!< walker.
+;;; walker.
 
-/*!<
+;;;
 
 
 (eval-when (compile load eval)
@@ -1591,7 +1591,7 @@
 
 
   ;;
-/*!< ;;; The actual templates
+;;; ;;; The actual templates
 
   ;;
 
@@ -1626,15 +1626,15 @@
 (define-walker-template THROW                (NIL EVAL EVAL))
 (define-walker-template UNWIND-PROTECT       (NIL RETURN REPEAT (EVAL)))
 
-/*!< The new special form.
+;;; The new special form.
 
 ;(define-walker-template pcl::LOAD-TIME-EVAL       (NIL EVAL))
 
-/*!<
+;;;
 
-/*!< And the extra templates...
+;;; And the extra templates...
 
-/*!<
+;;;
 
 (define-walker-template DO      walk-do)
 (define-walker-template DO*     walk-do*)
@@ -1694,43 +1694,43 @@
   (walker-environment-bind (new-env environment :walk-function walk-function)
     (walk-form-internal form :eval new-env)))
 
-/*!<
+;;;
 
-/*!< nested-walk-form provides an interface that allows nested macros, each
+;;; nested-walk-form provides an interface that allows nested macros, each
 
-/*!< of which must walk their body to just do one walk of the body of the
+;;; of which must walk their body to just do one walk of the body of the
 
-/*!< inner macro.  That inner walk is done with a walk function which is the
+;;; inner macro.  That inner walk is done with a walk function which is the
 
-/*!< composition of the two walk functions.
+;;; composition of the two walk functions.
 
-/*!<
+;;;
 
-/*!< This facility works by having the walker annotate the environment that
+;;; This facility works by having the walker annotate the environment that
 
-/*!< it passes to macroexpand-1 to know which form is being macroexpanded.
+;;; it passes to macroexpand-1 to know which form is being macroexpanded.
 
-/*!< If then the &whole argument to the macroexpansion function is eq to
+;;; If then the &whole argument to the macroexpansion function is eq to
 
-/*!< the env-walk-form of the environment, nested-walk-form can be certain
+;;; the env-walk-form of the environment, nested-walk-form can be certain
 
-/*!< that there are no intervening layers and that a nested walk is alright.
+;;; that there are no intervening layers and that a nested walk is alright.
 
-/*!<
+;;;
 
-/*!< There are some semantic problems with this facility.  In particular, if
+;;; There are some semantic problems with this facility.  In particular, if
 
-/*!< the outer walk function returns T as its walk-no-more-p value, this will
+;;; the outer walk function returns T as its walk-no-more-p value, this will
 
-/*!< prevent the inner walk function from getting a chance to walk the subforms
+;;; prevent the inner walk function from getting a chance to walk the subforms
 
-/*!< of the form.  This is almost never what you want, since it destroys the
+;;; of the form.  This is almost never what you want, since it destroys the
 
-/*!< equivalence between this nested-walk-form function and two seperate
+;;; equivalence between this nested-walk-form function and two seperate
 
-/*!< walk-forms.
+;;; walk-forms.
 
-/*!<
+;;;
 
 (defun NESTED-WALK-FORM (whole
 			 form
@@ -1780,35 +1780,35 @@
 			  (and inner-no-more-p outer-no-more-p)))))))
       (walk-form form environment walk-function)))
 
-/*!<
+;;;
 
-/*!< WALK-FORM-INTERNAL is the main driving function for the code walker. It
+;;; WALK-FORM-INTERNAL is the main driving function for the code walker. It
 
-/*!< takes a form and the current context and walks the form calling itself or
+;;; takes a form and the current context and walks the form calling itself or
 
-/*!< the appropriate template recursively.
+;;; the appropriate template recursively.
 
-/*!<
+;;;
 
-/*!< "It is recommended that a program-analyzing-program process a form
+;;; "It is recommended that a program-analyzing-program process a form
 
-/*!< that is a list whose car is a symbol as follows:
+;;; that is a list whose car is a symbol as follows:
 
-/*!<
+;;;
 
-/*!< 1. If the program has particular knowledge about the symbol,
+;;; 1. If the program has particular knowledge about the symbol,
 
-/*!< process the form using special-purpose code.  All of the
+;;; process the form using special-purpose code.  All of the
 
-/*!< standard special forms should fall into this category.
+;;; standard special forms should fall into this category.
 
-/*!< 2. Otherwise, if macro-function is true of the symbol apply
+;;; 2. Otherwise, if macro-function is true of the symbol apply
 
-/*!< either macroexpand or macroexpand-1 and start over.
+;;; either macroexpand or macroexpand-1 and start over.
 
-/*!< 3. Otherwise, assume it is a function call. "
+;;; 3. Otherwise, assume it is a function call. "
 
-/*!<
+;;;
 
 
 (defun walk-form-internal (form context env)
@@ -1982,7 +1982,7 @@
 
 
   ;;
-/*!< ;;; Special walkers
+;;; ;;; Special walkers
 
   ;;
 
@@ -2429,51 +2429,51 @@
 	    (walk-form-internal arm2 context env))))
 
 
-/*!<
+;;;
 
-/*!< Tests tests tests
+;;; Tests tests tests
 
-/*!<
+;;;
 
 
 #|
-/*!<
+;;;
 
-/*!< Here are some examples of the kinds of things you should be able to do
+;;; Here are some examples of the kinds of things you should be able to do
 
-/*!< with your implementation of the macroexpansion environment hacking
+;;; with your implementation of the macroexpansion environment hacking
 
-/*!< mechanism.
+;;; mechanism.
 
-/*!<
+;;;
 
-/*!< with-lexical-macros is kind of like macrolet, but it only takes names
+;;; with-lexical-macros is kind of like macrolet, but it only takes names
 
-/*!< of the macros and actual macroexpansion functions to use to macroexpand
+;;; of the macros and actual macroexpansion functions to use to macroexpand
 
-/*!< them.  The win about that is that for macros which want to wrap several
+;;; them.  The win about that is that for macros which want to wrap several
 
-/*!< macrolets around their body, they can do this but have the macroexpansion
+;;; macrolets around their body, they can do this but have the macroexpansion
 
-/*!< functions be compiled.  See the WITH-RPUSH example.
+;;; functions be compiled.  See the WITH-RPUSH example.
 
-/*!<
+;;;
 
-/*!< If the implementation had a special way of communicating the augmented
+;;; If the implementation had a special way of communicating the augmented
 
-/*!< environment back to the evaluator that would be totally great.  It would
+;;; environment back to the evaluator that would be totally great.  It would
 
-/*!< mean that we could just augment the environment then pass control back
+;;; mean that we could just augment the environment then pass control back
 
-/*!< to the implementations own compiler or interpreter.  We wouldn't have
+;;; to the implementations own compiler or interpreter.  We wouldn't have
 
-/*!< to call the actual walker.  That would make this much faster.  Since the
+;;; to call the actual walker.  That would make this much faster.  Since the
 
-/*!< principal client of this is defmethod it would make compiling defmethods
+;;; principal client of this is defmethod it would make compiling defmethods
 
-/*!< faster and that would certainly be a win.
+;;; faster and that would certainly be a win.
 
-/*!<
+;;;
 
 (defmacro with-lexical-macros (macros &body body &environment old-env)
   (with-augmented-environment (new-env old-env :macros macros)
@@ -2486,15 +2486,15 @@
   `(with-lexical-macros ,(list (list 'rpush #'expand-rpush)) ,@body))
 
 
-/*!<
+;;;
 
-/*!< Unfortunately, I don't have an automatic tester for the walker.
+;;; Unfortunately, I don't have an automatic tester for the walker.
 
-/*!< Instead there is this set of test cases with a description of
+;;; Instead there is this set of test cases with a description of
 
-/*!< how each one should go.
+;;; how each one should go.
 
-/*!<
+;;;
 
 (defmacro take-it-out-for-a-test-walk (form)
   `(take-it-out-for-a-test-walk-1 ',form))
@@ -2539,32 +2539,32 @@
 (take-it-out-for-a-test-walk (block block-name (list a) b c))
 
 (take-it-out-for-a-test-walk (catch catch-tag (list a) b c))
-/*!<
+;;;
 
-/*!< This is a fairly simple macrolet case.  While walking the body of the
+;;; This is a fairly simple macrolet case.  While walking the body of the
 
-/*!< macro, x should be lexically bound. In the body of the macrolet form
+;;; macro, x should be lexically bound. In the body of the macrolet form
 
-/*!< itself, x should not be bound.
+;;; itself, x should not be bound.
 
-/*!<
+;;;
 
 (take-it-out-for-a-test-walk
   (macrolet ((foo (x) (list x) ''inner))
     x
     (foo 1)))
 
-/*!<
+;;;
 
-/*!< A slightly more complex macrolet case.  In the body of the macro x
+;;; A slightly more complex macrolet case.  In the body of the macro x
 
-/*!< should not be lexically bound.  In the body of the macrolet form itself
+;;; should not be lexically bound.  In the body of the macrolet form itself
 
-/*!< x should be bound.  Note that THIS CASE WILL CAUSE AN ERROR when it
+;;; x should be bound.  Note that THIS CASE WILL CAUSE AN ERROR when it
 
-/*!< tries to macroexpand the call to foo.
+;;; tries to macroexpand the call to foo.
 
-/*!<
+;;;
 
 (take-it-out-for-a-test-walk
      (let ((x 1))
@@ -2572,17 +2572,17 @@
 	 x
 	 (foo))))
 
-/*!<
+;;;
 
-/*!< A truly hairy use of compiler-let and macrolet.  In the body of the
+;;; A truly hairy use of compiler-let and macrolet.  In the body of the
 
-/*!< macro x should not be lexically bound.  In the body of the macrolet
+;;; macro x should not be lexically bound.  In the body of the macrolet
 
-/*!< itself x should not be lexically bound.  But the macro should expand
+;;; itself x should not be lexically bound.  But the macro should expand
 
-/*!< into 1.
+;;; into 1.
 
-/*!<
+;;;
 
 (take-it-out-for-a-test-walk
   (compiler-let ((x 1))

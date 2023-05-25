@@ -50,7 +50,7 @@
 
 
 
-/*!< Additive Synthesis -- data comes in "synth table", a list of partial--amp pairs
+;;; Additive Synthesis -- data comes in "synth table", a list of partial--amp pairs
 
 
 (defun load-one-sine-wave (partial partial-amp table &optional (partial-phase 0.0))

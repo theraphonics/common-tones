@@ -1,18 +1,18 @@
 (in-package :common-tones/generators)
 
-/*!< Rand and Rand-Interp
+;;; Rand and Rand-Interp
 
-/*!<
+;;;
 
-/*!< rand latches its output random number, getting a new number
+;;; rand latches its output random number, getting a new number
 
-/*!< every srate/freq samples -- internally we pretend that our cycle is between 0 and
+;;; every srate/freq samples -- internally we pretend that our cycle is between 0 and
 
-/*!< two-pi so that the caller can use hz->radians without confusion.  This way,
+;;; two-pi so that the caller can use hz->radians without confusion.  This way,
 
-/*!< frequency calculations look the same between oscil and rand and so on.
+;;; frequency calculations look the same between oscil and rand and so on.
 
-/*!< rand-interp interpolates between successive random numbers.
+;;; rand-interp interpolates between successive random numbers.
 
 
 (defun ran (lo hi)			;returns random numbers between lo and hi

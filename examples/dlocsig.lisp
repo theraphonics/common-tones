@@ -1,178 +1,178 @@
-/*!< -*- Mode: LISP; Syntax: Common-lisp; Base: 10 -*-
+;;; -*- Mode: LISP; Syntax: Common-lisp; Base: 10 -*-
 
-/*!< ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-/*!< Copyright (c) 92, 93, 94, 98, 99, 2000, 2001 Fernando Lopez Lezcano.
+;;; Copyright (c) 92, 93, 94, 98, 99, 2000, 2001 Fernando Lopez Lezcano.
 
-/*!< All rights reserved.
+;;; All rights reserved.
 
-/*!< Use and copying of this software and preparation of derivative works
+;;; Use and copying of this software and preparation of derivative works
 
-/*!< based upon this software are permitted and may be copied as long as
+;;; based upon this software are permitted and may be copied as long as
 
-/*!< no fees or compensation are charged for use, copying, or accessing
+;;; no fees or compensation are charged for use, copying, or accessing
 
-/*!< this software and all copies of this software include this copyright
+;;; this software and all copies of this software include this copyright
 
-/*!< notice. Suggestions, comments and bug reports are welcome. Please
+;;; notice. Suggestions, comments and bug reports are welcome. Please
 
-/*!< address email to: nando@ccrma.stanford.edu
+;;; address email to: nando@ccrma.stanford.edu
 
-/*!< ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-/*!< ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-/*!< Dynamic multichannel three-dimentional signal locator
+;;; Dynamic multichannel three-dimentional signal locator
 
-/*!< (wow that sound good! :-)
+;;; (wow that sound good! :-)
 
-/*!<
+;;;
 
-/*!< by Fernando Lopez Lezcano
+;;; by Fernando Lopez Lezcano
 
-/*!< CCRMA, Stanford University
+;;; CCRMA, Stanford University
 
-/*!< nando@ccrma.stanford.edu
+;;; nando@ccrma.stanford.edu
 
-/*!<
+;;;
 
-/*!< Thanks to Juan Pampin for help in the initial coding of the new version
+;;; Thanks to Juan Pampin for help in the initial coding of the new version
 
-/*!< and for prodding me to finish it. To Joseph L. Anderson and Marcelo Perticone
+;;; and for prodding me to finish it. To Joseph L. Anderson and Marcelo Perticone
 
-/*!< for insights into the Ambisonics coding and decoding process.
+;;; for insights into the Ambisonics coding and decoding process.
 
-/*!< http://www.york.ac.uk/inst/mustech/3d_audio/ambison.htm for more details...
+;;; http://www.york.ac.uk/inst/mustech/3d_audio/ambison.htm for more details...
 
 
-/*!< CHANGES:
+;;; CHANGES:
 
-/*!< 2/5/15:     add sbcl code for gnuplot (Juan Reyes)
+;;; 2/5/15:     add sbcl code for gnuplot (Juan Reyes)
 
-/*!< 11/17/14:   add lispworks code for gnuplot (Anders Vinjar)
+;;; 11/17/14:   add lispworks code for gnuplot (Anders Vinjar)
 
-/*!< 04/26/2010: add delay hack to remove artifacts in delay output, fix other bugs (Nando)
+;;; 04/26/2010: add delay hack to remove artifacts in delay output, fix other bugs (Nando)
 
-/*!< added proper doppler src conversion thanks to Bill's code in dsp.scm
+;;; added proper doppler src conversion thanks to Bill's code in dsp.scm
 
-/*!< merged in code for higher order ambisonics (up to 2nd order h/v)
+;;; merged in code for higher order ambisonics (up to 2nd order h/v)
 
-/*!< 07/03/2006: changed to use move-sound generator, and various other changes for cmucl etc (Bill)
+;;; 07/03/2006: changed to use move-sound generator, and various other changes for cmucl etc (Bill)
 
-/*!< 04/29/2002: fixed reverb envelopes for no reverb under clisp
+;;; 04/29/2002: fixed reverb envelopes for no reverb under clisp
 
-/*!< 01/14/2001: added multichannel reverb output with local and global control
+;;; 01/14/2001: added multichannel reverb output with local and global control
 
-/*!< in the reverberator (the hrtf code is currently not merged into
+;;; in the reverberator (the hrtf code is currently not merged into
 
-/*!< this version). Reverb-amount can now be an envelope. Ambisonics
+;;; this version). Reverb-amount can now be an envelope. Ambisonics
 
-/*!< now outputs signal to the reverb stream.
+;;; now outputs signal to the reverb stream.
 
-/*!< 02/05/2000: . don't compile as part of the clm package, import symbols
+;;; 02/05/2000: . don't compile as part of the clm package, import symbols
 
-/*!< . switched over to clm-2, otherwise convolve HAS to operate
+;;; . switched over to clm-2, otherwise convolve HAS to operate
 
-/*!< on a file, we want convolve to process the output of the
+;;; on a file, we want convolve to process the output of the
 
-/*!< doppler delay line (for the hrtf code)
+;;; doppler delay line (for the hrtf code)
 
-/*!< 02/03/2000: started working on hrtf's
+;;; 02/03/2000: started working on hrtf's
 
-/*!< 01/15/2000: rewrote transform-path code to account for 3d paths
+;;; 01/15/2000: rewrote transform-path code to account for 3d paths
 
-/*!< 01/13/2000: . changed order of b-format output file to W:X:Y:Z from X:Y:Z:W
+;;; 01/13/2000: . changed order of b-format output file to W:X:Y:Z from X:Y:Z:W
 
-/*!< . plot method would bomb with paths that had constant velocity,
+;;; . plot method would bomb with paths that had constant velocity,
 
-/*!< fixed norm function
+;;; fixed norm function
 
-/*!< . added make-literal-path and friends to enable to create
+;;; . added make-literal-path and friends to enable to create
 
-/*!< paths with user supplied coordinates
+;;; paths with user supplied coordinates
 
-/*!< . decoded-ambisonics was rotating sounds in the wrong direction
+;;; . decoded-ambisonics was rotating sounds in the wrong direction
 
-/*!< . in change-direction: only check for change if both points are
+;;; . in change-direction: only check for change if both points are
 
-/*!< different (intersect-inside-radius can create a redundant point)
+;;; different (intersect-inside-radius can create a redundant point)
 
-/*!< 11/28/1999: decoded-ambisonics is now working for N channels
+;;; 11/28/1999: decoded-ambisonics is now working for N channels
 
-/*!< includes reverberation send
+;;; includes reverberation send
 
-/*!< 11/27/1999: set minimum segment distance for rendering, otherwise for long
+;;; 11/27/1999: set minimum segment distance for rendering, otherwise for long
 
-/*!< lines the amplitude envelope does not reflect power curve.
+;;; lines the amplitude envelope does not reflect power curve.
 
-/*!< 11/26/1999: added code to check for intersection with inner radius
+;;; 11/26/1999: added code to check for intersection with inner radius
 
-/*!< fixed nearest-point to handle trivial cases
+;;; fixed nearest-point to handle trivial cases
 
 
-/*!< TO-DO:
+;;; TO-DO:
 
-/*!< 01/21/2001: fix envelope generated for mono reverberation stream.
+;;; 01/21/2001: fix envelope generated for mono reverberation stream.
 
-/*!< change input and output to use frames and mixers
+;;; change input and output to use frames and mixers
 
-/*!< fix supersonic movement warning code
+;;; fix supersonic movement warning code
 
-/*!< > add warnings when object goes outside of area covered by speakers
+;;; > add warnings when object goes outside of area covered by speakers
 
-/*!< > fix one common vertice case of 3 speaker group transitions
+;;; > fix one common vertice case of 3 speaker group transitions
 
-/*!< > redo the old code for multiple images (reflections in a rectangular room)
+;;; > redo the old code for multiple images (reflections in a rectangular room)
 
-/*!< a bit of a pain, would have to add z (ceiling and floor reflections)
+;;; a bit of a pain, would have to add z (ceiling and floor reflections)
 
-/*!< would be better to find general purpose code for non-rectangular rooms
+;;; would be better to find general purpose code for non-rectangular rooms
 
-/*!< > we really need a good N-channel reverb [fixed with freeverb]
+;;; > we really need a good N-channel reverb [fixed with freeverb]
 
-/*!< > change reverb to be multichannel, add local and global reverb
+;;; > change reverb to be multichannel, add local and global reverb
 
-/*!< 11/24/1999: should use a waveguide reverb like pph@ccrma project
+;;; 11/24/1999: should use a waveguide reverb like pph@ccrma project
 
-/*!< would be a good idea to inject the signal through a center
+;;; would be a good idea to inject the signal through a center
 
-/*!< injection point that moves inside the virtual cube, more like
+;;; injection point that moves inside the virtual cube, more like
 
-/*!< a physical model of what actually happens in a room
+;;; a physical model of what actually happens in a room
 
-/*!< | add ambisonics back-end
+;;; | add ambisonics back-end
 
-/*!< 11/24/1999: code to b-format sort of working
+;;; 11/24/1999: code to b-format sort of working
 
-/*!< how to deal with the inner space and 0:0:0?
+;;; how to deal with the inner space and 0:0:0?
 
-/*!< decoded format not working if we incorporate distance att
+;;; decoded format not working if we incorporate distance att
 
-/*!< formulas are wrong...
+;;; formulas are wrong...
 
-/*!< > add hrtf back-end
+;;; > add hrtf back-end
 
-/*!< > extract a subpath from an existing path
+;;; > extract a subpath from an existing path
 
-/*!< > recode the transformation functions
+;;; > recode the transformation functions
 
-/*!< > add arcs of circles and other basic geometric paths
+;;; > add arcs of circles and other basic geometric paths
 
-/*!< make it so that you can concatenate them...
+;;; make it so that you can concatenate them...
 
-/*!< | 11/25/1999 fix the "diagonal case" (sounds go through the head of the listener)
+;;; | 11/25/1999 fix the "diagonal case" (sounds go through the head of the listener)
 
 
 
 (defun list-ref (lst n) (nth n lst))
 
-/*!< ;;;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;;;
 
-/*!< Global Parameters
+;;; Global Parameters
 
 
-/*!< Define the base in which all angles are expressed
+;;; Define the base in which all angles are expressed
 
 (defparameter dlocsig-one-turn 360)
 
@@ -200,9 +200,9 @@
 ;; default for whether to use two or three-dimensional speaker configurations
 (defparameter dlocsig-3d nil)
 
-/*!< ;;;;;;;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;;;;;;;
 
-/*!< Speaker Configuration
+;;; Speaker Configuration
 
 
 (defstruct group
@@ -230,21 +230,21 @@
   ;; mapping of speakers to output channels
   map)
 
-/*!< Create a speaker configuration structure based on a list of speakers
+;;; Create a speaker configuration structure based on a list of speakers
 
-/*!<
+;;;
 
-/*!< speakers:  list of angles of speakers with respect to 0
+;;; speakers:  list of angles of speakers with respect to 0
 
-/*!< delays:    list of delays for each speaker, zero if nil
+;;; delays:    list of delays for each speaker, zero if nil
 
-/*!< distances: list relative speaker distances,
+;;; distances: list relative speaker distances,
 
-/*!< (instead of delays)
+;;; (instead of delays)
 
-/*!< map:       mapping of speakers to output channels
+;;; map:       mapping of speakers to output channels
 
-/*!< content should be output channel number, zero based
+;;; content should be output channel number, zero based
 
 
 (def-optkey-fun  arrange-speakers ((speakers '())
@@ -426,7 +426,7 @@
 					      for whereto = (pop map)
 					      collect (or whereto chan)))))))
 
-/*!< Default speaker configurations
+;;; Default speaker configurations
 
 
 (defparameter dlocsig-speaker-configs
@@ -501,7 +501,7 @@
 					    ;; floor
 					    (0 1 2) (2 3 0)))))))
 
-/*!< Set a particular speaker configuration
+;;; Set a particular speaker configuration
 
 
 (defun set-speaker-configuration (config
@@ -512,7 +512,7 @@
 	      (speaker-config-number config))
 	config))
 
-/*!< Get the speaker configuration for a given number of output channels
+;;; Get the speaker configuration for a given number of output channels
 
 
 (defun get-speaker-configuration (channels
@@ -531,14 +531,14 @@
 		     channels (if (= channels 1) "s" ""))
 	      config))))
 
-/*!< ;;;;;;;;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;;;;;;;;
 
-/*!< Dlocsig unit generator
+;;; Dlocsig unit generator
 
-/*!< ;;;;;;;;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;;;;;;;;
 
 
-/*!< global dlocsig parameters
+;;; global dlocsig parameters
 
 
 (defparameter dlocsig-path '())
@@ -578,9 +578,9 @@
 (defparameter dlocsig-ambisonics-scaler point707)
 (defparameter dlocsig-ambisonics-ho-rev-scaler 0.05)
 
-/*!< ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-/*!< Get number of channels needed by ambisonics
+;;; Get number of channels needed by ambisonics
 
 
 (defun ambisonics-channels (&key
@@ -605,9 +605,9 @@
 	;; error: we need at least horizontal order 1!
 	0)))
 
-/*!< ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-/*!< Create a new dlocsig structure
+;;; Create a new dlocsig structure
 
 
 (def-optkey-fun make-dlocsig ((start-time nil)
@@ -1557,25 +1557,25 @@
 
 |#
 
-/*!< ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-/*!< Run macro to localize samples
+;;; Run macro to localize samples
 
-/*!< ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 ;; just a wrapper around move-sound for backwards compatibility
 (defmacro dlocsig (l i in-sig)
   `(move-sound ,l ,i ,in-sig))
 
-/*!< ;;;;;;
+;;; ;;;;;;
 
-/*!< Paths
+;;; Paths
 
-/*!< ;;;;;;
+;;; ;;;;;;
 
 
-/*!< Generic path class
+;;; Generic path class
 
 
 (defclass path ()
@@ -1597,7 +1597,7 @@
 	  (slot-value path 'rt) (slot-value path 'tx) (slot-value path 'ty) (slot-value path 'tz)
 	  (slot-value path 'tt)))
 
-/*!< Inquiries into the state of the path
+;;; Inquiries into the state of the path
 
 
 (defmethod not-rendered ((path path))
@@ -1606,7 +1606,7 @@
 (defmethod not-transformed ((path path))
   (null (slot-value path 'tx)))
 
-/*!< Reset any transformations on the originally rendered path
+;;; Reset any transformations on the originally rendered path
 
 
 (defmethod reset-transformation ((path path))
@@ -1616,7 +1616,7 @@
 	(slot-value path 'tz) nil)
   path)
 
-/*!< Reset the rendered path (and any transformations)
+;;; Reset the rendered path (and any transformations)
 
 
 (defmethod reset-rendering ((path path))
@@ -1627,7 +1627,7 @@
 	(slot-value path 'rz) nil)
   (reset-transformation path))
 
-/*!< Return the best possible set of coordinates
+;;; Return the best possible set of coordinates
 
 
 (defmethod path-x ((path path))
@@ -1658,19 +1658,19 @@
 		    path
 		  (render-path path)) 'rt)))
 
-/*!< ;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;
 
-/*!< Bezier paths
+;;; Bezier paths
 
-/*!< ;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;
 
 
-/*!< Parse a path as two or three-dimensional paths
+;;; Parse a path as two or three-dimensional paths
 
 
 (defparameter path-3d t)
 
-/*!< Path class for bezier rendered paths
+;;; Path class for bezier rendered paths
 
 
 (defclass bezier-path (path)
@@ -1702,7 +1702,7 @@
 	  (slot-value path 'bx) (slot-value path 'by) (slot-value path 'bz) (slot-value path 'error)
 	  (slot-value path 'curvature)))
 
-/*!< Path class for open bezier paths
+;;; Path class for open bezier paths
 
 
 (defclass open-bezier-path (bezier-path)
@@ -1710,22 +1710,22 @@
    (initial-direction :initform '(0.0 0.0 0.0) :initarg :initial-direction)
    (final-direction :initform '(0.0 0.0 0.0) :initarg :final-direction)))
 
-/*!< Path class for closed bezier paths
+;;; Path class for closed bezier paths
 
 
 (defclass closed-bezier-path (bezier-path) ())
 
-/*!< Generic error when method passed illegal path
+;;; Generic error when method passed illegal path
 
 
 (defun illegal-path-argument (path)
   (error "~s is not a path or a list describing a path" path))
 
-/*!<
+;;;
 
-/*!< Generic defining function (for open, closed, polar and cartesian paths)
+;;; Generic defining function (for open, closed, polar and cartesian paths)
 
-/*!<
+;;;
 
 
 (def-optkey-fun make-path (path
@@ -1778,7 +1778,7 @@
 		   :final-direction final-direction)))
 
 
-/*!< Some convenient abbreviations
+;;; Some convenient abbreviations
 
 
 (def-optkey-fun make-polar-path (path
@@ -1817,16 +1817,16 @@
 	     :curvature curvature
 	     :error error))
 
-/*!< Set components of a path and reset appropriate part of the rendering process
+;;; Set components of a path and reset appropriate part of the rendering process
 
-/*!< Rendering steps:
+;;; Rendering steps:
 
-/*!< (fit-path path)        calculate the bezier curve control points
+;;; (fit-path path)        calculate the bezier curve control points
 
-/*!< (render-path path)     derive a linear approximation to the bezier segments
+;;; (render-path path)     derive a linear approximation to the bezier segments
 
 
-/*!< Set a new cartesian set of points
+;;; Set a new cartesian set of points
 
 
 (defmethod set-path ((path bezier-path) points)
@@ -1834,7 +1834,7 @@
 	(slot-value path 'polar) nil)
   (parse-path path))
 
-/*!< Set a new polar set of points
+;;; Set a new polar set of points
 
 
 (defmethod set-polar-path ((path bezier-path) points)
@@ -1842,7 +1842,7 @@
 	(slot-value path 'polar) t)
   (parse-path path))
 
-/*!< Set a new path curvature
+;;; Set a new path curvature
 
 
 (defmethod set-path-curvature ((path bezier-path) curvature)
@@ -1850,7 +1850,7 @@
     (setf (slot-value path 'curvature) curvature)
     (reset-fit path)))
 
-/*!< Set a new path rendering error bound
+;;; Set a new path rendering error bound
 
 
 (defmethod set-path-error ((path bezier-path) error)
@@ -1858,11 +1858,11 @@
     (setf (slot-value path 'error) error)
     (reset-rendering path)))
 
-/*!<
+;;;
 
-/*!< Parse a path and transform it into cartesian coordinates
+;;; Parse a path and transform it into cartesian coordinates
 
-/*!<
+;;;
 
 
 (defmethod not-parsed ((path bezier-path))
@@ -1908,7 +1908,7 @@
 			      (slot-value path 'path))))
   path)
 
-/*!< Parse a set of 2d or 3d points into the separate coordinates
+;;; Parse a set of 2d or 3d points into the separate coordinates
 
 
 (defun parse-cartesian-coordinates (points 3d)
@@ -1961,7 +1961,7 @@
 				(loop repeat (length x) collect 0.0)
 				(loop repeat (length x) collect nil)))))))
 
-/*!< Parse a set of 2d or 3d polar points into the separate coordinates
+;;; Parse a set of 2d or 3d polar points into the separate coordinates
 
 
 (defun parse-polar-coordinates (points 3d)
@@ -2032,20 +2032,20 @@
 				;; no velocity points, collect nil's
 				(loop repeat (length x) collect nil)))))))
 
-/*!<
+;;;
 
-/*!< Bezier curve fitting auxiliary functions
+;;; Bezier curve fitting auxiliary functions
 
-/*!<
+;;;
 
 
-/*!< Pythagoras
+;;; Pythagoras
 
 
 (defun distance (x y z)
   (sqrt (+ (* x x) (* y y) (* z z))))
 
-/*!< Nearest point in a line
+;;; Nearest point in a line
 
 
 (defun nearest-point (x0 y0 z0 x1 y1 z1 px py pz)
@@ -2082,7 +2082,7 @@
 	     (+ y0 (* ym0 ratio))
 	     (+ z0 (* zm0 ratio))))))))
 
-/*!< Bezier curve fitting auxilliary functions
+;;; Bezier curve fitting auxilliary functions
 
 
 (defparameter path-ak-even nil)
@@ -2143,7 +2143,7 @@
   (if (null path-ak-even) (make-a-even))
   (aref (aref path-ak-even (- n 2)) (- k 1)))
 
-/*!< Calculate bezier difference vectors for the given path
+;;; Calculate bezier difference vectors for the given path
 
 
 (defmethod calculate-fit ((path closed-bezier-path))
@@ -2226,7 +2226,7 @@
 			      (ref p 2 (- i k)))))))
       (values n p d))))
 
-/*!< Calculate bezier control points for the given open path
+;;; Calculate bezier control points for the given open path
 
 
 (defmethod not-fitted ((path bezier-path))
@@ -2323,7 +2323,7 @@
 		 (slot-value path 'bz) nil))))
   path)
 
-/*!< Calculate bezier control points for the given closed path
+;;; Calculate bezier control points for the given closed path
 
 
 (defmethod fit-path ((path closed-bezier-path))
@@ -2383,7 +2383,7 @@
 		    (slot-value path 'bz) zc)))
   path)
 
-/*!< Transform a Bezier control point fit to a linear segment approximation
+;;; Transform a Bezier control point fit to a linear segment approximation
 
 
 (defmethod render-path ((path t))
@@ -2559,14 +2559,14 @@
 ;; (setf p (make-path '((-10 10 0 1) (-7 7 0 0.9) (0 5 0 0) (7 7 0 0.2) (10 10 0 1)) :error 0.001))
 ;; (with-sound(:channels 4 :play nil) (sinewave 0 2 880 0.5 :path p))
 
-/*!< ;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;
 
-/*!< Literal paths
+;;; Literal paths
 
-/*!< ;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;
 
 
-/*!< Generic literal path class
+;;; Generic literal path class
 
 (defclass literal-path (path)
   (;; points
@@ -2577,7 +2577,7 @@
    (polar :initform nil :initarg :polar)))
 
 
-/*!< Generic literal path creation function
+;;; Generic literal path creation function
 
 (def-optkey-fun make-literal-path ((points nil)
 				   (3d path-3d)
@@ -2587,7 +2587,7 @@
 		 :3d 3d
 		 :polar polar))
 
-/*!< Specific polar literal path creation function
+;;; Specific polar literal path creation function
 
 (def-optkey-fun make-literal-polar-path ((points nil)
 					 (3d path-3d))
@@ -2596,7 +2596,7 @@
 		 :3d 3d
 		 :polar t))
 
-/*!< Render a user-defined literal path from the data points
+;;; Render a user-defined literal path from the data points
 
 
 (defmethod render-path :after ((path literal-path))
@@ -2698,11 +2698,11 @@
       )
     path))
 
-/*!< ;;;;;;;;
+;;; ;;;;;;;;
 
-/*!< Spirals
+;;; Spirals
 
-/*!< ;;;;;;;;
+;;; ;;;;;;;;
 
 
 (defclass spiral-path (literal-path)
@@ -2721,7 +2721,7 @@
    ;; velocity envelope
    (velocity :initform '(0 1 1 1) :initarg :velocity)))
 
-/*!< Spiral path creation function
+;;; Spiral path creation function
 
 
 (def-optkey-fun make-spiral-path ((start-angle 0d0)
@@ -2743,7 +2743,7 @@
 		 :height height
 		 :velocity velocity))
 
-/*!< Render a spiral path from the object data
+;;; Render a spiral path from the object data
 
 
 (defmethod render-path :after ((path spiral-path))
@@ -2809,14 +2809,14 @@
     path))
 
 
-/*!< ;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;
 
-/*!< Transformations
+;;; Transformations
 
-/*!< ;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;
 
 
-/*!< Transform a rendered path using scaling, translation and rotation
+;;; Transform a rendered path using scaling, translation and rotation
 
 
 (defmethod transform-path ((path t)
@@ -2844,7 +2844,7 @@
 		  :rotation-center rotation-center
 		  :rotation-axis rotation-axis))
 
-/*!< Derive a rotation matrix from an axis vector and an angle
+;;; Derive a rotation matrix from an axis vector and an angle
 
 
 (defun rotation-matrix (x y z angle)
@@ -2897,7 +2897,7 @@
 		     (* omcs (aref AA row col))))))
 	rotate))))
 
-/*!< Transform a path (scaling + translation + rotation)
+;;; Transform a path (scaling + translation + rotation)
 
 
 (defmethod transform-path ((path path)
@@ -2988,19 +2988,19 @@
 	  (slot-value path 'tz) (copy-list (slot-value path 'rz))))
   path)
 
-/*!< Scale a path
+;;; Scale a path
 
 
 (defmethod scale-path ((path path) scaling)
   (transform-path path :scaling scaling))
 
-/*!< Translate a path
+;;; Translate a path
 
 
 (defmethod translate-path ((path path) translation)
   (transform-path path :translation translation))
 
-/*!< Rotate a path
+;;; Rotate a path
 
 
 (defmethod rotate-path ((path path) rotation
@@ -3012,7 +3012,7 @@
 		  :rotation-center rotation-center
 		  :rotation-axis rotation-axis))
 
-/*!< Mirror a path around an axis
+;;; Mirror a path around an axis
 
 
 (defun mirror-path (path &key (axis 'y)
@@ -3026,7 +3026,7 @@
       (loop for y in (slot-value path 'ty) collect (- around y))))
   path)
 
-/*!< Change the times of the rendered envelope so that the velocity is constant
+;;; Change the times of the rendered envelope so that the velocity is constant
 
 
 (defun constant-velocity (path)
@@ -3065,14 +3065,14 @@
   path)
 
 
-/*!< ;;;;;;;;;
+;;; ;;;;;;;;;
 
-/*!< Plotting
+;;; Plotting
 
-/*!< ;;;;;;;;;
+;;; ;;;;;;;;;
 
 
-/*!< Return the trajectory of the path
+;;; Return the trajectory of the path
 
 
 (defmethod path-trajectory ((path path))
@@ -3093,7 +3093,7 @@
       for y in yp
       collect x collect y)))
 
-/*!< Return the velocity as a function of time
+;;; Return the velocity as a function of time
 
 
 (defmethod path-velocity ((path path))
@@ -3114,7 +3114,7 @@
 		 (- tf ti))
       collect (/ (+ ti tf) 2) collect v)))
 
-/*!< Return the doppler shift as a function of time
+;;; Return the doppler shift as a function of time
 
 
 (defmethod path-doppler ((path path))
@@ -3135,7 +3135,7 @@
 	collect (- (/ (- (distance xf yf zf) (distance xi yi zi))
 		      (- tf ti))))))
 
-/*!< Return acceleration as a function of time
+;;; Return acceleration as a function of time
 
 
 (defmethod path-acceleration ((path path))
@@ -3150,7 +3150,7 @@
       collect ti collect am
       collect tf collect am)))
 
-/*!< Plot the trajectory of a path
+;;; Plot the trajectory of a path
 
 
 (defmethod plot-trajectory ((path path)
@@ -3176,7 +3176,7 @@
       (plot-2d-curve (path-2d-trajectory path)
 		     :label label))))
 
-/*!< Plot the velocity of a path
+;;; Plot the velocity of a path
 
 
 (defmethod plot-velocity ((path path)
@@ -3187,7 +3187,7 @@
 		 :label "velocity"
 		 :style "steps"))
 
-/*!< Plot the doppler shift of a path
+;;; Plot the doppler shift of a path
 
 
 (defmethod plot-doppler ((path path)
@@ -3199,7 +3199,7 @@
 		 :label "doppler"
 		 :style "steps"))
 
-/*!< Plot the acceleration of a path
+;;; Plot the acceleration of a path
 
 
 (defmethod plot-acceleration ((path path)
@@ -3246,18 +3246,18 @@
 				  "steps"))
     (plot-end-multiplot)))
 
-/*!< ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-/*!< GnuPlot based plotting functions
+;;; GnuPlot based plotting functions
 
-/*!< ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 (defvar plot-stream nil)
 (defvar plot-error nil)
 (defvar plot-pid nil)
 
-/*!< Open a connection to a gnuplot process
+;;; Open a connection to a gnuplot process
 
 
 #+excl
@@ -3271,7 +3271,7 @@
 	  plot-error error
 	  plot-pid pid)))
 
-/*!< Close and terminate gnuplot
+;;; Close and terminate gnuplot
 
 
 #+excl
@@ -3311,7 +3311,7 @@
       plot-error error
       plot-pid pid)))
 
-/*!< Close and terminate gnuplot
+;;; Close and terminate gnuplot
 
 
 #+lispworks
@@ -3323,11 +3323,11 @@
 
 
 
-/*!< from Juan Reyes
+;;; from Juan Reyes
 
-/*!< Open a connection to a gnuplot process on SBCL
+;;; Open a connection to a gnuplot process on SBCL
 
-/*!<
+;;;
 
 
 (defvar *plot-process* nil)
@@ -3360,7 +3360,7 @@
 
 
 
-/*!< Send an arbitrary command to gnuplot
+;;; Send an arbitrary command to gnuplot
 
 
 (defun plot-command (&optional (command ""))
@@ -3370,13 +3370,13 @@
   (format plot-stream "~%")
   (finish-output plot-stream))
 
-/*!< Reset all 'set' options to the default values
+;;; Reset all 'set' options to the default values
 
 
 (defun plot-reset ()
   (plot-command "reset"))
 
-/*!< Set autoscale for selected axes
+;;; Set autoscale for selected axes
 
 
 (defun plot-set-autoscale ()
@@ -3385,7 +3385,7 @@
   (format plot-stream "set autoscale~%")
   (finish-output plot-stream))
 
-/*!< Set x range
+;;; Set x range
 
 
 (defun plot-set-x-range (range)
@@ -3396,7 +3396,7 @@
 	    (first range) (second range))
     (finish-output plot-stream)))
 
-/*!< Set y range
+;;; Set y range
 
 
 (defun plot-set-y-range (range)
@@ -3407,7 +3407,7 @@
 	    (first range) (second range))
     (finish-output plot-stream)))
 
-/*!< Set z range
+;;; Set z range
 
 
 (defun plot-set-z-range (range)
@@ -3418,7 +3418,7 @@
 	    (first range) (second range))
     (finish-output plot-stream)))
 
-/*!< Set grid
+;;; Set grid
 
 
 (defun plot-set-grid ()
@@ -3427,7 +3427,7 @@
   (format plot-stream "set grid xtics; set grid ytics; set grid ztics~%")
   (finish-output plot-stream))
 
-/*!< Set surface
+;;; Set surface
 
 
 (defun plot-set-surface ()
@@ -3436,7 +3436,7 @@
   (format plot-stream "set surface~%")
   (finish-output plot-stream))
 
-/*!< Set parametric mode
+;;; Set parametric mode
 
 
 (defun plot-set-parametric ()
@@ -3445,7 +3445,7 @@
   (format plot-stream "set parametric~%")
   (finish-output plot-stream))
 
-/*!< Set ticslevel
+;;; Set ticslevel
 
 
 (defun plot-set-ticslevel (&optional (level 0))
@@ -3454,7 +3454,7 @@
   (format plot-stream "set ticslevel ~s~%" level)
   (finish-output plot-stream))
 
-/*!< Set title
+;;; Set title
 
 
 (defun plot-set-title (&optional
@@ -3465,7 +3465,7 @@
     (format plot-stream "set title ~s~%" title)
     (finish-output plot-stream)))
 
-/*!< Set the labels for a plot
+;;; Set the labels for a plot
 
 
 (defun plot-set-label (&optional
@@ -3476,7 +3476,7 @@
     (format plot-stream "set label ~s~%" label)
     (finish-output plot-stream)))
 
-/*!< Set the margins of a plot
+;;; Set the margins of a plot
 
 
 (defun plot-set-margins (&optional
@@ -3490,7 +3490,7 @@
     (format plot-stream "set bmargin ~s~%" margin)
     (finish-output plot-stream)))
 
-/*!< Set the borders of a plot
+;;; Set the borders of a plot
 
 
 (defun plot-set-border (&optional
@@ -3501,7 +3501,7 @@
     (format plot-stream "set border ~s~%" border)
     (finish-output plot-stream)))
 
-/*!< Start a multiplot
+;;; Start a multiplot
 
 
 (defun plot-start-multiplot ()
@@ -3510,7 +3510,7 @@
   (format plot-stream "set multiplot~%")
   (finish-output plot-stream))
 
-/*!< End a multiplot
+;;; End a multiplot
 
 
 (defun plot-end-multiplot ()
@@ -3519,7 +3519,7 @@
   (format plot-stream "set nomultiplot~%")
   (finish-output plot-stream))
 
-/*!< Set origin and size of plot area
+;;; Set origin and size of plot area
 
 
 (defun plot-size (xorigin yorigin xsize ysize)
@@ -3533,7 +3533,7 @@
 	  (coerce ysize 'float))
   (finish-output plot-stream))
 
-/*!< Simple data plot
+;;; Simple data plot
 
 
 (defun plot-data (data
@@ -3556,7 +3556,7 @@
   (format plot-stream "e~%")
   (finish-output plot-stream))
 
-/*!< Plot a supplied curve
+;;; Plot a supplied curve
 
 
 (defun plot-2d-curve (curve
@@ -3615,7 +3615,7 @@
     (format plot-stream "e~%"))
   (finish-output plot-stream))
 
-/*!< Plot a 3d curve
+;;; Plot a 3d curve
 
 
 (defun plot-3d-curve (3d-curve
@@ -3663,9 +3663,9 @@
   (finish-output plot-stream))
 
 
-/*!< ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-/*!< Quad version of NREV (the most popular Samson box reverb)
+;;; Quad version of NREV (the most popular Samson box reverb)
 
 #|
 (defun prime (val)

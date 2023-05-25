@@ -1,27 +1,27 @@
-/*!< Moog style four pole lowpass filter clm unit generator
+;;; Moog style four pole lowpass filter clm unit generator
 
-/*!< low pass, 24db/Oct, variable resonance, warm, analog sound ;-)
+;;; low pass, 24db/Oct, variable resonance, warm, analog sound ;-)
 
-/*!< [all this digital wizardry and we're back where we started!]
+;;; [all this digital wizardry and we're back where we started!]
 
-/*!<
+;;;
 
-/*!< original C instrument by Tim Stilson
+;;; original C instrument by Tim Stilson
 
-/*!< translation into clm and tuning by
+;;; translation into clm and tuning by
 
-/*!< Fernando Lopez-Lezcano, nando@ccrma.stanford.edu
+;;; Fernando Lopez-Lezcano, nando@ccrma.stanford.edu
 
-/*!< http://ccrma.stanford.edu/~nando/clm/moog
+;;; http://ccrma.stanford.edu/~nando/clm/moog
 
-/*!< Michael Edwards added the do-saturate argument, 23-Nov-10
+;;; Michael Edwards added the do-saturate argument, 23-Nov-10
 
 
-/*!< bil says: if you get "setf: unknown accessor: MOOG-Q in (MOOG-Q F)"
+;;; bil says: if you get "setf: unknown accessor: MOOG-Q in (MOOG-Q F)"
 
-/*!< or something like that from this code, trying compiling this file
+;;; or something like that from this code, trying compiling this file
 
-/*!< before loading it.
+;;; before loading it.
 
 
 
@@ -124,19 +124,19 @@
   (frequency 440.0)
   (Q 0.9))
 
-/*!< Create a ug structure.
+;;; Create a ug structure.
 
-/*!< freq: cutoff frequency in Hertz
+;;; freq: cutoff frequency in Hertz
 
-/*!< Q: resonance, 0->no resonance, 1->oscilates at freq
+;;; Q: resonance, 0->no resonance, 1->oscilates at freq
 
-/*!<
+;;;
 
-/*!< Note: the relation between freq and the actual cutoff is not exactly linear but
+;;; Note: the relation between freq and the actual cutoff is not exactly linear but
 
-/*!< I prefered to translate Hz into the internal parameter rather than controlling
+;;; I prefered to translate Hz into the internal parameter rather than controlling
 
-/*!< the cutoff frequency in terms of a number that goes between -1 and 1.
+;;; the cutoff frequency in terms of a number that goes between -1 and 1.
 
 
 (clm::def-optkey-fun make-moog-filter ((frequency 440)
@@ -146,7 +146,7 @@
 	     :s (make-array 4 :initial-contents '(0 0 0 0))
 	     :A 0.0))
 
-/*!< Macro to do the filtering
+;;; Macro to do the filtering
 
 #|
 (defmacro moog-filter (m sig)

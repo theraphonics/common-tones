@@ -1,6 +1,6 @@
 (in-package :common-tones/generators)
 
-/*!< two-zero  y(n) = a0 x(n) + a1 x(n-1) + a2 x(n-2)
+;;; two-zero  y(n) = a0 x(n) + a1 x(n-1) + a2 x(n-2)
 
 
 (defclass two-zero ()

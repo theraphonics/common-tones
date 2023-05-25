@@ -1,10 +1,10 @@
 (in-package :common-tones/plugins)
 
-/*!< ------------------------------------------------------------------------
+;;; ------------------------------------------------------------------------
 
-/*!< courtesy Michael Edwards (for use with src-change and such) -- returns
+;;; courtesy Michael Edwards (for use with src-change and such) -- returns
 
-/*!< duration after all the resampling has taken effect.
+;;; duration after all the resampling has taken effect.
 
 
 (defun gliss-dur (env initial-transp input-dur &key (scaler 1) (semitones nil))

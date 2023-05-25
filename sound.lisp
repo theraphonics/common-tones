@@ -127,37 +127,37 @@
 
 (defvar *force-recomputation* nil)
 
-/*!< in all that follows, we have nested with-sounds, so various globals like *offset*
+;;; in all that follows, we have nested with-sounds, so various globals like *offset*
 
-/*!< need to be handled dynamically, but we also need to protect against two kinds of errors --
+;;; need to be handled dynamically, but we also need to protect against two kinds of errors --
 
-/*!< exit from the debugger, wherein we have to leave CLM/Lisp in a clean state, and user-forgetfulness
+;;; exit from the debugger, wherein we have to leave CLM/Lisp in a clean state, and user-forgetfulness
 
-/*!< with regard to open-input (it's easy to leave files open accidentally).  Additionally, with-sound
+;;; with regard to open-input (it's easy to leave files open accidentally).  Additionally, with-sound
 
-/*!< can be called within the debugger while in with-sound.  We used to call clm-cleanup all the time
+;;; can be called within the debugger while in with-sound.  We used to call clm-cleanup all the time
 
-/*!< but that closed all open files, and cleared *offset* which was the wrong thing, especially
+;;; but that closed all open files, and cleared *offset* which was the wrong thing, especially
 
-/*!< if the user was handling mus_any structs globally across a with-mix call.  So, we try to see the normal
+;;; if the user was handling mus_any structs globally across a with-mix call.  So, we try to see the normal
 
-/*!< exit via *clm-with-sound-depth*, and error exits via *clm-within-with-sound*.  clm-cleanup from
+;;; exit via *clm-with-sound-depth*, and error exits via *clm-within-with-sound*.  clm-cleanup from
 
-/*!< io.lisp is still a complete wipe-the-slate function.
+;;; io.lisp is still a complete wipe-the-slate function.
 
-/*!< An added complication is that mix can open files in C (hidden from clm's list of open files),
+;;; An added complication is that mix can open files in C (hidden from clm's list of open files),
 
-/*!< an IO error can occur (disk full), then checked_write can exit back to lisp, whereupon the
+;;; an IO error can occur (disk full), then checked_write can exit back to lisp, whereupon the
 
-/*!< caller can :reset from the debugger, leaving files open with no way to free the space except
+;;; caller can :reset from the debugger, leaving files open with no way to free the space except
 
-/*!< exit from lisp!  So I added (22-Oct-98) mus_file_cleanup_descriptors which runs through
+;;; exit from lisp!  So I added (22-Oct-98) mus_file_cleanup_descriptors which runs through
 
-/*!< the entire C array of file descriptors, tries to deduce which files are still open, and
+;;; the entire C array of file descriptors, tries to deduce which files are still open, and
 
-/*!< close them -- this means the error exit from with-sound will clobber any files global
+;;; close them -- this means the error exit from with-sound will clobber any files global
 
-/*!< to that call.  Can't decide whether something fancier is needed.
+;;; to that call.  Can't decide whether something fancier is needed.
 
 
 (defvar *clm-with-sound-depth* 0)
@@ -616,21 +616,21 @@
 
 
 
-/*!< ---------------- OPEN-INPUT OPEN-OUTPUT ----------------
+;;; ---------------- OPEN-INPUT OPEN-OUTPUT ----------------
 
-/*!<
+;;;
 
-/*!< for a "make" facility for sound file pieces.   Here we tie into the
+;;; for a "make" facility for sound file pieces.   Here we tie into the
 
-/*!< sound file headers etc.  mix is called if the file-to-be-merged
+;;; sound file headers etc.  mix is called if the file-to-be-merged
 
-/*!< is up-to-date.  We need the name of the output file, input file,
+;;; is up-to-date.  We need the name of the output file, input file,
 
-/*!< sample number in the output to begin at, sample number in the input
+;;; sample number in the output to begin at, sample number in the input
 
-/*!< to start at, number of channel-independent samples to merge (i.e. seconds*srate).
+;;; to start at, number of channel-independent samples to merge (i.e. seconds*srate).
 
-/*!< Output header may be changed.
+;;; Output header may be changed.
 
 
 (defun mix-wrapper (file output-sample input-file dur)
@@ -643,21 +643,21 @@
   (make-pathname :type ext :defaults name))
 
 
-/*!< this version is like lisp's load function to some extent in that
+;;; this version is like lisp's load function to some extent in that
 
-/*!< if it gets an incomplete file name, or a cm/clm file name, it
+;;; if it gets an incomplete file name, or a cm/clm file name, it
 
-/*!< checks to see if the associated sound file is either not present
+;;; checks to see if the associated sound file is either not present
 
-/*!< or out of date and recomputes it if so.  In any case, open-input
+;;; or out of date and recomputes it if so.  In any case, open-input
 
-/*!< opens the sound file and returns an mus_any structure for it.  If it
+;;; opens the sound file and returns an mus_any structure for it.  If it
 
-/*!< has to recompute the file, it must also close the current computation,
+;;; has to recompute the file, it must also close the current computation,
 
-/*!< open the new computation, run it to completion, then reopen the
+;;; open the new computation, run it to completion, then reopen the
 
-/*!< previous computation where it left off.
+;;; previous computation where it left off.
 
 
 (defvar last-open-input-file-name nil)
@@ -770,7 +770,7 @@
 	  (error "can't find ~A~A" name (if (not (eq name sound-file-name)) (format nil " (~A)" sound-file-name) ""))))))
 
 
-/*!< ---------------- WITH-MIX, SOUND-LET ----------------
+;;; ---------------- WITH-MIX, SOUND-LET ----------------
 
 
 (defvar *clm-mix-calls* nil)
@@ -845,23 +845,23 @@
      (loop for snd in sound-file-list do (delete-file snd))
      ))
 
-/*!< WITH-MIX
+;;; WITH-MIX
 
-/*!<
+;;;
 
-/*!< weird syntax = with-mix (with-sound-args) file-name start-in-output &body body
+;;; weird syntax = with-mix (with-sound-args) file-name start-in-output &body body
 
-/*!<
+;;;
 
-/*!< (with-sound ()
+;;; (with-sound ()
 
-/*!< (with-mix () "section-1" 0 (fm-violin 0 1 440 .1)
+;;; (with-mix () "section-1" 0 (fm-violin 0 1 440 .1)
 
-/*!< (fm-violin 1 2 660 .1))
+;;; (fm-violin 1 2 660 .1))
 
-/*!< (with-mix (:reverb nrev) "section-2" ...)
+;;; (with-mix (:reverb nrev) "section-2" ...)
 
-/*!< )
+;;; )
 
 
 (defun mix-in (source-file begin-time &optional duration)
@@ -972,7 +972,7 @@
 
 
 
-/*!< ---------------- COMMON MUSIC INTERFACE TO WITH-SOUND ----------------
+;;; ---------------- COMMON MUSIC INTERFACE TO WITH-SOUND ----------------
 
 
 (defstruct wsdat revfun revdat revdecay outtype play stats wait scaled-to format file channels scaled-by)

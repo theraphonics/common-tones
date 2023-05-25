@@ -1,16 +1,16 @@
 (in-package :common-tones/generators)
 
-/*!< Envelopes
+;;; Envelopes
 
-/*!< magify-seg takes an envelope, a starting time in samples, the envelope duration in samples,
+;;; magify-seg takes an envelope, a starting time in samples, the envelope duration in samples,
 
-/*!< and a y scaler.  It returns another seg-like list (i.e. a list of time-value pairs),
+;;; and a y scaler.  It returns another seg-like list (i.e. a list of time-value pairs),
 
-/*!< where the times are pass numbers, and the values are increments to be added on each pass to
+;;; where the times are pass numbers, and the values are increments to be added on each pass to
 
-/*!< get to the next y-value.   For very large envelopes, (say more than 50 segments), we should
+;;; get to the next y-value.   For very large envelopes, (say more than 50 segments), we should
 
-/*!< simply load the thing into an array and use table-lookup to read it out.
+;;; simply load the thing into an array and use table-lookup to read it out.
 
 
 (defun magify-seg (envelope duration-in-samples scaler &optional (stepit nil) (offset 0.0))

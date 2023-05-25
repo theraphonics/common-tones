@@ -1,4 +1,4 @@
-/*!< one-pole  y(n) = a0 x(n) - b1 y(n-1)
+;;; one-pole  y(n) = a0 x(n) - b1 y(n-1)
 
 
 (defclass one-pole ()

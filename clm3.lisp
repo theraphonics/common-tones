@@ -1,8 +1,8 @@
-/*!< clm3.lisp
+;;; clm3.lisp
 
-/*!<
+;;;
 
-/*!< backwards compatibility stuff for clm4
+;;; backwards compatibility stuff for clm4
 
 
 (in-package :common-tones)
@@ -16,7 +16,7 @@
 	  mus-formant-radius
 	  ))
 
-/*!< these are from clm1 or clm2
+;;; these are from clm1 or clm2
 
 
 (defun sound-format-name (a) (mus-data-format-name a))
