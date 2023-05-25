@@ -1,5 +1,4 @@
 (in-package :common-tones)
-(ql:quickload :cffi)
 
 (export '(clm-seek-bytes clm-seek-floats
           clm-read-floats clm-write-floats

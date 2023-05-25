@@ -26,7 +26,7 @@
 
 (defsystem "common-tones/plugins"
   :depends-on ("common-tones")
-  :pathname "t/" ;; specify the subdirectory
+  :pathname "t/plugins" ;; specify the subdirectory
   :components
   ((:file "plugins")
     (:file "add-and-cut" :depends-on ("plugins"))
@@ -43,7 +43,7 @@
 
 (defsystem "common-tones/generators"
   :depends-on ("common-tones")
-  :pathname "t/" ;; specify the subdirectory
+  :pathname "t/generators" ;; specify the subdirectory
   :components
   ((:file "generators")
    (:file "all-pass" :depends-on ("generators"))
