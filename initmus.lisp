@@ -9,7 +9,7 @@
 (defvar *clm-source-directory* "")
 (defvar *clm-binary-directory* "")
 (defvar *clm-ins-directory* nil)
-(defvar *clm-compiler-name* #-windoze "cc" #+windoze "cl")         
+(defvar *clm-compiler-name* #-windoze "cc" #+windoze "cl")
 					;this is set in all.lisp via the envirionment variable "CC"
 
 
@@ -18,9 +18,7 @@
 (load "generics.lisp")
 
 (defvar *clm-instruments* nil)		;list of currently loaded instruments
-
 (defvar *clm-linked* nil)
-
 
 (defun double (x) (coerce x 'double-float))
 
@@ -36,7 +34,7 @@
 	    `(make-array ,lim :element-type 'double-float :initial-element (coerce 0.0 'double-float)
 			 #+lispworks :allocation #+lispworks :static)
 	    ))))
-      
+
 (defmacro make-double-array (lim &key initial-contents initial-element)
   (let ((ic initial-contents)
 	(ie initial-element))
@@ -62,10 +60,10 @@
 	    `(make-array ,len :element-type ',type :initial-element 0
 			 #+lispworks :allocation #+lispworks :static)))))
 
- 
+
 (defun print-hash (tab &optional (stream t)) (maphash #'(lambda (a b) (format stream "~A ~A~%" a b)) tab))
 
-(defun clm-print (fstr &rest args) 
+(defun clm-print (fstr &rest args)
   ;; 30-Sep-96 allow file output(?)
   (if (stringp fstr)
       (princ (apply #'format nil fstr args))
@@ -88,9 +86,9 @@
 
 (defvar *clm-lisp-name* "lisp")
 
-(defvar *clm-c-options* 
-  #+sgi " -DMUS_SGI" 
-  #+sun " -DMUS_SUN" 
+(defvar *clm-c-options*
+  #+sgi " -DMUS_SGI"
+  #+sun " -DMUS_SUN"
   #+(and linux (not alsa)) " -DMUS_LINUX" #+(and linux alsa) " -DMUS_LINUX -DHAVE_ALSA"
   #+hpux " -DMUS_HPUX"
   #+windoze " -DMUS_WINDOZE"
@@ -109,7 +107,7 @@
 
 (defvar *so-ext* nil)
 
-;;; we also need restart-case in all lisps.  
+;;; we also need restart-case in all lisps.
 ;;;  In later ACL's it is built-in.
 ;;;  In CMU-CL it is broken.
 
@@ -120,7 +118,7 @@
   (apply #'cerror continue-control error-control args)
   ;; if we get here, we've been told to go on
   (if continue-test
-      (loop do 
+      (loop do
 	(progn
 	  (princ (format nil "new value (return=~A):" continue-default-value))
 	  (multiple-value-bind (new-str eof) (read-line)
@@ -149,9 +147,9 @@
 	   (if (or (= parglen 1) (and (> parglen 2) (keywordp (second passed-args))))
 	       (apply #',keyed-name ,(first argnames) (first passed-args) (rest passed-args))
 	     (if (or (= parglen 2) (and (> parglen 3) (keywordp (third passed-args))))
-		 (apply #',keyed-name 
-			,(first argnames) (first passed-args) 
-			,(second argnames) (second passed-args) 
+		 (apply #',keyed-name
+			,(first argnames) (first passed-args)
+			,(second argnames) (second passed-args)
 			(nthcdr 2 passed-args))
 	       (let ((i 0))
 		 (loop for arg in passed-args while (not (keywordp arg)) do (incf i))
@@ -173,4 +171,3 @@
 
 (defvar *output* nil)
 (defvar *reverb* nil)
-
