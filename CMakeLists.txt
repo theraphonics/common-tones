@@ -6,7 +6,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 include_directories(headers)
 
 set(SRC_FILES
-    src/xen
     src/io
     src/headers
     src/audio
