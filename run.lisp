@@ -414,7 +414,7 @@
 	  (let ((var (make-compiler-temp)))
 	    #+sbcl (if (and (symbolp (car x))
 			    (string-equal "SRC" (symbol-name (car x))))  ; sbcl apparently exports SRC but it's in about 40 packages...
-		       (return-from sbcl-stupidity (apply (clm-function 'CLM::SRC) (list var x))))
+		       (return-from sbcl-stupidity (apply (clm-function 'COMMON-TONES::SRC) (list var x))))
 	    (if (clm-function (car x))
 		(apply (clm-function (car x)) (list var x))
 	      (if (and (listp (car x)) (eq (caar x) 'lambda))
@@ -2052,7 +2052,7 @@
 #+excl(defconstant SIGINT_C 12)
 #+(and excl acl-50)
   (progn
-    (ff:defun-foreign-callable c-sigint () (setf clm::*interrupted* 1))
+    (ff:defun-foreign-callable c-sigint () (setf common-tones::*interrupted* 1))
     (ff:register-foreign-callable 'c-sigint SIGINT_C))
 
 ;;; sbcl traps sigint: doc/manual/ffi.texinfo
@@ -7058,9 +7058,9 @@
 					 (symbol-name name)
 					 "-"
 					 (symbol-name (if (listp field) (first field) field)))))
-	   `(progn (clm::def-clm-fun (intern ,fieldname)
-		     #'(lambda (var x) (package-op 'clm::<aref> var (list 'aref (cadr x) ,i))))
-		   (push (list (intern ,fieldname) 'clm::<setf-aref> (list ,i)) clm::setf-functions)))))))
+	   `(progn (common-tones::def-clm-fun (intern ,fieldname)
+		     #'(lambda (var x) (package-op 'common-tones::<aref> var (list 'aref (cadr x) ,i))))
+		   (push (list (intern ,fieldname) 'common-tones::<setf-aref> (list ,i)) common-tones::setf-functions)))))))
 
 
 (defmacro def-clm-float-struct (name &rest fields)
@@ -7081,9 +7081,9 @@
 					 (symbol-name name)
 					 "-"
 					 (symbol-name (if (listp field) (first field) field)))))
-	   `(progn (clm::def-clm-fun (intern ,fieldname)
-		     #'(lambda (var x) (package-op 'clm::<double-aref> var (list 'aref (cadr x) ,i) :clm-real)))
-		   (push (list (intern ,fieldname) 'clm::<setf-double-aref> (list ,i) :clm-real) clm::setf-functions)))))))
+	   `(progn (common-tones::def-clm-fun (intern ,fieldname)
+		     #'(lambda (var x) (package-op 'common-tones::<double-aref> var (list 'aref (cadr x) ,i) :clm-real)))
+		   (push (list (intern ,fieldname) 'common-tones::<setf-double-aref> (list ,i) :clm-real) common-tones::setf-functions)))))))
 
 
 ;;; ---------------- RUN*
@@ -7886,7 +7886,7 @@
     (values ni nr)))
 
 (defun pv ()
-  (maphash #'(lambda (k v) (format t "~A ~A~%" k v)) clm::vars))
+  (maphash #'(lambda (k v) (format t "~A ~A~%" k v)) common-tones::vars))
 
 (defun load-vars (i r varlist vallist datai datar)
   ;; set variable pointers while loading data
