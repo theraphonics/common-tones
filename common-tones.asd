@@ -10,9 +10,8 @@
     :serial t
     :components
     ((:file "common-tones")
-     (:file "constants")
-     (:file "generics")
-     (:file "initmus")
+    (:file "initmus")
+     (:file "defaults")
      (:file "all")
      (:file "ffi")
      (:file "mus")
