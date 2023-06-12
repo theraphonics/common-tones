@@ -1,5 +1,5 @@
 (defpackage :common-tones/plugins
-  (:use :common-tones)
+  (:use :cl)
   (:export
     #:add
     #:cut

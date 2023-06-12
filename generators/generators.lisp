@@ -1,4 +1,4 @@
 (defpackage :common-tones/generators
-  (:use :common-tones))
+  (:use :cl))
 
 (in-package :common-tones/generators)

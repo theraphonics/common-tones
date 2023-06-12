@@ -8,10 +8,23 @@
     :author "Josh Armenta"
     :licence "BSD"
     :components
-    ((:file "common-tones")
+    ((:module "plugins" 
+      :components
+        ((:file "plugins")
+          (:file "add-and-cut" :depends-on ("plugins"))
+          (:file "db-to-linear" :depends-on ("plugins"))
+          (:file "dur-gliss" :depends-on ("plugins"))
+          (:file "fft-mag-and-phase" :depends-on ("plugins"))
+          (:file "gliss-dur" :depends-on ("plugins"))
+          (:file "hey" :depends-on ("plugins"))
+          (:file "load-ins" :depends-on ("plugins"))
+          (:file "remote-play" :depends-on ("plugins"))
+          (:file "rmix" :depends-on ("plugins"))
+          (:file "sf-ssf" :depends-on ("plugins"))
+          (:file "with-instruments" :depends-on ("plugins"))))
+    (:file "common-tones")
     (:file "initmus" :depends-on ("common-tones"))
      (:file "defaults" :depends-on ("common-tones"))
-     ; (:file "all")
      ; (:file "ffi")
      (:file "mus" :depends-on ("common-tones"))
      ;(:file "run" :depends-on ("common-tones"))
@@ -23,11 +36,10 @@
      ))
 
 (defsystem "common-tones/plugins"
-  :depends-on ("common-tones")
-  :pathname "t/plugins" ;; specify the subdirectory
+  :pathname "plugins" ;; specify the subdirectory
   :components
   ((:file "plugins")
-    (:file "add-and-cut" :depends-on ("plugins"))
+   ; (:file "add-and-cut" :depends-on ("plugins"))
     (:file "db-to-linear" :depends-on ("plugins"))
     (:file "dur-gliss" :depends-on ("plugins"))
     (:file "fft-mag-and-phase" :depends-on ("plugins"))
@@ -41,7 +53,7 @@
 
 (defsystem "common-tones/generators"
   :depends-on ("common-tones")
-  :pathname "t/generators" ;; specify the subdirectory
+  :pathname "qgenerators" ;; specify the subdirectory
   :components
   ((:file "generators")
    (:file "all-pass" :depends-on ("generators"))
@@ -81,3 +93,4 @@
    (:file "wave-train" :depends-on ("generators"))
    (:file "waves" :depends-on ("generators"))
    (:file "waveshaping" :depends-on ("generators"))))
+
