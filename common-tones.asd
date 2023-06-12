@@ -2,7 +2,7 @@
 (in-package :asdf)
 
 (defsystem "common-tones"
-    :depends-on ("cffi" "bordeaux-threads")
+    :depends-on ("cffi" "bordeaux-threads" "cffi-grovel")
     :description "common-tones synthesis library (forked from CLM-V)"
     :version "0.1"
     :author "Josh Armenta"
@@ -18,7 +18,6 @@
      (:file "sound" :depends-on ("common-tones"))
      (:file "defins" :depends-on ("common-tones"))
      (:file "env" :depends-on ("common-tones"))
-     ;(:file "export" :depends-on ("common-tones"))
      (:file "clm1" :depends-on ("common-tones"))
      ;(:file "temp-init" :depends-on ("common-tones"))
      ))

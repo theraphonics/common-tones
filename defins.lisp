@@ -1,30 +1,19 @@
 ;;; definstrument, various instrument debugging functions
-
 ;;;
-
 ;;; used to be in sound.lisp, but split out to make debugging the new versions simpler.
-
 ;;; Definstrument was straightforward until version 3 of cmus -- in its new incarnation
-
 ;;; it has to know how to write/compile/load c modules on each system.  And as of
-
 ;;; 12-Feb-97 it has to be able to live with any combination of lisp/machine output
-
 ;;; on the same directory (i.e. user here at ccrma starts clm, which automatically chooses
-
 ;;; whichever lisp/machine combination happens to work there, all such machines
-
 ;;; mounting the user's directories, so when he loads his instruments, clm has to
-
 ;;; find the right versions).
-
 
 (in-package :common-tones)
 
 (defvar *clm-snd-in-progress* nil)
 (defvar *current-ins-args* nil)
 
-#-clisp
 (defmacro set-instrument-properties (name &optional file print-function)
   `(progn
      (setf (get ,name :ins-vars) ',variable-load-list)
@@ -33,15 +22,6 @@
      (setf (get ,name :print-function) ,print-function)
      (setf (get ,name :c-file-name) ,file)))
 
-#+clisp
-(defmacro set-instrument-properties (name &optional file print-function library)
-  `(progn
-     (setf (get ,name :ins-vars) ',variable-load-list)
-     (setf (get ,name :ins-args) ',common-tones::*current-ins-args*)
-     (setf (get ,name :c-proc) ,(symbol-name common-tones::*c-proc*))
-     (setf (get ,name :print-function) ,print-function)
-     (setf (get ,name :library) ,library)
-     (setf (get ,name :c-file-name) ,file)))
 
 (defun clm-datai (&optional name) (get (or name *clm-ins*) :datai))
 (defun clm-datar (&optional name) (get (or name *clm-ins*) :datar))
@@ -81,37 +61,9 @@
 
 (defun di (&optional name) (describe-instrument name))
 
-#+clisp (ffi:default-foreign-language :stdc)
-
-#+openmcl
-(defun fixup-gensyms-and-write (lst &key stream)
-  ;; (defun hi () (let ((#:G123 0)) #:G123)) is an error in Lisp! so before writing the
-  ;; ins-code to the intermediate file in the *ins-file-loading* case, we need to
-  ;; strip out the #:'s and replace them with something unlikely such as "clm_".
-  ;; The keyword "stream" is used to mimic lisp's write function which we're replacing.
-  (let ((code (write-to-string lst))
-	(looking nil))
-    (loop for char across code do
-      (if (char= char #\#)
-	  (setf looking t)
-	(if looking
-	    (progn
-	      (if (char= char #\:)
-		  (write-string "clm_" stream)
-		(progn
-		  (write-char #\# stream) ;# but not #:
-		  (write-char char stream)))
-	      (setf looking nil))
-	  (write-char char stream))))))
-
 (defun noopfun (x y z)
   (declare (ignore y z))
   x)
-
-#+cltl2
-(defun without-extension (name)
-  (let ((ext (pathname-type name)))
-    (subseq name 0 (- (length name) (1+ (length ext))))))
 
 (defvar *c-flags* nil)
 (setf *c-flags*
@@ -140,22 +92,14 @@
 (defvar *libclm-pathname* (format nil "~Alibclm.~A" *clm-binary-directory* *so-ext*))
 
 (defvar *ins-file-loading* nil)
-#+(or clisp cmu) (defvar so-ctr 0)
 
 ;;; *definstrument-hook* can be set to a function that returns a
-
 ;;; form to include in the definstrument expansion. If the hook
-
 ;;; is already set at macroexpansion time then its result will
-
 ;;; be expanded and compiled with the instrument definition.
-
 ;;; Otherwise, if the hook is set at load time then its result
-
 ;;; will be evaluated when the ins is loaded. Otherwise the hook
-
 ;;; is nil and it has no effect.
-
 
 (defvar *definstrument-hook* nil)
 
@@ -188,14 +132,14 @@
          ;; include a form that checks at load time.
          (hookform (if *definstrument-hook*
                      (funcall *definstrument-hook* name args)
-                     `(eval-when #-excl (:load-toplevel)
+                     `(eval-when #-excl (:load-toplevel) 
 				 #+excl (load eval)
                         (if *definstrument-hook*
                           (eval (funcall *definstrument-hook*
                                          ',name ',args))))))
          )
 
-    #+clisp (let ((lib (get name :library))) ; if edit + recompile, need to unload old .so
+    #+clisp (let ((lib (get name :library))) ; if edit + recompile, need to unload old .so 
 	      (when lib
 		(ffi:close-foreign-library lib)
 		(setf (get name :library) nil)))
@@ -204,7 +148,7 @@
     (let* ((lsp-name (concatenate 'string "clm_" (string-downcase (lisp->c-name (symbol-name name)))))
 	   ;; since *ins-file-loading* doesnt recompute cfile each time name must be reused.
 	   #-(or sbcl lispworks) (c-ff (if common-tones::*ins-file-loading* (intern lsp-name) (gentemp lsp-name)))
-	   #+(or sbcl lispworks) (c-ff (intern lsp-name)) ; recompilation (""can't find alien function ...") bugfix thanks to Todd Ingalls
+	   #+(or sbcl lispworks) (c-ff (intern lsp-name)) ; recompilation (""can't find alien function ...") bugfix thanks to Todd Ingalls 
 	   #+(or cmu sbcl excl clisp lispworks) (c-ff-name (symbol-name c-ff))
 	   #+(or cmu sbcl lispworks) (c-ff-cmu (gentemp lsp-name))
 	   (ins-file-name (or #+(and excl cltl2) (truename (or excl:*source-pathname* *load-pathname*))
@@ -270,8 +214,8 @@
 		(progn
 		  (setf *c-file* (open c-file-name :direction :output :if-exists :supersede :if-does-not-exist :create))
 		  (princ (format nil "; Writing ~S~%" c-file-name))
-
-		  (format *c-file* "/* translate ~A in ~A to C~% *   written ~A by CLM of ~A~% */~%~%"
+		  
+		  (format *c-file* "/* translate ~A in ~A to C~% *   written ~A by COMMON-TONES of ~A~% */~%~%"
 			  (string-downcase name)
 			  ins-file-name
 			  (timestring)
@@ -303,7 +247,7 @@
 	      ))		;unwind-protect cleanup
 	  `(progn
              ,hookform
-             (eval-when #-excl (:compile-toplevel)
+             (eval-when #-excl (:compile-toplevel) 
 			#+excl (compile load eval)
 	       (when (or (not (probe-file ,dependent-file))
 			 (not (probe-file ,antecedent-file))
@@ -314,7 +258,7 @@
 				  (> (file-write-date (truename ,c-file-name)) (file-write-date (truename ,l-file-name))))))
 
 		 ;;; ---------------------------------------- COMPILE ----------------------------------------
-
+		 
 		 (princ (format nil "; Compiling ~S~%" ,c-file-name))
 
 		 ;;; ---------------- EXCL-WINDOWS
@@ -341,11 +285,11 @@
 		 ;;; ---------------- CLISP
 		 ;;; clisp inserts unrequested cr's!! can't use format or run-in-shell here
 		 #+(and clisp (not mac-osx))
-		 (ext::shell (concatenate 'string ,*clm-compiler-name* " " ,c-file-name " " ,*c-compiler-options*
+		 (ext::shell (concatenate 'string ,*clm-compiler-name* " " ,c-file-name " " ,*c-compiler-options* 
 					  " -shared -o " ,so-file-name " -L" *clm-binary-directory* " " *libclm-pathname* (string #\Newline)))
 
 		 #+(and clisp mac-osx)
-		 (ext::shell (concatenate 'string ,*clm-compiler-name* " " ,c-file-name " " ,*c-compiler-options*
+		 (ext::shell (concatenate 'string ,*clm-compiler-name* " " ,c-file-name " " ,*c-compiler-options* 
 					  " -shared -dynamiclib -o " ,so-file-name " -L" *clm-binary-directory* " " *libclm-pathname* (string #\Newline)))
 
 		 ;;; ---------------- NOT OPENMCL/MCL/EXCL-WINDOWS/OSX/CLISP
@@ -356,31 +300,27 @@
 
 
 		 ;;; ---------------------------------------- LOAD ----------------------------------------
-
+		 
 			#+(and (or excl cmu sbcl lispworks (and openmcl (or linux-target linuxppc-target))))
 			(princ (format nil "; Creating shared object file ~S~%" ,so-file-name))
 
 ;;; ---------------- SGI (all)
-
 			#+(and (or excl cmu sbcl) sgi)
 			(common-tones::run-in-shell "ld" (format nil "-shared -all ~A -o ~A ~A -L~A -lclm -lm -lc~%"
 							,so-file-name ,l-file-name *clm-binary-directory*))
 			;; what about -laudio?
 
 ;;; ---------------- SUN (not acl 7)
-
 			#+(and (or excl cmu sbcl) (not acl-70) sun)
 			(common-tones::run-in-shell "ld" (format nil "-G -o ~A ~A -L~A -lclm -lm -lc~%"
 							,so-file-name ,l-file-name *clm-binary-directory*))
 
 ;;; ---------------- SUN (acl 7)
-
 			#+(and acl-70 sun)
 			(common-tones::run-in-shell "ld" (format nil "-G -o ~A ~A -L~A ~A -lm -lc~%"
 							,so-file-name ,l-file-name *clm-binary-directory* *libclm-pathname*))
 
 ;;; ---------------- LISPWORKS
-
 			#+lispworks
 			(common-tones::run-in-shell "gcc"
 					   (format nil
@@ -389,44 +329,38 @@
 						   ,so-file-name ,l-file-name *libclm-pathname*
 						   "-lm"))
 ;;; ---------------- LINUX (all except clisp), NETBSD
-
 			#+(and (or excl cmu sbcl) (or linux netbsd) (not freebsd))
 			(common-tones::run-in-shell "ld" (format nil "-shared -whole-archive -o ~A ~A ~A ~A~%"
 							,so-file-name ,l-file-name *libclm-pathname*
 							"-lm"))
 
 ;;; ---------------- OSX (ACL 7)
-
 			#+(and acl-70 (not acl-80) macosx)
 			(common-tones::run-in-shell "ld"
 					   (format nil "-bundle /usr/lib/bundle1.o -flat_namespace -undefined suppress -o ~A ~A -lm -lc -lcc_dynamic -framework CoreAudio "
 						   ,so-file-name ,l-file-name))
 
 ;;; ---------------- OSX (ACL 8)
-
 			#+(and acl-80 macosx)
 			(common-tones::run-in-shell "ld"
 					   (format nil "-bundle /usr/lib/bundle1.o -flat_namespace -undefined suppress -o ~A ~A -lm -lc -framework CoreAudio "
 						   ,so-file-name ,l-file-name))
 
 ;;; ---------------- OSX CMUCL/SBCL
-
 			#+(and mac-osx (or cmu sbcl))
 			(common-tones::run-in-shell "gcc"
 					   (format nil "-o ~A ~A ~A -dynamiclib" ,so-file-name ,l-file-name *libclm-pathname*))
 
 ;;; ---------------- PPC (openmcl)
-
 			#+(and openmcl (or linux-target linuxppc-target))
 			(common-tones::run-in-shell "ld" (format nil "-shared -whole-archive -o ~A ~A ~A~%"
 							,so-file-name ,l-file-name *libclm-pathname*))
 
 ;;; ---------------- FREEBSD
-
 			#+(and cmu freebsd)
 			(common-tones::run-in-shell "ld" (format nil "-r -L/usr/lib -o ~A ~A -L~A -lm~%"
 							,so-file-name ,l-file-name *clm-binary-directory*))
-
+		 
 		 ;; this puts the absolute location of libclm.so in the ins .so file -- another way to solve
 		 ;; this problem would be to ask the user to add the clm directory to his LD_LIBRARY_PATH
 		 ;; environment variable: (.cshrc): setenv LD_LIBRARY_PATH /usr/lib:/lib:/user/b/bil/linux/clm
@@ -435,10 +369,9 @@
 		 (common-tones::run-in-shell "ld" (format nil "-Bshareable -Bdynamic -o ~A ~A ~A ~A~%"
 						 ,so-file-name ,l-file-name *libclm-pathname*
 						 "-lm"))
-
+		 
 
 ;;; ---------------- WINDOWS
-
 			#+(and excl windoze)
 			(common-tones::run-in-shell "cl" (concatenate 'string " -D_MT -MD -nologo -LD -Zi -W3 -Fe"
 							     ,so-file-name " "
@@ -485,13 +418,13 @@
 	   (ff:def-foreign-call (,c-ff ,c-ff-name)
 	       ((datar (* :float) array) (len :int) (datai (* :int) array) (ilen :int))
 	     :returning :int)
-
+	     
 	   #+lispworks
 	   (fli::define-foreign-function (,c-ff ,c-ff-name)
 	       ((datar :lisp-array) (len :int) (datai :lisp-array) (ilen :int))
 	     :result-type :int
 	     :module ,c-ff-name)
-
+	   
 	   #+acl-70
 	   (ff:def-foreign-call (,c-ff ,c-ff-name)
 				((datar (:array :double)) (len :int) (datai (:array :int)) (ilen :int))
@@ -500,12 +433,12 @@
 	   #+cmu
 	   (alien:def-alien-routine (,c-ff-name ,c-ff-cmu) c-call:int
 				    (datar (* double-float)) (len c-call:int) (datai (* c-call:int)) (ilen c-call:int))
-
+	     
 	   #+sbcl
 	   (sb-alien:define-alien-routine (,c-ff-name ,c-ff-cmu) sb-alien:int
 	     (datar (* double-float))
 	     (len sb-alien:int) (datai (* sb-alien:int)) (ilen sb-alien:int))
-
+	   
 	   #+cmu
 	   (defun ,c-ff (c &optional d e f)
 	     (,c-ff-cmu (array-data-address c) d (array-data-address e) f))
@@ -514,9 +447,9 @@
 	   (defun ,c-ff (c &optional d e f)
 	     (,c-ff-cmu (array-data-address c) d (array-data-address e) f))
 
-	   #+clisp (ffi:def-call-out ,c-ff
-		       (:name ,c-ff-name)
-		     (:library (expand-filename->string ,so-file-name))
+	   #+clisp (ffi:def-call-out ,c-ff 
+		       (:name ,c-ff-name) 
+		     (:library (expand-filename->string ,so-file-name)) 
 		     (:language :stdc)
 		     (:return-type ffi:int)
 		     (:arguments (datar (ffi:c-array-ptr ffi:double-float))
@@ -524,12 +457,6 @@
 				 (datai (ffi:c-array-ptr ffi:int))
 				 (ilen ffi:int)))
 
-	   #+openmcl
-	   ;; this (openmcl instrument linkage) probably needs the -to-c-and-lisp linkages for run*
-	   ;;   I can't remember now what that ^ comment refers to!
-	   (defun ,c-ff (c &optional d e f)
-	     (ccl::external-call (common-tones::clm_ffi_name ,(string c-ff)) :address c
-				 :signed d :address e :signed f :signed))
 
 	   (pushnew ',name *clm-instruments*)
 	   (defun ,name ,args
@@ -563,28 +490,24 @@
   (when (not *clm-linked*)
     (mus-sound-initialize)
     (initialize-cmus)
-    #-windoze (if (probe-file "/etc/clm.conf") (load "/etc/clm.conf"))
     )
   (setf *clm-linked* t))
-
 
 (defvar clm-cleanup-functions nil)
 
 (defun cleanup-clm ()
-  #+excl (when *dac-pid* (loop while (numberp (system:os-wait))))
   (when clm-cleanup-functions
     (loop for func in clm-cleanup-functions do (funcall func))))
 
-#+excl (eval-when (compile load eval) (excl:advise excl:exit :before clm-exit-advice nil (cleanup-clm)))
-
-(defun exit () (cl-user::quit))
+(defun bye () (uiop:quit))
+(defun exit () (uiop:quit))
 
 #+(or cmu sbcl openmcl excl)
 (defun restart-clm ()
-  #+cmu (load-foreign *libclm-pathname*)
-  #+sbcl (sb-alien:load-shared-object *libclm-pathname*)
+	(cffi:load-foreign-library *libclm-pathname*)
   (setf *clm-linked* nil)
   (reset-headers)
   (reset-audio)
   (reset-io)
   (clm-initialize-links))
+
