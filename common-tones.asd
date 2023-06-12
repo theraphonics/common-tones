@@ -7,21 +7,21 @@
     :version "0.1"
     :author "Josh Armenta"
     :licence "BSD"
-    :serial t
     :components
     ((:file "common-tones")
-    (:file "initmus")
-     (:file "defaults")
+    (:file "initmus" :depends-on ("common-tones"))
+     (:file "defaults" :depends-on ("common-tones"))
      ; (:file "all")
      ; (:file "ffi")
-     (:file "mus")
-     (:file "run")
-     (:file "sound")
-     (:file "defins")
-     (:file "env")
-     (:file "export")
-     (:file "clm1")
-     (:file "temp-init")))
+     (:file "mus" :depends-on ("common-tones"))
+     ;(:file "run" :depends-on ("common-tones"))
+     (:file "sound" :depends-on ("common-tones"))
+     (:file "defins" :depends-on ("common-tones"))
+     (:file "env" :depends-on ("common-tones"))
+     ;(:file "export" :depends-on ("common-tones"))
+     (:file "clm1" :depends-on ("common-tones"))
+     ;(:file "temp-init" :depends-on ("common-tones"))
+     ))
 
 (defsystem "common-tones/plugins"
   :depends-on ("common-tones")
