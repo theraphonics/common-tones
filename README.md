@@ -6,7 +6,7 @@ Threading has been rewritten to use Bordeaux-threads and the main ffi interface 
 
 The build process has been entirely rewritten to work with ASDF3 and Quicklisp.
 
-The main mus file has been broken out into generators/ to isolate issues in debugging.
+The main `mus` file has been broken out into `generators/*` to isolate issues in debugging.
 
 Todo’s include updating run macro and the defins, as well as automating the full build process, but from a portability perspective this should be a lot more portable. Once I finish that I plan to add modern linkages to the audio stack and update the code to use 64-bit floats as an option.
 
