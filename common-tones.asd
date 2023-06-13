@@ -69,6 +69,4 @@
         (:file "two-zero")
         (:file "wave-train")
         (:file "waves")
-        (:file "waveshaping")
-        ))
-     ))
+        (:file "waveshaping")))))
