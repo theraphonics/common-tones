@@ -579,19 +579,6 @@
       (princ (apply #'format nil fstr args))
     (apply #'format fstr (car args) (cdr args))))
 
-(defun run-in-shell (prog args)
-  (let ((str (format nil "~A ~A" prog args)))
-    #+debug (progn (print str) (force-output))
-    #+excl (excl:shell str)
-    #+lispworks (sys::run-shell-command str)
-    #+cmu (extensions:run-program "/bin/csh" (list "-fc" str) :output t)
-    #+openmcl (ccl:run-program "/bin/csh" (list "-fc" str) :output t)
-    #+sbcl (sb-ext:run-program "/bin/csh" (list "-fc" str) :output t)
-    #+(and clisp (not ansi-cl)) (lisp::shell str)
-    #+(and clisp ansi-cl) (ext::shell str)
-    #-(or excl cmu sbcl openmcl clisp lispworks) (warn "can't run ~A in a shell" prog)
-    ))
-
 ;;; take care of some minor differences in file names and so on
 
 

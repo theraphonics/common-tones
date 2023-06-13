@@ -154,7 +154,7 @@
 			      ))
 	   (c-file-name (or *c-file-name*
 			    ;; try to find compile-time input file name so that the subsequent .c and .o files
-			    ;; are written to the same directory.
+			    ;; are writeten to the same directory.
 			    (filename->string
 			     (merge-pathnames
 			      (concatenate 'string
