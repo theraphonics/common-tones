@@ -16,7 +16,7 @@
      (:file "sound" :depends-on ("common-tones"))
      (:file "defins" :depends-on ("common-tones"))
      (:file "env" :depends-on ("common-tones"))
-     (:file "clm1" :depends-on ("common-tones"))
+     (:file "legacy" :depends-on ("common-tones"))
      ;(:file "sndlib2clm" :depends-on ("common-tones"))
      (:module "plugins" :depends-on ("common-tones")
        :components
