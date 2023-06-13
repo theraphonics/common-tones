@@ -1,12 +1,5 @@
 (in-package :common-tones)
 
-;;; import some sndlib names to CLM
-
-;;;
-
-;;; file name is no longer accurate (this is now CL/CLM-specific, but aims at sndlib stuff mostly)
-
-
 (cffi:defcfun ("mus_error_type_to_string" mus-error-type->string) :cstring
   (err :int))
 
@@ -80,11 +73,15 @@
 (cffi:defcfun ("clm_mus_set_clipping" clm-mus-set-clipping) :int
   (clipped :int))
 
-(cffi:defcfun ("clm_mus_clipping" clm-mus-clipping) :int)
+(cffi:defcfun ("clm_mus_clipping" clm-mus-clipping)
+  :int)
 
-(cffi:defcfun ("clm_header_samples" mus-header-samples) :int)
+(cffi:defcfun ("clm_header_samples" mus-header-samples)
+  :int)
 
-(cffi:defcfun ("clm_header_data_location" mus-header-data-location) :int)
+(cffi:defcfun ("clm_header_data_location" mus-header-data-location)
+  :int)
+
 (cffi:defcvar ("mus_header_chans" mus-header-chans) :int)
 (cffi:defcvar ("mus_header_srate" mus-header-srate) :int)
 (cffi:defcvar ("mus_header_type" mus-header-type) :int)
@@ -99,31 +96,57 @@
 (cffi:defcfun ("mus_header_mark_position" mus-header-mark-position) :int (id :int))
 (cffi:defcvar ("mus_header_base_note" mus-header-base-note) :int)
 (cffi:defcvar ("mus_header_base_detune" mus-header-base-detune) :int)
+
 (cffi:defcfun ("mus_header_set_raw_defaults" mus-header-set-raw-defaults) :void
-  (sr :int) (chn :int) (frm :int))
+  (sr :int)
+  (chn :int)
+  (frm :int))
+
 (cffi:defcvar ("clm_header_true_length" mus-header-true-length) :int)
 (cffi:defcvar ("mus_header_original_sample_type" mus-header-original-format) :int)
+
 (cffi:defcfun ("clm_samples_to_bytes" mus-samples-to-bytes) :int
-  (format :int) (size :int))
+  (format :int)
+  (size :int))
+
 (cffi:defcfun ("clm_bytes_to_samples" mus-bytes-to-samples) :int
-  (format :int) (size :int))
-(cffi:defcfun ("mus_header_read" mus-header-read) :int (name :string))
+  (format :int)
+  (size :int))
+
+(cffi:defcfun ("mus_header_read" mus-header-read) :int
+  (name :string))
+
 (cffi:defcfun ("clm_header_write" mus-header-write) :int
-  (name :string) (type :int) (srate :int) (chans :int)
-  (loc :int) (size :int) (format :int) (comment :string)
+  (name :string)
+  (type :int)
+  (srate :int)
+  (chans :int)
+  (loc :int)
+  (size :int)
+  (format :int)
+  (comment :string)
   (len :int))
+
 (cffi:defcfun ("clm_header_aux_comment_start" mus-header-aux-comment-start) :int
   (n :int))
+
 (cffi:defcfun ("clm_header_aux_comment_end" mus-header-aux-comment-end) :int
   (n :int))
+
 (cffi:defcfun ("mus_header_initialize" mus-header-initialize) :int)
+
 (cffi:defcfun ("clm_mus_header_writable" clm-mus-header-writable) :int
-  (type :int) (format :int))
+  (type :int)
+  (format :int))
+
 (cffi:defcvar ("mus_header_sf2_entries" mus-header-sf2-entries) :int)
+
 (cffi:defcfun ("mus_header_sf2_name" mus-header-sf2-name) :string
   (n :int))
+
 (cffi:defcfun ("mus_header_sf2_start" mus-header-sf2-start) :int
   (n :int))
+
 (cffi:defcfun ("mus_header_sf2_end" mus-header-sf2-end) :int
   (n :int))
 
@@ -140,7 +163,6 @@
 (cffi:defcfun ("mus_bytes_per_sample" mus-bytes-per-sample) :int
   (format :int))
 
-#+(and sbcl linux)
 (cffi:defcfun ("mus_oss_set_buffers" mus-oss-set-buffers) :void
   (num :int)
   (size :int))
@@ -151,7 +173,6 @@
 
 (cffi:defcfun ("mus_reset_io_c" reset-io) :void)
 
-#+(and mac-osx sbcl)
 (cffi:defcfun ("mus_audio_output_properties_mutable" mus-audio-output-properties-mutable-1) :int
   (n :int))
 
@@ -162,9 +183,7 @@
                  mutable
                (if mutable
                    1 0))))
-    (setf *clm-output-properties-mutable* arg)
-    #+mac-osx (mus-audio-output-properties-mutable-1 arg)
-    )) ; this has no effect since Lisp calls sndplay
+    (setf *clm-output-properties-mutable* arg))) ; this has no effect since Lisp calls sndplay
 
 (defun mus-file-probe (name)
   (not (zerop (clm-mus-file-probe name))))

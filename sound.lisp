@@ -71,7 +71,7 @@
 	  (progn
 	  ;; Wait for a previous play command
 	  	(when *dac-pid*
-	  		(uiop:process-wait *dac-pid*))
+	  		(uiop:wait-process *dac-pid*))
 	  	(setf *dac-pid*
 	  		(uiop:run-program "sndplay" command-args :wait wait)))
 	  (if filename (setf last-dac-filename filename)))))
@@ -79,11 +79,11 @@
 
 (defun stop-playing ()
   (when *dac-pid*
-  	(let ((pid (uiop:process-pid *dac-pid*)))
+  	(let ((pid (uiop:process-info-pid *dac-pid*)))
   		(print pid)
   		(force-output)
-  		(uiop:process-kill pid :sigterm)
-  		(uiop:process-wait pid))
+  		(uiop:terminate-process pid :sigterm)
+  		(uiop:wait-process pid))
   	(setf *dac-pid* nil)))
 
 (defun dac (&optional name-1 &key
