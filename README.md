@@ -2,7 +2,7 @@
 
 This is `common-tones`. `common-tones` is a fork of CLM-5.
 
-Threading has been rewritten to use Bordeaux-threads and the main ffi interface has been rewritten to use cffi.
+Threading has been rewritten to use `bordeaux-threads` and the main ffi interface has been rewritten to use `cffi`.
 
 The build process has been entirely rewritten to work with ASDF3 and Quicklisp.
 
