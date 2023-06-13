@@ -139,19 +139,14 @@
                                          ',name ',args))))))
          )
 
-    #+clisp (let ((lib (get name :library))) ; if edit + recompile, need to unload old .so
-	      (when lib
-		(ffi:close-foreign-library lib)
-		(setf (get name :library) nil)))
-
     (setf *current-ins-args* args)
     (let* ((lsp-name (concatenate 'string "clm_" (string-downcase (lisp->c-name (symbol-name name)))))
 	   ;; since *ins-file-loading* doesnt recompute cfile each time name must be reused.
-	   #-(or sbcl lispworks) (c-ff (if common-tones::*ins-file-loading* (intern lsp-name) (gentemp lsp-name)))
-	   #+(or sbcl lispworks) (c-ff (intern lsp-name)) ; recompilation (""can't find alien function ...") bugfix thanks to Todd Ingalls
-	   #+(or cmu sbcl excl clisp lispworks) (c-ff-name (symbol-name c-ff))
-	   #+(or cmu sbcl lispworks) (c-ff-cmu (gentemp lsp-name))
-	   (ins-file-name (or #+(and excl cltl2) (truename (or excl:*source-pathname* *load-pathname*))
+	  (c-ff (if common-tones::*ins-file-loading* (intern lsp-name) (gentemp lsp-name)))
+	  (c-ff (intern lsp-name)) ; recompilation (""can't find alien function ...") bugfix thanks to Todd Ingalls
+	  (c-ff-name (symbol-name c-ff))
+    (c-ff-cmu (gentemp lsp-name))
+   	(ins-file-name (or #+(and excl cltl2) (truename (or excl:*source-pathname* *load-pathname*))
 			      #+(and excl (not cltl2)) (truename excl:*source-pathname*)
 			      #+(or clisp cmu sbcl lispworks) (or *load-pathname* *compile-file-truename*) ;this is the CLtL2 name
 			      #+openmcl (or *compile-file-truename* *load-pathname*)
@@ -171,21 +166,10 @@
 	   (l-file-name
 	    (concatenate 'string (subseq c-file-name 0 (- (length c-file-name) 2)) #-windoze ".o" #+windoze ".obj")
 	     )
-	   #+(or excl sbcl openmcl lispworks) (so-file-name (concatenate 'string (subseq c-file-name 0 (- (length c-file-name) 2))  "." *so-ext*))
-	   #+(or clisp cmu) (so-file-name (concatenate 'string (subseq c-file-name 0 (- (length c-file-name) 2)) (format nil "_~D" so-ctr) "." *so-ext*))
-	   #+cmu (cmucl-file-name
-		  (let ((input-file (filename->string (pathname-name (or *load-pathname* *compile-file-truename*)))))
-		    (filename->string
-		     (merge-pathnames
-		      (concatenate 'string input-file ".cmucl")
-		      (or *load-pathname* *compile-file-truename*)))))
+	   (so-file-name (concatenate 'string (subseq c-file-name 0 (- (length c-file-name) 2))  "." *so-ext*))
 	   (ins-code-file (if common-tones::*ins-file-loading* (concatenate 'string (subseq c-file-name 0 (- (length c-file-name) 2))  ".icl")))
 	   ;; ^ this is for openmcl only, I think
 	   )
-      #+(or clisp cmu) (setf so-ctr (1+ so-ctr))
-      ;; multi-instrument files don't work in cmucl -- this is a cmucl bug.
-      #+cmu
-      (with-open-file (fil cmucl-file-name :direction :output :if-exists :supersede :if-does-not-exist :create)
 	(format fil "(load-foreign ~S)~%" so-file-name)
 	;; how to get the compiler's output filename?
 	(format fil "(load ~S)~%"
@@ -238,17 +222,13 @@
 
 		  (setf *c-proc* c-ff)
 		  (setf *lisp-proc* ins-name)
-		  (setf ins-code (walk-form `(locally ,@body) env 'noopfun))
-		  ;; the extra lambda is needed by walk-form
-
-		  )			;unwind-protect progn
+		  (setf ins-code (walk-form `(locally ,@body) env 'noopfun)))			;unwind-protect progn
 	      (close *c-file*)
-	      #+sbcl (setf *c-file* nil)
+	      (setf *c-file* nil)
 	      ))		;unwind-protect cleanup
 	  `(progn
              ,hookform
              (eval-when #-excl (:compile-toplevel)
-			#+excl (compile load eval)
 	       (when (or (not (probe-file ,dependent-file))
 			 (not (probe-file ,antecedent-file))
  			 (> (file-write-date (truename ,antecedent-file)) (file-write-date (truename ,dependent-file)))
@@ -260,126 +240,14 @@
 		 ;;; ---------------------------------------- COMPILE ----------------------------------------
 
 		 (princ (format nil "; Compiling ~S~%" ,c-file-name))
-
-		 ;;; ---------------- EXCL-WINDOWS
-		 #+(and excl windoze)
-		 (common-tones::run-in-shell ,*clm-compiler-name*
-				    (format nil " ~A ~A -Fo~A" ,c-file-name ,*c-compiler-options* ,l-file-name))
-
-		 ;;; ---------------- EXCL-OSX
-		 #+(and excl macosx)
-		 (progn
-		   (common-tones::run-in-shell ,*clm-compiler-name*
-				      (format nil " ~A ~A -c -o ~A~%" ,c-file-name ,*c-compiler-options* ,l-file-name))
-		   (format t "~A ~A ~A -o ~A~%" ,*clm-compiler-name* ,c-file-name ,*c-compiler-options* ,l-file-name))
-
-		 ;;; ---------------- OPENMCL
-		 #+(and openmcl darwin)
-		 (let ((command (concatenate 'string
-									 #+x8632-target " -arch i386"
-									 (format nil " -bundle ~A -o ~A ~A -lclm -L~A"
-											 ,c-file-name ,so-file-name ,*c-compiler-options* *clm-binary-directory*))))
-		   (format t "~A ~A~%" ,*clm-compiler-name* command)
-		   (common-tones::run-in-shell ,*clm-compiler-name* command))
-
-		 ;;; ---------------- CLISP
-		 ;;; clisp inserts unrequested cr's!! can't use format or run-in-shell here
-		 #+(and clisp (not mac-osx))
-		 (ext::shell (concatenate 'string ,*clm-compiler-name* " " ,c-file-name " " ,*c-compiler-options*
-					  " -shared -o " ,so-file-name " -L" *clm-binary-directory* " " *libclm-pathname* (string #\Newline)))
-
-		 #+(and clisp mac-osx)
-		 (ext::shell (concatenate 'string ,*clm-compiler-name* " " ,c-file-name " " ,*c-compiler-options*
-					  " -shared -dynamiclib -o " ,so-file-name " -L" *clm-binary-directory* " " *libclm-pathname* (string #\Newline)))
-
-		 ;;; ---------------- NOT OPENMCL/MCL/EXCL-WINDOWS/OSX/CLISP
-		 #-(or clisp (and excl (or windoze macosx)) (and openmcl (not linux-target) (not linuxppc-target)))
-		 (common-tones::run-in-shell ,*clm-compiler-name*
-				    (format nil " ~A ~A -o ~A~%" ,c-file-name ,*c-compiler-options* ,l-file-name))
-
-
+     (uiop:run-program (format nil "~A ~A -o ~A~%" ,*clm-compiler-name* ,*c-compiler-options* ,c-file-name ,l-file-name)
+                  :output t)
 
 		 ;;; ---------------------------------------- LOAD ----------------------------------------
 
-			#+(and (or excl cmu sbcl lispworks (and openmcl (or linux-target linuxppc-target))))
 			(princ (format nil "; Creating shared object file ~S~%" ,so-file-name))
-
-;;; ---------------- SGI (all)
-			#+(and (or excl cmu sbcl) sgi)
-			(common-tones::run-in-shell "ld" (format nil "-shared -all ~A -o ~A ~A -L~A -lclm -lm -lc~%"
-							,so-file-name ,l-file-name *clm-binary-directory*))
-			;; what about -laudio?
-
-;;; ---------------- SUN (not acl 7)
-			#+(and (or excl cmu sbcl) (not acl-70) sun)
-			(common-tones::run-in-shell "ld" (format nil "-G -o ~A ~A -L~A -lclm -lm -lc~%"
-							,so-file-name ,l-file-name *clm-binary-directory*))
-
-;;; ---------------- SUN (acl 7)
-			#+(and acl-70 sun)
-			(common-tones::run-in-shell "ld" (format nil "-G -o ~A ~A -L~A ~A -lm -lc~%"
-							,so-file-name ,l-file-name *clm-binary-directory* *libclm-pathname*))
-
-;;; ---------------- LISPWORKS
-			#+lispworks
-			(common-tones::run-in-shell "gcc"
-					   (format nil
-						   #+lispworks-32 "-m32 -shared -o ~A ~A ~A ~A~%"
-						   #-lispworks-32 "-shared -o ~A ~A ~A ~A~%"
-						   ,so-file-name ,l-file-name *libclm-pathname*
-						   "-lm"))
-;;; ---------------- LINUX (all except clisp), NETBSD
-			#+(and (or excl cmu sbcl) (or linux netbsd) (not freebsd))
-			(common-tones::run-in-shell "ld" (format nil "-shared -whole-archive -o ~A ~A ~A ~A~%"
-							,so-file-name ,l-file-name *libclm-pathname*
-							"-lm"))
-
-;;; ---------------- OSX (ACL 7)
-			#+(and acl-70 (not acl-80) macosx)
-			(common-tones::run-in-shell "ld"
-					   (format nil "-bundle /usr/lib/bundle1.o -flat_namespace -undefined suppress -o ~A ~A -lm -lc -lcc_dynamic -framework CoreAudio "
-						   ,so-file-name ,l-file-name))
-
-;;; ---------------- OSX (ACL 8)
-			#+(and acl-80 macosx)
-			(common-tones::run-in-shell "ld"
-					   (format nil "-bundle /usr/lib/bundle1.o -flat_namespace -undefined suppress -o ~A ~A -lm -lc -framework CoreAudio "
-						   ,so-file-name ,l-file-name))
-
-;;; ---------------- OSX CMUCL/SBCL
-			#+(and mac-osx (or cmu sbcl))
-			(common-tones::run-in-shell "gcc"
-					   (format nil "-o ~A ~A ~A -dynamiclib" ,so-file-name ,l-file-name *libclm-pathname*))
-
-;;; ---------------- PPC (openmcl)
-			#+(and openmcl (or linux-target linuxppc-target))
-			(common-tones::run-in-shell "ld" (format nil "-shared -whole-archive -o ~A ~A ~A~%"
-							,so-file-name ,l-file-name *libclm-pathname*))
-
-;;; ---------------- FREEBSD
-			#+(and cmu freebsd)
-			(common-tones::run-in-shell "ld" (format nil "-r -L/usr/lib -o ~A ~A -L~A -lm~%"
-							,so-file-name ,l-file-name *clm-binary-directory*))
-
-		 ;; this puts the absolute location of libclm.so in the ins .so file -- another way to solve
-		 ;; this problem would be to ask the user to add the clm directory to his LD_LIBRARY_PATH
-		 ;; environment variable: (.cshrc): setenv LD_LIBRARY_PATH /usr/lib:/lib:/user/b/bil/linux/clm
-
-		 #+(and excl freebsd)
-		 (common-tones::run-in-shell "ld" (format nil "-Bshareable -Bdynamic -o ~A ~A ~A ~A~%"
-						 ,so-file-name ,l-file-name *libclm-pathname*
-						 "-lm"))
-
-
-;;; ---------------- WINDOWS
-			#+(and excl windoze)
-			(common-tones::run-in-shell "cl" (concatenate 'string " -D_MT -MD -nologo -LD -Zi -W3 -Fe"
-							     ,so-file-name " "
-							     ,l-file-name " "
-							     *clm-binary-directory* "libclm.lib"
-							     ))
-
-			))
+      (uiop:run-program "gcc"
+                  `("-shared" "-o" ,so-file-name ,l-file-name ,(uiop:pathname-directory-pathname *libclm-pathname*) "-lm"))))
 
 	   (cffi:load-foreign-library ,so-file-name)
 
@@ -413,8 +281,7 @@
 	     (pushnew ',name *clm-instruments*)
 	     (set-instrument-properties ',name ,c-file-name ,*c-print-function*)
 	     )
-	   (,silly-name))
-          ))))
+	   (,silly-name)))))
 
 (defun clm-initialize-links ()
   (when (not *clm-linked*)

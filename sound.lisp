@@ -68,55 +68,23 @@
 	    (setf sndplay "sndplay")) ; hope there's a system version, I guess
 	  ;;
 	  ;; SNDPLAY
-	  #-(or excl openmcl cmu sbcl)
-	  (run-in-shell sndplay command-args)
-	  #+openmcl
-	  (ccl:run-program sndplay command-args :output t :wait wait)
-	  #+(and excl windoze)
-	  (run-in-shell sndplay command-args)
-	  #+(and excl (not windoze))
 	  (progn
-	    ;; this dubious business tested slightly in Linux and SGI
-	    (when *dac-pid* (loop while (numberp (system:os-wait))))
-	    (setf *dac-pid* (nth-value 2 (excl:run-shell-command command-args :wait wait))))
-	  #+cmu
-	  ;; *dac-pid* is not really a pid, it is a cmucl process
-	  (progn
-	    ;; wait for a previous play command
-	    (when *dac-pid* (ext:process-wait *dac-pid*))
-	    (setf *dac-pid* (ext:run-program sndplay command-args :wait wait)))
-	  #+sbcl
-	  (progn
-	    ;; wait for a previous play command
-	    (when *dac-pid* (sb-ext:process-wait *dac-pid*))
-	    (setf *dac-pid* (sb-ext:run-program sndplay command-args :wait wait)))
+	  ;; Wait for a previous play command
+	  	(when *dac-pid*
+	  		(uiop:process-wait *dac-pid*))
+	  	(setf *dac-pid*
+	  		(uiop:run-program "sndplay" command-args :wait wait)))
 	  (if filename (setf last-dac-filename filename)))))
     last-dac-filename))
 
 (defun stop-playing ()
-  #+excl (progn
-	   (print *dac-pid*)
-	   (force-output)
-	   (when *dac-pid*
-	     #-windoze (excl:shell (format nil "kill ~D" *dac-pid*))
-	     (system:os-wait)
-	     (setf *dac-pid* nil)))
-  #+cmu
   (when *dac-pid*
-    (print (ext:process-pid *dac-pid*))
-    (force-output)
-    (ext:process-kill *dac-pid* :sigterm)
-    (ext:process-wait *dac-pid*)
-    (setf *dac-pid* nil))
-  #+sbcl
-  (when *dac-pid*
-    (print (sb-ext:process-pid *dac-pid*))
-    (force-output)
-    (sb-ext:process-kill *dac-pid* sb-unix::sigterm) ; in sb-unix as of 0.9.8 => use 15 if they move it again
-    (sb-ext:process-wait *dac-pid*)
-    (setf *dac-pid* nil))
-  #-(or openmcl excl cmu sbcl) (warn "stop-dac not implemented yet")
-  )
+  	(let ((pid (uiop:process-pid *dac-pid*)))
+  		(print pid)
+  		(force-output)
+  		(uiop:process-kill pid :sigterm)
+  		(uiop:process-wait pid))
+  	(setf *dac-pid* nil)))
 
 (defun dac (&optional name-1 &key
 		      start end (wait *clm-dac-wait-default*))
@@ -127,38 +95,22 @@
 
 (defvar *force-recomputation* nil)
 
-;;; in all that follows, we have nested with-sounds, so various globals like *offset*
-
+;;; in all that follows, we have nested with-sounds, so various globals like *offset*=
 ;;; need to be handled dynamically, but we also need to protect against two kinds of errors --
-
 ;;; exit from the debugger, wherein we have to leave CLM/Lisp in a clean state, and user-forgetfulness
-
 ;;; with regard to open-input (it's easy to leave files open accidentally).  Additionally, with-sound
-
 ;;; can be called within the debugger while in with-sound.  We used to call clm-cleanup all the time
-
 ;;; but that closed all open files, and cleared *offset* which was the wrong thing, especially
-
 ;;; if the user was handling mus_any structs globally across a with-mix call.  So, we try to see the normal
-
 ;;; exit via *clm-with-sound-depth*, and error exits via *clm-within-with-sound*.  clm-cleanup from
-
 ;;; io.lisp is still a complete wipe-the-slate function.
-
 ;;; An added complication is that mix can open files in C (hidden from clm's list of open files),
-
 ;;; an IO error can occur (disk full), then checked_write can exit back to lisp, whereupon the
-
 ;;; caller can :reset from the debugger, leaving files open with no way to free the space except
-
 ;;; exit from lisp!  So I added (22-Oct-98) mus_file_cleanup_descriptors which runs through
-
 ;;; the entire C array of file descriptors, tries to deduce which files are still open, and
-
 ;;; close them -- this means the error exit from with-sound will clobber any files global
-
 ;;; to that call.  Can't decide whether something fancier is needed.
-
 
 (defvar *clm-with-sound-depth* 0)
 (defvar *clm-within-with-sound* nil)
