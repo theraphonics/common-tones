@@ -1,6 +1,6 @@
 # common-tones
 
-This is `common-tones'. `common-tones' is a fork of CLM-5.
+This is `common-tones`. `common-tones` is a fork of CLM-5.
 
 Threading has been rewritten to use Bordeaux-threads and the main ffi interface has been rewritten to use cffi.
 
