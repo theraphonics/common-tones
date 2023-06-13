@@ -6,7 +6,7 @@ Threading has been rewritten to use `bordeaux-threads` and the main ffi interfac
 
 The build process has been entirely rewritten to work with ASDF3 and Quicklisp.
 
-Sound *probably* doesn't work. I wouldn't call this "production-ready" but all of the mathematical/signal functions DO work. If you're on Unix/Linux/MacOS (but not M1) it might be able to connect to the audio system but I haven't gotten to that part of the code yet. 
+Sound *probably* doesn't work. I wouldn't call this "production-ready" but all of the mathematical/signal functions DO work. If you're on Unix/Linux/MacOS (but not M1) it might be able to connect to the audio system but I haven't gotten to that part of the code yet. Same with the run loop. Use those at your own risk...
 
 The main `mus` file has been broken out into `generators/*` to isolate issues in debugging.
 
