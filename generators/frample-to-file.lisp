@@ -1,7 +1,6 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 ;;; -------- FRAMPLE->FILE --------
-
 
 (defclass frample->file ()
   ((loc :initform 0 :initarg :start :accessor f2f-loc)

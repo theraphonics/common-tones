@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 ;;; All-pass or "moving moving-average comb" filter
 ;;;

@@ -1,9 +1,7 @@
 (in-package :common-tones)
 
 ;;; foreign function interfaces using portable cffi library.
-;;; sndlib linkages are in sndlib2clm.lisp, packaged here into the old names
-;;; the rest of this file links to cmus.c and clm.c
-
+;;; this file links to cmus.c and clm.c
 
 (defun clm-close-output () (clm-close-output-1) (setf *output* nil))
 (defun clm-close-reverb () (clm-close-reverb-1) (setf *reverb* nil))

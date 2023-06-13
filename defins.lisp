@@ -381,82 +381,14 @@
 
 			))
 
-	   #+excl (if *use-chcon* (excl:shell (format nil "chcon -t textrel_shlib_t ~A" ,so-file-name)))
-	   #+excl (without-warnings (load ,so-file-name))
+	   (cffi:load-foreign-library ,so-file-name)
 
-	   ;; (princ (format nil "~&registering foreign module: ~A from file ~A~%" ',c-ff-name ,so-file-name))
-	   #+lispworks (fli:disconnect-module ,c-ff-name)
-	   #+lispworks (fli:register-module ,c-ff-name :real-name ,so-file-name)
-	   ;; #+lispworks (fli:register-module ,c-ff-name :real-name ,so-file-name :dlopen-flags t)
-	   ;; #+lispworks (fli:register-module ,c-ff-name :file-name ,so-file-name :connection-style :immediate)
+     (cffi:defcfun (,c-ff-name ,c-ff-cmu) :int
+       (datar (* :double))
+       (len :int) (datai (* :int)) (ilen :int))
 
-	   #+openmcl (progn
-		       #+(and clozure darwinx86-target)
-		       ;; MacOS X 10.4 introduced native dlopen/dlclose which CCL now uses
-		       ;; a side effect of this is that close-shared-library no longer works for bundles
-		       ;; eventually close-shared-library should probably be updated but for now
-		       ;; we look for the library, call dlclose and unload the entrypoints
-		       (let ((lib (ccl::shared-library-with-name ,so-file-name))
-			     (closed nil))
-			 (when lib
-			   (do () ((/= 0
-				       (ccl::ff-call (ccl::foreign-symbol-entry "dlclose")
-						     :address (ccl::shlib.map lib)
-						     :int)
-				       ))
-			     (setf closed t))
-			   (when closed
-			     (setf (ccl::shlib.map lib) nil
-				   (ccl::shlib.base lib) nil)
-			     (ccl::unload-library-entrypoints lib)
-			     (setq ccl::*shared-libraries* (delete lib ccl::*shared-libraries*)))))
-		       (ccl:open-shared-library ,so-file-name))
-
-	   #+sbcl (sb-alien:load-shared-object ,so-file-name)
-
-	   #+(and acl-50 (not acl-70))
-	   (ff:def-foreign-call (,c-ff ,c-ff-name)
-	       ((datar (* :float) array) (len :int) (datai (* :int) array) (ilen :int))
-	     :returning :int)
-
-	   #+lispworks
-	   (fli::define-foreign-function (,c-ff ,c-ff-name)
-	       ((datar :lisp-array) (len :int) (datai :lisp-array) (ilen :int))
-	     :result-type :int
-	     :module ,c-ff-name)
-
-	   #+acl-70
-	   (ff:def-foreign-call (,c-ff ,c-ff-name)
-				((datar (:array :double)) (len :int) (datai (:array :int)) (ilen :int))
-				:returning :int)
-
-	   #+cmu
-	   (alien:def-alien-routine (,c-ff-name ,c-ff-cmu) c-call:int
-				    (datar (* double-float)) (len c-call:int) (datai (* c-call:int)) (ilen c-call:int))
-
-	   #+sbcl
-	   (sb-alien:define-alien-routine (,c-ff-name ,c-ff-cmu) sb-alien:int
-	     (datar (* double-float))
-	     (len sb-alien:int) (datai (* sb-alien:int)) (ilen sb-alien:int))
-
-	   #+cmu
 	   (defun ,c-ff (c &optional d e f)
 	     (,c-ff-cmu (array-data-address c) d (array-data-address e) f))
-
-	   #+sbcl
-	   (defun ,c-ff (c &optional d e f)
-	     (,c-ff-cmu (array-data-address c) d (array-data-address e) f))
-
-	   #+clisp (ffi:def-call-out ,c-ff
-		       (:name ,c-ff-name)
-		     (:library (expand-filename->string ,so-file-name))
-		     (:language :stdc)
-		     (:return-type ffi:int)
-		     (:arguments (datar (ffi:c-array-ptr ffi:double-float))
-				 (len ffi:int)
-				 (datai (ffi:c-array-ptr ffi:int))
-				 (ilen ffi:int)))
-
 
 	   (pushnew ',name *clm-instruments*)
 	   (defun ,name ,args
@@ -479,12 +411,10 @@
 		       val))))
 	   (defun ,silly-name ()
 	     (pushnew ',name *clm-instruments*)
-	     #-clisp (set-instrument-properties ',name ,c-file-name ,*c-print-function*)
-	     #+clisp (set-instrument-properties ',name ,c-file-name ,*c-print-function* (expand-filename->string ,so-file-name))
+	     (set-instrument-properties ',name ,c-file-name ,*c-print-function*)
 	     )
 	   (,silly-name))
           ))))
-
 
 (defun clm-initialize-links ()
   (when (not *clm-linked*)
@@ -503,7 +433,6 @@
 (defun bye () (uiop:quit))
 (defun exit () (uiop:quit))
 
-#+(or cmu sbcl openmcl excl)
 (defun restart-clm ()
 	(cffi:load-foreign-library *libclm-pathname*)
   (setf *clm-linked* nil)

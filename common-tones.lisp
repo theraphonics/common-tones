@@ -257,7 +257,7 @@
 (defvar *clm-binary-directory* "")
 (defvar *clm-ins-directory* nil)
 (defvar *clm-compiler-name* #-windoze "cc" #+windoze "cl")
-					;this is set in all.lisp via the envirionment variable "CC"
+	;this is set in all.lisp via the envirionment variable "CC"
 
 ;;; this is reflected in cmus.h
 (defconstant +clm-interrupted+ 0)

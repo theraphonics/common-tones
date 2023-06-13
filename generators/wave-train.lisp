@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 (defclass wave-train ()
   ((wave :initform nil :initarg :wave :accessor wt-wave)

@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 (defclass convolve ()
   ((filtr :initform nil :initarg :filtr :accessor conv-filtr)

@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 (defclass delay ()
   ((size :initform nil :initarg :size :accessor dly-size)

@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 
 (defmacro ring-modulate (in1 in2) `(* ,in1 ,in2))

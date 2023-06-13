@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 ;;; two-pole  y(n) = a0 x(n) - b1 y(n-1) - b2 y(n-2)
 

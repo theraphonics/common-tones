@@ -1,5 +1,5 @@
 ;;; ncos
-
+(in-package :common-tones)
 
 (defclass ncos ()
   ((n :initform nil :initarg :n :accessor ncosp-n)
