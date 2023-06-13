@@ -499,6 +499,7 @@
   (when clm-cleanup-functions
     (loop for func in clm-cleanup-functions do (funcall func))))
 
+(defun quit () (uiop:quit))
 (defun bye () (uiop:quit))
 (defun exit () (uiop:quit))
 
