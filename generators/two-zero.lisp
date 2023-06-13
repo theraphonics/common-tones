@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 ;;; two-zero  y(n) = a0 x(n) + a1 x(n-1) + a2 x(n-2)
 

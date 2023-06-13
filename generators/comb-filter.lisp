@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 ;;; Comb filter (a delay line with a scaler on the feedback term)
 

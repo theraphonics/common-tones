@@ -1,24 +1,20 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 ;;; Rand and Rand-Interp
-
 ;;;
-
 ;;; rand latches its output random number, getting a new number
-
 ;;; every srate/freq samples -- internally we pretend that our cycle is between 0 and
-
 ;;; two-pi so that the caller can use hz->radians without confusion.  This way,
-
 ;;; frequency calculations look the same between oscil and rand and so on.
-
 ;;; rand-interp interpolates between successive random numbers.
 
 
 (defun ran (lo hi)			;returns random numbers between lo and hi
   (if (= hi lo)
       lo
-    (and excl cltl2) (+ lo (random (- hi lo)))))
+    (+ lo (random (- hi lo)))
+    ; #+(and excl cltl2) (+ lo (* (- hi lo) (random 1.0f0)))
+    ))
 
 (defun centered-random (n)          ;[-n .. n] not lisp's [0.0 .. n]
   (if (zerop n) n			;don't die just because n happens to touch 0!

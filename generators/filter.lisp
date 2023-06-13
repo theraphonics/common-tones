@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 (defclass filter ()
   ((order :initform nil :initarg :order :accessor flt-order)

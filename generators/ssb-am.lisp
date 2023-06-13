@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 ;;; single sideband suppressed carrier amplitude modulation
 
 

@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 (defclass triangle-wave ()
   ((current-value :initform nil :initarg :current-value :accessor sw-current-value)

@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 (defclass oscil ()
   ((freq :initform nil :initarg :freq :accessor oscil-freq)

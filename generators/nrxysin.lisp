@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 (defclass nrxysin ()
   ((phase :initform nil :initarg :phase :accessor nrxy-phase)

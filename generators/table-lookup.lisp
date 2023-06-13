@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 
 (defclass table-lookup ()
   ((freq :initform nil :initarg :freq :accessor tbl-freq)

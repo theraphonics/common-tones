@@ -12,19 +12,9 @@
 
 (defvar *clm-file-buffer-size* (* 64 1024))
 
-(defvar *clm-file-name*
-  #+ccrma "/zap/test.snd"
-  #+(or sgi sun hpux linux) "test.snd"
-  #+windoze "test.wav"
-  #-(or windoze ccrma sgi sun hpux linux) "test.aiff"
-  )
+(defvar *clm-file-name* "test.aiff")
 
-(defvar *clm-header-type*
-  #+(or sun hpux linux) mus-next
-  #+(or (and openmcl (not linux-target)) sgi) mus-aifc
-  #+windoze mus-riff
-  #-(or windoze openmcl sgi sun hpux linux) mus-aifc
-  )
+(defvar *clm-header-type* mus-aifc)
 
 (defvar *clm-data-format* mus-ldouble)
 

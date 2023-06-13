@@ -1,4 +1,4 @@
-(in-package :common-tones/generators)
+(in-package :common-tones)
 ;;; Granulate was originally called SpeedFile (in Mixer.Sai)
 
 ;;; Another version of SpeedFile alternated between forward and backward segments.
