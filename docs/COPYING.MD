@@ -1,5 +1,6 @@
-CLM is a sound synthesis package written by Bill Schottstaedt (bil@ccrma.stanford.edu).
+common-tones is a sound synthesis package. It is based on CLM.
 
+CLM is a sound synthesis package written by Bill Schottstaedt.
 Except where otherwise noted, it is Copyright 1989-2013 Bill Schottstaedt.
 
 Except where otherwise noted, clm is Copyright 1996-2006 The Board of Trustees
