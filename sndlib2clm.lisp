@@ -1,74 +1,74 @@
 (in-package :common-tones)
 
-(cffi:defcfun ("mus_error_type_to_string" mus-error-type->string) :cstring
+(cffi:defcfun ("mus_error_type_to_string" mus-error-type->string) :string
   (err :int))
 
 (cffi:defcfun ("clm_sound_samples" mus-sound-samples) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("clm_sound_framples" mus-sound-framples) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("mus_sound_datum_size" mus-sound-datum-size) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("clm_sound_data_location" mus-sound-data-location) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("mus_sound_chans" mus-sound-chans) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("mus_sound_srate" mus-sound-srate) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("mus_sound_header_type" mus-sound-header-type) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("mus_sound_sample_type" mus-sound-data-format) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("mus_sound_original_sample_type" mus-sound-original-format) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("mus_sound_write_date" mus-sound-write-date) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("clm_sound_comment_start" mus-sound-comment-start) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("clm_sound_comment_end" mus-sound-comment-end) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("clm_sound_length" mus-sound-length) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("mus_sound_type_specifier" mus-sound-type-specifier) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("mus_sound_bits_per_sample" mus-sound-bits-per-sample) :int
-  (arg :cstring))
+  (arg :string))
 
-(cffi:defcfun ("mus_header_type_name" mus-header-type-name) :cstring
+(cffi:defcfun ("mus_header_type_name" mus-header-type-name) :string
   (type :int))
 
-(cffi:defcfun ("mus_sample_type_name" mus-data-format-name) :cstring
+(cffi:defcfun ("mus_sample_type_name" mus-data-format-name) :string
   (format :int))
 
-(cffi:defcfun ("mus_sound_comment" mus-sound-comment) :cstring
-  (name :cstring))
+(cffi:defcfun ("mus_sound_comment" mus-sound-comment) :string
+  (name :string))
 
 (cffi:defcfun ("mus_sound_duration" mus-sound-duration) :float
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("mus_sound_initialize" mus-sound-initialize) :int)
 
 (cffi:defcfun ("mus_sound_forget" mus-sound-forget) :int
-  (name :cstring))
+  (name :string))
 
 (cffi:defcfun ("mus_audio_initialize" mus-audio-initialize) :int)
 
 (cffi:defcfun ("clm_mus_file_probe" clm-mus-file-probe) :int
-  (arg :cstring))
+  (arg :string))
 
 (cffi:defcfun ("clm_mus_set_clipping" clm-mus-set-clipping) :int
   (clipped :int))
