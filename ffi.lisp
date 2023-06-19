@@ -7,7 +7,6 @@
 (defun clm-close-reverb () (clm-close-reverb-1) (setf *reverb* nil))
 
 
-#-(and sbcl x86-64)
 (defun mus-sound-loop-info (name)
   (clm-initialize-links)
   (let ((err (mus-header-read name)))
